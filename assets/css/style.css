@@ -1,0 +1,103 @@
+/* Import font bulat yang ramah anak */
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap");
+
+body {
+  font-family: "Quicksand", sans-serif;
+  margin: 0;
+  background-color: #f9f9f9;
+}
+
+/* Header Styling */
+.main-header {
+  background-color: #ffffff;
+  padding: 15px 5%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo h1 {
+  color: #ff6b6b; /* Warna pink ceria */
+  font-size: 28px;
+  margin: 0;
+}
+
+.search-box input {
+  padding: 10px 20px;
+  border: 2px solid #ffd93d; /* Warna kuning ceria */
+  border-radius: 25px;
+  width: 300px;
+  outline: none;
+}
+
+.btn-login {
+  color: #4d96ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.btn-register {
+  background-color: #4d96ff; /* Biru muda */
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+}
+
+/* Hero Banner Styling */
+.hero-banner {
+  background: linear-gradient(
+    135deg,
+    #ffdee9 0%,
+    #b5fffc 100%
+  ); /* Gradasi pastel */
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-text h2 {
+  font-size: 42px;
+  color: #4a4a4a;
+  margin-bottom: 10px;
+}
+
+.discount-tag {
+  font-size: 24px;
+  color: #ff6b6b;
+  font-weight: bold;
+  background: white;
+  display: inline-block;
+  padding: 5px 15px;
+  border-radius: 10px;
+}
+
+.btn-cta {
+  display: block;
+  margin: 20px auto;
+  padding: 15px 30px;
+  background-color: #6bcb77; /* Hijau ceria */
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(107, 203, 119, 0.4);
+  transition: transform 0.2s;
+}
+
+.btn-cta:hover {
+  transform: scale(1.05);
+}
