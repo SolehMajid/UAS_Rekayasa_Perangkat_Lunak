@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         body {
-            background-image: url('../assets/images/bg.png');
+            background-image: url('/squashy/assets/images/tbg.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -225,8 +225,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <?php echo $message; ?>
 
-    <div class="top-nav"><a href="../index.php">Kembali</a></div>
+    <!-- <div class="top-nav"><a href="../index.php">Kembali</a></div> -->
 
+    <?= require_once __DIR__ . "/../components/layout/header.php" ?>
     <main>
         <div class="login-card">
             <div class="logo-top">
@@ -258,9 +259,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </main>
 
-    <footer>
-        <span class="info-icon">i</span> About Us
-    </footer>
+
 
 </body>
 

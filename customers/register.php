@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         body {
-            background-image: url('../assets/images/bg.png');
+            background-image: url('../assets/images/tbg.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -68,15 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overflow: hidden;
         }
 
-        header {
-            padding: 20px 50px;
-            font-weight: bold;
-        }
-
-        header a {
-            text-decoration: none;
-            color: var(--text-dark);
-        }
 
         main {
             flex: 1;
@@ -251,7 +242,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <?php echo $message; ?>
 
-    <header><a href="login.php">Login</a></header>
+    <!-- <header><a href="login.php">Login</a></header> -->
+
+    <?= require_once __DIR__ . "/../components/layout/header.php" ?>
 
     <main>
         <div class="register-card">
@@ -301,9 +294,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </main>
 
-    <footer>
-        <span class="info-icon">i</span> About Us
-    </footer>
 
 </body>
 

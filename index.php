@@ -345,18 +345,7 @@
 
 <body data-theme="home">
 
-    <nav>
-        <div class="logo">
-            <img src="assets/images/logo.png" alt="Squashy Logo">
-        </div>
-        <div class="nav-links">
-            <a href="index.php" class="active">Home</a>
-            <a href="../squashy/customers/kategori.php">Pakaian</a>
-            <a href="../squashy/customers/kategori.php">Mainan</a>
-            <a href="../squashy/customers/kategori.php">Perlengkapan</a>
-            <a href="../squashy/customers/login.php">🔐 Login</a>
-        </div>
-    </nav>
+    <?= require_once __DIR__ . "/components/layout/header.php" ?>
 
     <div class="main-wrapper">
         <section class="promo-banner-seru">
@@ -377,10 +366,10 @@
         </section>
 
         <div class="categories-seru">
-            <a href="#" class="cat-card-seru"><span>👕</span>Pakaian Anak</a>
-            <a href="#" class="cat-card-seru"><span>🚂</span>Mainan Seru</a>
-            <a href="#" class="cat-card-seru"><span>🍼</span>Perlengkapan</a>
-            <a href="#" class="cat-card-seru"><span>🎁</span>Promo Spesial</a>
+            <a href="/customers/kategori.php" class="cat-card-seru"><span>👕</span>Pakaian Anak</a>
+            <a href="/customers/kategori.php" class="cat-card-seru"><span>🚂</span>Mainan Seru</a>
+            <a href="/customers/kategori.php" class="cat-card-seru"><span>🍼</span>Perlengkapan</a>
+            <a href="/customers/kategori.php" class="cat-card-seru"><span>🎁</span>Promo Spesial</a>
         </div>
 
         <h2 class="section-title-seru">Produk <span>Pilihan</span> Bunda</h2>
@@ -389,15 +378,6 @@
         </div>
     </div>
 
-    <footer class="custom-footer-seru">
-
-        <div class="footer-left-content-seru">
-            <a href="about.php" class="about-us-link-seru">
-                <span class="info-circle-seru">i</span> About Us
-            </a>
-        </div>
-
-    </footer>
 
     <script>
         const productsSeru = [{
