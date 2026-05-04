@@ -169,7 +169,12 @@ require_once __DIR__ . '/../../config/app.php'; ?>
             // Cek apakah session sudah dimulai (pastikan session_start() ada di file utama)
             if (isset($_SESSION['login']) && $_SESSION['login'] === true) :
             ?>
-                <a href="<?= $base_url ?>customers/logout.php" class="login-btn" style="background-color: #d32f2f;">🚪 Logout</a>
+                <a href="<?= $base_url ?>customers/logout.php"
+                    class="login-btn"
+                    style="background-color: #d32f2f;"
+                    onclick="return confirm('Apakah Anda yakin ingin keluar dari akun ini?');">
+                    🚪 Logout
+                </a>
             <?php else : ?>
                 <a href="<?= $base_url ?>customers/login.php" class="login-btn">🔐 Login</a>
             <?php endif; ?>
