@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $message = "<script>alert('Email sudah terdaftar!');</script>";
         } else {
             // Hash password untuk keamanan
-            $password_secure = password_hash($pass, PASSWORD_DEFAULT);
+            $password_secure = hash('sha256', $pass);
 
             // Insert ke tabel user (sesuai struktur squashy_db.sql)
             $query = "INSERT INTO user (nama_lengkap, email, password_hash) VALUES ('$nama', '$email', '$password_secure')";
@@ -287,10 +287,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="divider">Atau Daftar dengan</div>
 
-            <div class="social-login">
+            <!-- <div class="social-login">
                 <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" class="social-icon" alt="Google">
                 <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" class="social-icon" alt="Facebook">
-            </div>
+            </div> -->
         </div>
     </main>
 

@@ -1,8 +1,5 @@
 <?php
-// Memulai session untuk menyimpan status login
 session_start();
-
-// Sertakan koneksi database
 include '../config/database.php';
 
 $message = "";
@@ -11,31 +8,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
 
-    // Query untuk mencari user berdasarkan email
-    $query = "SELECT * FROM user WHERE email = '$email'";
-    $result = mysqli_query($conn, $query);
+    // HASH password input
+    $password_hash = hash('sha256', $password);
 
-    if (mysqli_num_rows($result) === 1) {
-        $row = mysqli_fetch_assoc($result);
+    // 1. Cek di tabel Admin
+    $query_admin = "SELECT * FROM admin 
+                    WHERE email = '$email' 
+                    AND password_hash_admin = '$password_hash'";
+    $res_admin = mysqli_query($conn, $query_admin);
 
-        // Verifikasi password yang di-hash
-        if (password_verify($password, $row['password_hash'])) {
-            // Set session data
-            $_SESSION['login'] = true;
-            $_SESSION['id_user'] = $row['id_user'];
-            $_SESSION['nama_lengkap'] = $row['nama_lengkap'];
+    if (mysqli_num_rows($res_admin) === 1) {
+        $row = mysqli_fetch_assoc($res_admin);
 
-            echo "<script>
-                    alert('Login Berhasil! Selamat datang " . $row['nama_lengkap'] . "');
-                    window.location='../index.php';
-                  </script>";
-            exit;
-        } else {
-            $message = "<script>alert('Kata sandi salah!');</script>";
-        }
-    } else {
-        $message = "<script>alert('Email tidak ditemukan!');</script>";
+        $_SESSION['login'] = true;
+        $_SESSION['id_admin'] = $row['id_admin'];
+        $_SESSION['nama'] = $row['nama_admin'];
+        $_SESSION['role'] = 'admin';
+
+        echo "<script>alert('Login Admin Berhasil!'); window.location='../admin/dashboard.php';</script>";
+        exit;
     }
+
+    // 2. Cek di tabel User
+    $query_user = "SELECT * FROM user 
+                   WHERE email = '$email' 
+                   AND password_hash = '$password_hash'";
+    $res_user = mysqli_query($conn, $query_user);
+
+    if (mysqli_num_rows($res_user) === 1) {
+        $row = mysqli_fetch_assoc($res_user);
+
+        $_SESSION['login'] = true;
+        $_SESSION['id_user'] = $row['id_user'];
+        $_SESSION['nama'] = $row['nama_lengkap'];
+        $_SESSION['role'] = 'customer';
+
+        echo "<script>alert('Login Berhasil! Selamat datang " . $row['nama_lengkap'] . "'); window.location='../index.php';</script>";
+        exit;
+    }
+
+    $message = "<script>alert('Email atau Password Salah!');</script>";
 }
 ?>
 
@@ -250,7 +262,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <button type="submit" class="btn-masuk">MASUK SEKARANG</button>
 
-                <a href="#" class="forgot-link">Lupa Kata Sandi?</a>
+                <a href="<?= $base_url ?>customers/forgot_password.php" class="forgot-link">Lupa Kata Sandi?</a>
 
                 <p class="register-text">
                     Belum Punya Akun? <a href="register.php">Daftar di sini</a>
