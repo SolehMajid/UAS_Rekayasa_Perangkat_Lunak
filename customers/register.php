@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Sertakan koneksi database
 include '../config/database.php';
 

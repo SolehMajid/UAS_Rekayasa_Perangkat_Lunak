@@ -1,4 +1,5 @@
-<?php require_once __DIR__ . '/../../config/app.php'; ?>
+<?php
+require_once __DIR__ . '/../../config/app.php'; ?>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
 
 <style>
@@ -164,7 +165,14 @@
         </div>
 
         <div class="nav-links">
-            <a href="<?= $base_url ?>customers/login.php" class="login-btn">🔐 Login</a>
+            <?php
+            // Cek apakah session sudah dimulai (pastikan session_start() ada di file utama)
+            if (isset($_SESSION['login']) && $_SESSION['login'] === true) :
+            ?>
+                <a href="<?= $base_url ?>customers/logout.php" class="login-btn" style="background-color: #d32f2f;">🚪 Logout</a>
+            <?php else : ?>
+                <a href="<?= $base_url ?>customers/login.php" class="login-btn">🔐 Login</a>
+            <?php endif; ?>
         </div>
 
         <div class="search-container">
