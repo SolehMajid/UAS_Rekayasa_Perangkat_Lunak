@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['nama'] = $row['nama_admin'];
         $_SESSION['role'] = 'admin';
 
-        echo "<script>alert('Login Admin Berhasil!'); window.location='../admin/dashboard.php';</script>";
+        echo "<script>alert('Login Admin Berhasil!'); window.location='../admin/admin_dashboard.php';</script>";
         exit;
     }
 
