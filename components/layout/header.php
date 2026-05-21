@@ -52,17 +52,17 @@
 
     /* ── NAVBAR ── */
     nav {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 0 40px;
+        background: transparent;
+        padding: 12px 40px;
         height: 80px;
         display: flex;
         justify-content: center;
         align-items: center;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        box-shadow: none;
         position: sticky;
         top: 0;
         z-index: 1000;
+        border-top: 6px solid var(--pink);
     }
 
     .nav-container {
@@ -75,7 +75,7 @@
     }
 
     .logo img {
-        width: 110px;
+        width: 120px;
         height: auto;
         display: block;
     }
@@ -160,7 +160,10 @@
             <a onclick="changeTheme('home', this)" class="active" href="<?= $base_url ?>index.php">Home</a>
             <a onclick="changeTheme('pakaian', this)" href="<?= $base_url ?>customers/kategori.php">Kategori</a>
             <a onclick="changeTheme('mainan', this)" href="<?= $base_url ?>index.php">Chat</a>
-            <a onclick="changeTheme('perlengkapan', this)" href="<?= $base_url ?>index.php">Keranjang</a>
+            <a onclick="changeTheme('perlengkapan', this)" href="<?= $base_url ?>customers/keranjang.php">Keranjang</a>
+            <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true) : ?>
+                <a href="<?= $base_url ?>customers/profil.php">Profil</a>
+            <?php endif; ?>
         </div>
 
         <div class="nav-links">

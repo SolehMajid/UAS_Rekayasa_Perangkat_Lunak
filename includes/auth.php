@@ -7,7 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
 function checkLogin()
 {
     if (!isset($_SESSION['login'])) {
-        header("Location: /squashy/customers/login.php");
+        $redirect = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/squashy/index.php';
+        header("Location: /squashy/customers/login.php?redirect=" . urlencode($redirect));
         exit;
     }
 }

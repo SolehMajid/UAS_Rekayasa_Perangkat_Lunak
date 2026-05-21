@@ -4,6 +4,8 @@ session_start();
 require_once '../config/app.php';
 require_once '../config/database.php';
 
+$active_page = 'produk';
+
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: " . $base_url);
@@ -401,23 +403,212 @@ $result_produk = mysqli_query($conn, $sql_produk);
             pointer-events: none;
             z-index: 5;
         }
+
+        /* Modal Tambah Produk */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .modal {
+            width: 520px;
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px 22px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal h3 {
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .modal .form-row {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .modal label {
+            font-weight: 700;
+            width: 110px;
+        }
+
+        .modal input[type="text"],
+        .modal input[type="number"],
+        .modal textarea,
+        .modal select {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .modal .image-previews {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px
+        }
+
+        .modal .image-previews img {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f0f0f0
+        }
+
+        .modal .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 14px
+        }
+
+        .modal .btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            border: none
+        }
+
+        .modal .btn.cancel {
+            background: #E0E0E0
+        }
+
+        .modal .btn.save {
+            background: #FFB347;
+            color: #fff
+        }
+
+        /* Modal Popup Styles */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+        }
+
+        .modal {
+            width: 720px;
+            max-width: 100%;
+            background: #FFF6EE;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+
+        .modal .modal-title {
+            text-align: center;
+            font-weight: 900;
+            background: #8DE3C7;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 0 auto 14px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .upload-box {
+            background: #F7F7F7;
+            border: 2px dashed #DDD;
+            border-radius: 12px;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .upload-box input[type=file] {
+            display: none;
+        }
+
+        .thumbs {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .thumbs img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #eee;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .form-row label {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #DDD;
+            font-weight: 700;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-cancel {
+            background: #DADADA;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 900;
+        }
+
+        .btn-save {
+            background: #FF9F3C;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 900;
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="sidebar">
-        <div class="logo-box">
-            <img src="../assets/images/logo.png" alt="Logo Squashy">
-        </div>
-        <div class="menu-list">
-            <a href="admin_dashboard.php" class="menu-item">📈 Dashboard</a>
-            <a href="kelola_produk.php" class="menu-item active">📦 Kelola Produk</a>
-            <a href="kelola_pesanan.php" class="menu-item active">📋 Kelola Pesanan</a>
-            <a href="#" class="menu-item">👥 Status Pesanan</a>
-            <a href="?logout=true" class="menu-item">Logout</a>
-        </div>
-    </div>
+    <?php require_once '../components/layout/header_admin.php'; ?>
 
     <div class="main-content">
 
@@ -432,7 +623,7 @@ $result_produk = mysqli_query($conn, $sql_produk);
             <div class="stat-card">
                 <div class="color-block green"></div>
                 <div class="stat-info">
-                    <span>Produk Tersedia:</span>
+                    <span>Produk Tersedia:</span>s
                     <h2><?= $produk_tersedia; ?></h2>
                 </div>
             </div>
@@ -452,7 +643,7 @@ $result_produk = mysqli_query($conn, $sql_produk);
                     <button type="submit">🔍</button>
                     <input type="text" name="search" placeholder="Cari Nama / ID Produk..." value="<?= htmlspecialchars($search); ?>">
                 </form>
-                <a href="form_tambah_produk.php" class="btn-tambah">Tambah Produk Baru</a>
+                <button type="button" class="btn-tambah" id="open-modal">Tambah Produk Baru</button>
             </div>
 
             <table class="main-table">
@@ -483,7 +674,13 @@ $result_produk = mysqli_query($conn, $sql_produk);
                             <tr>
                                 <td>#<?= $row['id_produk']; ?></td>
                                 <td>
-                                    <div class="img-container-td">🧸</div>
+                                    <?php if (!empty($row['foto'])): ?>
+                                        <div class="img-container-td">
+                                            <img src="../<?= htmlspecialchars($row['foto']); ?>" alt="<?= htmlspecialchars($row['nama_produk']); ?>" style="max-width:100%; max-height:100%; border-radius:8px; object-fit:cover;" />
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="img-container-td">🧸</div>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($row['nama_produk']); ?></td>
                                 <td><?= htmlspecialchars($row['nama_kategori'] ?? 'Tanpa Kategori'); ?></td>
@@ -492,9 +689,8 @@ $result_produk = mysqli_query($conn, $sql_produk);
                                 <td><?= $status_badge; ?></td>
                                 <td>
                                     <div class="action-group">
-                                        <a href="form_edit_produk.php?id=<?= $row['id_produk']; ?>" class="action-btn btn-edit">📝<span>Edit</span></a>
-                                        <a href="proses_hapus_produk.php?id=<?= $row['id_produk']; ?>" class="action-btn btn-hapus" onclick="return confirm('Yakin ingin menghapus produk ini?')">🗑️<span>Hapus</span></a>
-                                        <a href="../detail_produk.php?id=<?= $row['id_produk']; ?>" target="_blank" class="action-btn btn-preview">👁️<span>Preview</span></a>
+                                        <button type="button" class="action-btn btn-edit" data-id="<?= $row['id_produk']; ?>">📝<span>Edit</span></button>
+                                        <button type="button" class="action-btn btn-hapus btn-delete" data-id="<?= $row['id_produk']; ?>">🗑️<span>Hapus</span></button>
                                     </div>
                                 </td>
                             </tr>
@@ -520,7 +716,222 @@ $result_produk = mysqli_query($conn, $sql_produk);
         </div>
     </div>
 
+    <!-- Modal: Tambah Produk -->
+    <?php $kategori_q = mysqli_query($conn, "SELECT id_kategori, nama_kategori FROM kategori ORDER BY nama_kategori ASC"); ?>
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+            <h3 id="modalTitle">TAMBAH PRODUK BARU</h3>
+            <form id="formTambah" action="#" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="id_produk" id="id_produk" value="">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <div class="form-row">
+                            <label>Nama Produk</label>
+                            <input type="text" name="nama_produk" class="form-control" required>
+                        </div>
+                        <div class="form-row">
+                            <label>SKU/Kode</label>
+                            <input type="text" name="sku" class="form-control">
+                        </div>
+                        <div class="form-row">
+                            <label>Kategori</label>
+                            <select name="id_kategori" class="form-control" required>
+                                <option value="" disabled selected>Pilih Kategori</option>
+                                <?php while ($k = mysqli_fetch_assoc($kategori_q)) { ?>
+                                    <option value="<?= $k['id_kategori'] ?>"><?= htmlspecialchars($k['nama_kategori']) ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>Harga</label>
+                            <input type="number" name="harga" class="form-control" min="0" value="0" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Stok</label>
+                            <input type="number" name="stok" class="form-control" min="0" value="0" required>
+                        </div>
+                    </div>
+                    <div style="width:180px;">
+                        <label style="font-weight:900">Gambar</label>
+                        <div class="upload-box">
+                            <button type="button" id="pickImage" class="btn" style="background:#fff; border:1px dashed #ccc; padding:8px 12px;">Pilih Gambar</button>
+                            <input type="file" id="imagesInput" name="images[]" accept="image/*" multiple>
+                            <div class="image-previews" id="imagePreviews"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <label style="font-weight:900">Deskripsi Singkat (Optional)</label>
+                    <textarea name="deskripsi" rows="3" class="form-control"></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn cancel" id="btnCancel">BATALKAN</button>
+                    <button type="submit" class="btn save" id="btnSave">SIMPAN PRODUK</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <img src="../assets/images/decor-right.png" class="decor-flower-bottom">
+
+    <script>
+        (function() {
+            var openBtn = document.getElementById('open-modal');
+            var backdrop = document.getElementById('modalBackdrop');
+            var btnCancel = document.getElementById('btnCancel');
+            var pick = document.getElementById('pickImage');
+            var imagesInput = document.getElementById('imagesInput');
+            var previews = document.getElementById('imagePreviews');
+            var modalTitle = document.getElementById('modalTitle');
+            var form = document.getElementById('formTambah');
+            var inputId = document.getElementById('id_produk');
+            var btnSave = document.getElementById('btnSave');
+
+            function openModal() {
+                backdrop.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                backdrop.style.display = 'none';
+                document.body.style.overflow = '';
+                // clear previews and reset form
+                previews.innerHTML = '';
+                imagesInput.value = '';
+                form.reset();
+                inputId.value = '';
+                modalTitle.textContent = 'TAMBAH PRODUK BARU';
+                btnSave.textContent = 'SIMPAN PRODUK';
+            }
+
+            if (openBtn) openBtn.addEventListener('click', function() {
+                inputId.value = '';
+                modalTitle.textContent = 'TAMBAH PRODUK BARU';
+                btnSave.textContent = 'SIMPAN PRODUK';
+                openModal();
+            });
+            if (btnCancel) btnCancel.addEventListener('click', closeModal);
+            // close when clicking outside modal
+            backdrop.addEventListener('click', function(e) {
+                if (e.target === backdrop) closeModal();
+            });
+            // esc to close
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
+
+            pick.addEventListener('click', function() {
+                imagesInput.click();
+            });
+
+            imagesInput.addEventListener('change', function() {
+                previews.innerHTML = '';
+                var files = Array.from(this.files).slice(0, 4);
+                files.forEach(function(file) {
+                    if (!file.type.startsWith('image/')) return;
+                    var fr = new FileReader();
+                    fr.onload = function(evt) {
+                        var img = document.createElement('img');
+                        img.src = evt.target.result;
+                        previews.appendChild(img);
+                    }
+                    fr.readAsDataURL(file);
+                });
+            });
+
+            // Handle edit buttons
+            document.querySelectorAll('.btn-edit').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var id = this.getAttribute('data-id');
+                    if (!id) return;
+                    fetch('produk_action.php?action=get&id=' + encodeURIComponent(id))
+                        .then(function(res) {
+                            return res.json();
+                        })
+                        .then(function(json) {
+                            if (!json.success) {
+                                alert('Gagal mengambil data produk');
+                                return;
+                            }
+                            var data = json.data;
+                            // populate form fields
+                            inputId.value = data.id_produk || '';
+                            form.nama_produk.value = data.nama_produk || '';
+                            form.sku.value = data.sku || '';
+                            form.id_kategori.value = data.id_kategori || '';
+                            form.harga.value = data.harga || 0;
+                            form.stok.value = data.stok || 0;
+                            form.deskripsi.value = data.deskripsi || '';
+                            modalTitle.textContent = 'EDIT PRODUK';
+                            btnSave.textContent = 'UPDATE PRODUK';
+                            openModal();
+                        })
+                        .catch(function() {
+                            alert('Gagal terhubung ke server');
+                        });
+                });
+            });
+
+            // Handle delete buttons (event delegation)
+            document.querySelectorAll('.btn-delete').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var id = this.getAttribute('data-id');
+                    if (!id) return;
+                    if (!confirm('Yakin ingin menghapus produk ini?')) return;
+                    var row = this.closest('tr');
+                    var fd = new FormData();
+                    fd.append('id', id);
+                    fetch('produk_action.php?action=delete', {
+                            method: 'POST',
+                            body: fd
+                        })
+                        .then(function(res) {
+                            return res.json();
+                        })
+                        .then(function(json) {
+                            if (json.success) {
+                                if (row) row.remove();
+                            } else {
+                                alert('Gagal menghapus: ' + (json.message || 'error'));
+                            }
+                        })
+                        .catch(function() {
+                            alert('Gagal terhubung ke server');
+                        });
+                });
+            });
+
+            // Handle form submit (create or update) via AJAX
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var idVal = inputId.value.trim();
+                var action = idVal ? 'update' : 'create';
+                var fd = new FormData(form);
+                fetch('produk_action.php?action=' + action, {
+                        method: 'POST',
+                        body: fd
+                    })
+                    .then(function(res) {
+                        return res.json();
+                    })
+                    .then(function(json) {
+                        if (json.success) {
+                            // close modal and reload to reflect changes
+                            closeModal();
+                            location.reload();
+                        } else {
+                            alert('Gagal menyimpan: ' + (json.message || 'error'));
+                        }
+                    })
+                    .catch(function() {
+                        alert('Gagal terhubung ke server');
+                    });
+            });
+
+        })();
+    </script>
 
 </body>
 

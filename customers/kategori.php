@@ -370,6 +370,11 @@ if ($kategori == "Mainan") {
             margin-bottom: 15px;
         }
 
+        .cart-form {
+            display: inline-block;
+            margin: 0;
+        }
+
         .buy-btn {
 
             border: none;
@@ -575,7 +580,11 @@ if ($kategori == "Mainan") {
 
                     <div class="product-image">
 
-                        <img src="../assets/images/ada.png">
+                        <?php if (!empty($produk['foto'])) : ?>
+                            <img src="../<?= htmlspecialchars($produk['foto']); ?>" alt="<?= htmlspecialchars($produk['nama_produk']); ?>">
+                        <?php else : ?>
+                            <img src="../assets/images/ada.png" alt="No image">
+                        <?php endif; ?>
 
                     </div>
 
@@ -596,12 +605,12 @@ if ($kategori == "Mainan") {
                         Stok : <?= $produk['stok'] ?>
 
                     </div>
-
-                    <button class="buy-btn">
-
-                        🛒 Tambah ke Keranjang
-
-                    </button>
+                    <form action="keranjang.php?action=add" method="POST" class="cart-form">
+                        <input type="hidden" name="id_produk" value="<?= $produk['id_produk']; ?>">
+                        <button type="submit" class="buy-btn">
+                            🛒 Tambah ke Keranjang
+                        </button>
+                    </form>
 
                 </div>
 

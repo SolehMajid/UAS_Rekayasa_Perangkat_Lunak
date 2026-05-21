@@ -1,4 +1,23 @@
-<?php session_start(); ?>
+<?php
+session_start();
+require_once __DIR__ . '/config/database.php';
+
+$top_products = [];
+$query_best = mysqli_query($conn, "
+    SELECT p.*, COALESCE(SUM(od.kuantitas), 0) AS total_sold
+    FROM produk p
+    LEFT JOIN order_detail od ON p.id_produk = od.id_produk
+    WHERE p.stok > 0
+    GROUP BY p.id_produk
+    ORDER BY total_sold DESC, p.id_produk DESC
+    LIMIT 4
+");
+if ($query_best) {
+    while ($row = mysqli_fetch_assoc($query_best)) {
+        $top_products[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -376,47 +395,33 @@
         <h2 class="section-title-seru">Produk <span>Pilihan</span> Bunda</h2>
 
         <div class="product-grid-seru" id="productGridSeru">
+            <?php if (!empty($top_products)) : ?>
+                <?php foreach ($top_products as $product) : ?>
+                    <div class="product-card-seru">
+                        <?php if (!empty($product['foto'])) : ?>
+                            <div class="product-img-box-seru">
+                                <img src="<?= htmlspecialchars($product['foto']); ?>" alt="<?= htmlspecialchars($product['nama_produk']); ?>" style="width:100%; height:100%; object-fit:cover; border-radius:20px;" />
+                            </div>
+                        <?php else : ?>
+                            <div class="product-img-box-seru">🎁</div>
+                        <?php endif; ?>
+                        <div>
+                            <h4 style="margin-bottom:5px"><?= htmlspecialchars($product['nama_produk']); ?></h4>
+                            <p style="color:var(--pink); font-weight:800">Rp <?= number_format($product['harga'], 0, ',', '.'); ?></p>
+                            <p style="font-size:12px; color:#777; margin-top:6px;">Terjual <?= number_format($product['total_sold'], 0, ',', '.'); ?> pcs</p>
+                        </div>
+                        <button class="btn-buy-seru">BELI SEKARANG</button>
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: white; border-radius: 30px;">
+                    Belum ada produk terlaris tersedia.
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 
 
-    <script>
-        const productsSeru = [{
-                name: "Baju Lucu Anak",
-                price: 75000,
-                emoji: "👗"
-            },
-            {
-                name: "Mainan Edukasi",
-                price: 89000,
-                emoji: "🧩"
-            },
-            {
-                name: "Sepatu Nyaman",
-                price: 95000,
-                emoji: "👟"
-            },
-            {
-                name: "Botol Minum",
-                price: 35000,
-                emoji: "🍼"
-            }
-        ];
-
-        const gridSeru = document.getElementById('productGridSeru');
-        productsSeru.forEach(p => {
-            gridSeru.innerHTML += `
-                <div class="product-card-seru">
-                    <div class="product-img-box-seru">${p.emoji}</div>
-                    <div>
-                        <h4 style="margin-bottom:5px">${p.name}</h4>
-                        <p style="color:var(--pink); font-weight:800">Rp ${p.price.toLocaleString('id-ID')}</p>
-                    </div>
-                    <button class="btn-buy-seru">BELI SEKARANG</button>
-                </div>
-            `;
-        });
-    </script>
 </body>
 
 </html>

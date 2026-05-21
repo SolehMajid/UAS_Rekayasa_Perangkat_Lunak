@@ -4,6 +4,8 @@ session_start();
 require_once '../config/app.php';
 require_once '../config/database.php';
 
+$active_page = 'pesanan';
+
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: " . $base_url);
@@ -220,6 +222,8 @@ $result_orders = mysqli_query($conn, $query_orders);
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            gap: 16px;
+            flex-wrap: wrap;
         }
 
         .header-dash h1 {
@@ -227,6 +231,25 @@ $result_orders = mysqli_query($conn, $query_orders);
             font-size: 28px;
             font-weight: 900;
             letter-spacing: 0.5px;
+        }
+
+        .btn-status-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: var(--mint-bg);
+            color: var(--dark-purple);
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-status-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
         }
 
         .header-right {
@@ -477,23 +500,7 @@ $result_orders = mysqli_query($conn, $query_orders);
 
 <body>
 
-    <!-- SIDEBAR -->
-
-    <div class="sidebar">
-
-        <div class="logo-box">
-            <img src="../assets/images/logo.png" alt="Logo Squashy">
-        </div>
-
-        <div class="menu-list">
-            <a href="admin_dashboard.php" class="menu-item">📈 Dashboard</a>
-            <a href="kelola_produk.php" class="menu-item">📦 Kelola Produk</a>
-            <a href="kelola_pesanan.php" class="menu-item active">📋 Kelola Pesanan</a>
-            <a href="#" class="menu-item">👥 Status Pesanan</a>
-            <a href="?logout=true" class="menu-item">Logout</a>
-        </div>
-
-    </div>
+    <?php require_once '../components/layout/header_admin.php'; ?>
 
     <!-- MAIN CONTENT -->
 
@@ -501,6 +508,7 @@ $result_orders = mysqli_query($conn, $query_orders);
 
         <div class="header-dash">
             <h1>KELOLA PESANAN</h1>
+            <a href="kelola_status_pesanan.php" class="btn-status-link">🚚 Kelola Status Pesanan</a>
         </div>
 
         <!-- TOP CARDS -->

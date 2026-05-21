@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 20, 2026 at 02:18 PM
+-- Generation Time: Apr 27, 2026 at 02:11 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -29,9 +29,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `admin` (
   `id_admin` int NOT NULL,
-  `password_hash_admin` varchar(255) NOT NULL,
-  `nama_admin` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `password_hash_admin` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_admin` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -42,12 +42,12 @@ CREATE TABLE `admin` (
 CREATE TABLE `alamat_pengiriman` (
   `id_alamat` int NOT NULL,
   `id_user` int NOT NULL,
-  `label_alamat` varchar(255) DEFAULT NULL,
-  `jalan` varchar(255) NOT NULL,
-  `kecamatan` varchar(255) NOT NULL,
-  `kabupaten` varchar(255) NOT NULL,
+  `label_alamat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jalan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kecamatan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kabupaten` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `kodepos` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -59,8 +59,8 @@ CREATE TABLE `cart` (
   `id_cart` int NOT NULL,
   `id_user` int NOT NULL,
   `id_produk` int NOT NULL,
-  `jumlah` int DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `jumlah` int NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -70,8 +70,8 @@ CREATE TABLE `cart` (
 
 CREATE TABLE `kategori` (
   `id_kategori` int NOT NULL,
-  `nama_kategori` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `nama_kategori` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -82,12 +82,11 @@ CREATE TABLE `kategori` (
 CREATE TABLE `order` (
   `id_order` int NOT NULL,
   `id_user` int NOT NULL,
-  `nomer_hp` varchar(20) DEFAULT NULL,
-  `nama_pembeli` varchar(255) NOT NULL,
+  `nomer_hp` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_pembeli` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tanggal_pesanan` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `total_tagihan` int NOT NULL,
-  `status_pesanan` enum('pending','dibayar','diproses','dikirim','selesai','dibatalkan') DEFAULT 'pending'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `total_tagihan` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -99,12 +98,10 @@ CREATE TABLE `order_detail` (
   `id_detail` int NOT NULL,
   `id_order` int NOT NULL,
   `id_produk` int NOT NULL,
-  `nama_produk` varchar(255) DEFAULT NULL,
-  `harga_saat_order` int DEFAULT NULL,
-  `foto_produk` varchar(255) DEFAULT NULL,
   `kuantitas` int NOT NULL,
+  `harga_satuan` int NOT NULL,
   `subtotal` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -115,10 +112,10 @@ CREATE TABLE `order_detail` (
 CREATE TABLE `payment` (
   `id_payment` int NOT NULL,
   `id_order` int NOT NULL,
-  `metode_pembayaran` varchar(255) DEFAULT NULL,
-  `status_pembayaran` varchar(100) DEFAULT 'pending',
+  `metode_pembayaran` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_pembayaran` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `waktu_bayar` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -130,8 +127,8 @@ CREATE TABLE `pesan_chat` (
   `id_chat` int NOT NULL,
   `id_user` int NOT NULL,
   `id_admin` int NOT NULL,
-  `isi_chat` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `isi_chat` text COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -142,30 +139,11 @@ CREATE TABLE `pesan_chat` (
 CREATE TABLE `produk` (
   `id_produk` int NOT NULL,
   `id_kategori` int NOT NULL,
-  `nama_produk` varchar(255) NOT NULL,
+  `nama_produk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `harga` int NOT NULL,
-  `stok` int DEFAULT '0',
-  `deskripsi` varchar(255) DEFAULT NULL,
-  `foto` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `review_produk`
---
-
-CREATE TABLE `review_produk` (
-  `id_review` int NOT NULL,
-  `id_user` int NOT NULL,
-  `id_produk` int NOT NULL,
-  `id_order` int NOT NULL,
-  `rating` int NOT NULL,
-  `komentar` text,
-  `foto_review` varchar(255) DEFAULT NULL,
-  `balasan_admin` text,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ;
+  `stok` int NOT NULL DEFAULT '0',
+  `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -175,11 +153,11 @@ CREATE TABLE `review_produk` (
 
 CREATE TABLE `user` (
   `id_user` int NOT NULL,
-  `nama_lengkap` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password_hash` varchar(255) NOT NULL,
+  `nama_lengkap` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
@@ -250,15 +228,6 @@ ALTER TABLE `produk`
   ADD KEY `id_kategori` (`id_kategori`);
 
 --
--- Indexes for table `review_produk`
---
-ALTER TABLE `review_produk`
-  ADD PRIMARY KEY (`id_review`),
-  ADD UNIQUE KEY `id_user` (`id_user`,`id_produk`,`id_order`),
-  ADD KEY `id_produk` (`id_produk`),
-  ADD KEY `id_order` (`id_order`);
-
---
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -324,12 +293,6 @@ ALTER TABLE `produk`
   MODIFY `id_produk` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `review_produk`
---
-ALTER TABLE `review_produk`
-  MODIFY `id_review` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
@@ -383,14 +346,6 @@ ALTER TABLE `pesan_chat`
 --
 ALTER TABLE `produk`
   ADD CONSTRAINT `produk_ibfk_1` FOREIGN KEY (`id_kategori`) REFERENCES `kategori` (`id_kategori`);
-
---
--- Constraints for table `review_produk`
---
-ALTER TABLE `review_produk`
-  ADD CONSTRAINT `review_produk_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`),
-  ADD CONSTRAINT `review_produk_ibfk_2` FOREIGN KEY (`id_produk`) REFERENCES `produk` (`id_produk`),
-  ADD CONSTRAINT `review_produk_ibfk_3` FOREIGN KEY (`id_order`) REFERENCES `order` (`id_order`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

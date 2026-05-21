@@ -1,5 +1,5 @@
 <?php
-__DIR__ . '/../../config/app.php';
+require_once __DIR__ . '/../../config/app.php';
 
 if (!isset($active_page)) {
     $active_page = '';
@@ -107,7 +107,10 @@ if (!isset($active_page)) {
             class="menu-item <?= $active_page == 'pesanan' ? 'active' : '' ?>">
             📋 Pesanan
         </a>
-
+        <a href="kelola_status_pesanan.php"
+            class="menu-item <?= $active_page == 'status' ? 'active' : '' ?>">
+            🚚 Status Pesanan
+        </a>
         <a href="#"
             class="menu-item <?= $active_page == 'pelanggan' ? 'active' : '' ?>">
             👥 Pelanggan

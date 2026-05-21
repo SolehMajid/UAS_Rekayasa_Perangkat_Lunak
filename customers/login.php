@@ -3,17 +3,24 @@ session_start();
 include '../config/database.php';
 
 $message = "";
+$redirect = '';
+if (!empty($_GET['redirect'])) {
+    $redirect = $_GET['redirect'];
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    if (!empty($_POST['redirect'])) {
+        $redirect = $_POST['redirect'];
+    }
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
     // HASH password input
     $password_hash = hash('sha256', $password);
 
-    // 1. Cek di tabel Admin
+    // 1. Cek di tabel Admin (menggunakan username = nama_admin)
     $query_admin = "SELECT * FROM admin 
-                    WHERE email = '$email' 
+                    WHERE nama_admin = '$username' 
                     AND password_hash_admin = '$password_hash'";
     $res_admin = mysqli_query($conn, $query_admin);
 
@@ -29,9 +36,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // 2. Cek di tabel User
+    // 2. Cek di tabel User (Customer menggunakan username = email)
     $query_user = "SELECT * FROM user 
-                   WHERE email = '$email' 
+                   WHERE email = '$username' 
                    AND password_hash = '$password_hash'";
     $res_user = mysqli_query($conn, $query_user);
 
@@ -42,12 +49,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['id_user'] = $row['id_user'];
         $_SESSION['nama'] = $row['nama_lengkap'];
         $_SESSION['role'] = 'customer';
-
-        echo "<script>alert('Login Berhasil! Selamat datang " . $row['nama_lengkap'] . "'); window.location='../index.php';</script>";
+        $target = '../index.php';
+        if (!empty($redirect) && strpos($redirect, '/squashy/') === 0) {
+            $target = $redirect;
+        }
+        echo "<script>alert('Login Berhasil! Selamat datang " . $row['nama_lengkap'] . "'); window.location='" . $target . "';</script>";
         exit;
     }
 
-    $message = "<script>alert('Email atau Password Salah!');</script>";
+    $message = "<script>alert('Username atau Password Salah!');</script>";
 }
 ?>
 
@@ -250,9 +260,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p class="subtitle">Halo, Bunda!<br>Silahkan Masuk</p>
 
             <form action="" method="POST">
+                <?php if (!empty($redirect)) : ?>
+                    <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect); ?>">
+                <?php endif; ?>
                 <div class="input-wrapper">
-                    <i>✉️</i>
-                    <input type="email" name="email" placeholder="Dummy123@gmail.com" required>
+                    <i>👤</i>
+                    <input type="text" name="username" placeholder="Username (Email/Nama Admin)" required>
                 </div>
 
                 <div class="input-wrapper">

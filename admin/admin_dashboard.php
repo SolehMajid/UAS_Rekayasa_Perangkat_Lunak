@@ -4,6 +4,8 @@ session_start();
 require_once '../config/app.php';
 require_once '../config/database.php';
 
+$active_page = 'dashboard';
+
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: " . $base_url);
@@ -476,19 +478,7 @@ while ($row = mysqli_fetch_assoc($result_categories)) {
 
 <body>
 
-    <div class="sidebar">
-        <div class="logo-box">
-            <img src="../assets/images/logo.png" alt="Logo Squashy">
-        </div>
-
-        <div class="menu-list">
-            <a href="admin_dashboard.php" class="menu-item active">📈 Dashboard</a>
-            <a href="kelola_produk.php" class="menu-item">📦 Kelola Produk</a>
-            <a href="kelola_pesanan.php" class="menu-item active">📋 Kelola Pesanan</a>
-            <a href="#" class="menu-item">👥 Status Pesanan</a>
-            <a href="?logout=true" class="menu-item">Logout</a>
-        </div>
-    </div>
+    <?php require_once '../components/layout/header_admin.php'; ?>
 
     <div class="main-content">
 
