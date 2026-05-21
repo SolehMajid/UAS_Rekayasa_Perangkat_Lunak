@@ -37,11 +37,35 @@ if (isset($_GET['search']) && $_GET['search'] != '') {
     $where_clause = " WHERE p.nama_produk LIKE '%$search%' OR p.id_produk LIKE '%$search%' ";
 }
 
-// 4. Query Mengambil Data Produk & Join dengan Tabel Kategori
+// 3.5. Pagination Logic
+$limit = 8; // Jumlah item per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) {
+    $page = 1;
+}
+
+// Hitung total produk dengan filter pencarian yang aktif
+$sql_count = "SELECT COUNT(*) as total 
+              FROM `produk` p 
+              LEFT JOIN `kategori` k ON p.id_kategori = k.id_kategori" . $where_clause;
+$query_count = mysqli_query($conn, $sql_count);
+$count_row = mysqli_fetch_assoc($query_count);
+$total_products = $count_row['total'];
+$total_pages = ceil($total_products / $limit);
+if ($total_pages < 1) {
+    $total_pages = 1;
+}
+if ($page > $total_pages) {
+    $page = $total_pages;
+}
+$offset = ($page - 1) * $limit;
+
+// 4. Query Mengambil Data Produk & Join dengan Tabel Kategori (dengan LIMIT & OFFSET)
 $sql_produk = "SELECT p.*, k.nama_kategori 
                FROM `produk` p 
                LEFT JOIN `kategori` k ON p.id_kategori = k.id_kategori" . $where_clause . " 
-               ORDER BY p.id_produk DESC";
+               ORDER BY p.id_produk DESC 
+               LIMIT $limit OFFSET $offset";
 $result_produk = mysqli_query($conn, $sql_produk);
 ?>
 
@@ -385,14 +409,45 @@ $result_produk = mysqli_query($conn, $sql_produk);
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
-            font-size: 13px;
+            gap: 8px;
+            font-size: 14px;
             font-weight: 700;
+            margin-top: 30px;
         }
 
-        .pagination-bar a {
+        .pagination-bar a, .pagination-bar span {
             text-decoration: none;
             color: var(--dark-purple);
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: white;
+            border: 2px solid var(--dark-purple);
+            transition: all 0.2s ease;
+        }
+
+        .pagination-bar a:hover {
+            background-color: var(--cream-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 var(--dark-purple);
+        }
+
+        .pagination-bar a:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .pagination-bar a.active {
+            background-color: var(--coral-header);
+            pointer-events: none;
+        }
+
+        .pagination-bar span.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            background-color: #f2f2f2;
+            border-color: #ccc;
+            color: #888;
         }
 
         .decor-flower-bottom {
@@ -707,10 +762,29 @@ $result_produk = mysqli_query($conn, $sql_produk);
                 </tbody>
             </table>
 
+            <?php
+            $search_query_param = ($search !== '') ? '&search=' . urlencode($search) : '';
+            ?>
             <div class="pagination-bar">
-                <a href="#">← Previous</a>
-                <a href="#" class="page-num active">1</a>
-                <a href="#">Next →</a>
+                <?php if ($page > 1): ?>
+                    <a href="?page=<?= $page - 1 ?><?= $search_query_param ?>">← Previous</a>
+                <?php else: ?>
+                    <span class="disabled">← Previous</span>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <?php if ($i == $page): ?>
+                        <a href="#" class="page-num active"><?= $i ?></a>
+                    <?php else: ?>
+                        <a href="?page=<?= $i ?><?= $search_query_param ?>" class="page-num"><?= $i ?></a>
+                    <?php endif; ?>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="?page=<?= $page + 1 ?><?= $search_query_param ?>">Next →</a>
+                <?php else: ?>
+                    <span class="disabled">Next →</span>
+                <?php endif; ?>
             </div>
 
         </div>

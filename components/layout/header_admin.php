@@ -111,16 +111,6 @@ if (!isset($active_page)) {
             class="menu-item <?= $active_page == 'status' ? 'active' : '' ?>">
             💳 Kelola Pembayaran
         </a>
-        <a href="#"
-            class="menu-item <?= $active_page == 'pelanggan' ? 'active' : '' ?>">
-            👥 Pelanggan
-        </a>
-
-        <a href="#"
-            class="menu-item <?= $active_page == 'promo' ? 'active' : '' ?>">
-            🎟️ Promo
-        </a>
-
         <a href="../customers/logout.php" class="menu-item">
             🚪 Logout
         </a>

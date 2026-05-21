@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../../config/app.php'; ?>
+<?php 
+require_once __DIR__ . '/../../config/app.php'; 
+$current_page = basename($_SERVER['SCRIPT_NAME']);
+?>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
 
 <style>
@@ -165,12 +168,12 @@
         </div>
 
         <div class="nav-links">
-            <a onclick="changeTheme('home', this)" class="active" href="<?= $base_url ?>index.php">Home</a>
-            <a onclick="changeTheme('pakaian', this)" href="<?= $base_url ?>customers/kategori.php">Kategori</a>
-            <a onclick="changeTheme('mainan', this)" href="<?= $base_url ?>index.php">Chat</a>
-            <a onclick="changeTheme('perlengkapan', this)" href="<?= $base_url ?>customers/keranjang.php">Keranjang</a>
+            <a onclick="changeTheme('home', this)" class="<?= ($current_page == 'index.php') ? 'active' : '' ?>" href="<?= $base_url ?>index.php">Home</a>
+            <a onclick="changeTheme('pakaian', this)" class="<?= ($current_page == 'kategori.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/kategori.php">Kategori</a>
+            <a onclick="changeTheme('mainan', this)" class="<?= ($current_page == 'chat.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/chat.php">Chat</a>
+            <a onclick="changeTheme('perlengkapan', this)" class="<?= ($current_page == 'keranjang.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/keranjang.php">Keranjang</a>
             <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true) : ?>
-                <a href="<?= $base_url ?>customers/profil.php">Profil</a>
+                <a class="<?= ($current_page == 'profil.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/profil.php">Profil</a>
             <?php endif; ?>
         </div>
 

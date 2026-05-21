@@ -747,13 +747,13 @@ if ($query_best) {
         </section>
 
         <div class="categories-seru">
-            <a href="/customers/kategori.php" class="cat-card-seru"><span>👕</span>Pakaian Anak</a>
-            <a href="/customers/kategori.php" class="cat-card-seru"><span>🚂</span>Mainan Seru</a>
-            <a href="/customers/kategori.php" class="cat-card-seru"><span>🍼</span>Perlengkapan</a>
-            <a href="/customers/kategori.php" class="cat-card-seru"><span>🎁</span>Promo Spesial</a>
+            <a href="<?= $base_url ?>customers/kategori.php?kategori=Pakaian" class="cat-card-seru"><span>👕</span>Pakaian Anak</a>
+            <a href="<?= $base_url ?>customers/kategori.php?kategori=Mainan" class="cat-card-seru"><span>🚂</span>Mainan Seru</a>
+            <a href="<?= $base_url ?>customers/kategori.php?kategori=Perlengkapan" class="cat-card-seru"><span>🍼</span>Perlengkapan</a>
+            <a href="<?= $base_url ?>customers/kategori.php?kategori=all" class="cat-card-seru"><span>🎁</span>Promo Spesial</a>
         </div>
 
-        <h2 class="section-title-seru">Produk <span>Pilihan</span> Bunda</h2>
+        <h2 class="section-title-seru" id="produk">Produk <span>Pilihan</span> Bunda</h2>
 
         <div class="product-grid-seru" id="productGridSeru">
             <?php if (!empty($top_products)) : ?>
