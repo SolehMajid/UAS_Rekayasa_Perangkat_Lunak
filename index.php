@@ -721,6 +721,102 @@ if ($query_best) {
                 padding: 20px;
             }
         }
+
+        /* ===================================
+           SEARCH BAR (PREMIUM SQUASHY STYLE)
+        =================================== */
+        .search-bar-container {
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .search-form-body {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 35px;
+            border: 3px solid white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            align-items: center;
+        }
+
+        .search-form-body:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--pink);
+            background: white;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+        }
+
+        .search-icon {
+            font-size: 18px;
+            color: var(--dark);
+            opacity: 0.6;
+            margin-right: 10px;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            outline: none;
+        }
+
+        .search-input-wrapper input::placeholder {
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .search-submit-btn {
+            background: var(--pink);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0.95;
+        }
+
+        @media (max-width: 576px) {
+            .search-form-body {
+                flex-direction: column;
+                border-radius: 20px;
+                padding: 10px;
+                gap: 8px;
+            }
+            .search-input-wrapper {
+                width: 100%;
+                padding-left: 5px;
+            }
+            .search-submit-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
@@ -751,6 +847,20 @@ if ($query_best) {
             <a href="<?= $base_url ?>customers/kategori.php?kategori=Mainan" class="cat-card-seru"><span>🚂</span>Mainan Seru</a>
             <a href="<?= $base_url ?>customers/kategori.php?kategori=Perlengkapan" class="cat-card-seru"><span>🍼</span>Perlengkapan</a>
             <a href="<?= $base_url ?>customers/kategori.php?kategori=all" class="cat-card-seru"><span>🎁</span>Promo Spesial</a>
+        </div>
+
+        <!-- ===================================
+             SEARCH BAR
+        ==================================== -->
+        <div class="search-bar-container">
+            <form action="customers/kategori.php" method="GET" class="search-form-body">
+                <input type="hidden" name="kategori" value="all">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" name="keyword" placeholder="Cari mainan atau baju anak lucu...">
+                </div>
+                <button type="submit" class="search-submit-btn">Cari</button>
+            </form>
         </div>
 
         <h2 class="section-title-seru" id="produk">Produk <span>Pilihan</span> Bunda</h2>

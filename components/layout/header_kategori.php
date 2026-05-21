@@ -1,36 +1,6 @@
-<?php
-require_once __DIR__ . '/../../config/app.php';
-
-// Ensure session is started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Include database connection so header can adapt from DB
-require_once __DIR__ . '/../../config/database.php';
-
-// Determine current category from query string (used to mark active link)
-$current_kategori = isset($_GET['kategori']) ? $_GET['kategori'] : 'all';
-
-// Fetch categories from database
-$kategori_list = [];
-$kq = mysqli_query($conn, "SELECT id_kategori, nama_kategori FROM kategori ORDER BY nama_kategori ASC");
-if ($kq) {
-    while ($row = mysqli_fetch_assoc($kq)) {
-        $kategori_list[] = $row;
-    }
-}
-
-// Cart count (if logged in)
-$cart_count = 0;
-if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
-    $uid = intval($_SESSION['id_user']);
-    $cq = mysqli_query($conn, "SELECT SUM(jumlah) as total FROM cart WHERE id_user = $uid");
-    if ($cq) {
-        $crow = mysqli_fetch_assoc($cq);
-        $cart_count = intval($crow['total']);
-    }
-}
+<?php 
+require_once __DIR__ . '/../../config/app.php'; 
+$current_page = basename($_SERVER['SCRIPT_NAME']);
 ?>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
 
@@ -86,7 +56,7 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
     /* ── NAVBAR ── */
     nav {
         background: transparent;
-        padding: 12px 10px;
+        padding: 12px 40px;
         height: 80px;
         display: flex;
         justify-content: center;
@@ -189,30 +159,6 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
         background-color: #e67625;
         transform: scale(1.05);
     }
-
-    .cart-badge {
-        background: var(--header-active);
-        color: #fff;
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-weight: 700;
-        margin-left: 6px;
-        font-size: 12px;
-    }
-
-    @media(max-width:768px) {
-        nav {
-            padding: 10px;
-        }
-
-        .nav-container {
-            gap: 10px;
-        }
-
-        .search-container {
-            display: none;
-        }
-    }
 </style>
 
 <nav>
@@ -222,29 +168,29 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
         </div>
 
         <div class="nav-links">
-            <a onclick="changeTheme('home', this)" class="<?= $current_kategori == 'all' ? 'active' : '' ?>" href="<?= $base_url ?>customers/kategori.php?kategori=all">Home</a>
-            <?php foreach ($kategori_list as $k) : ?>
-                <?php $name = $k['nama_kategori']; ?>
-                <a onclick="changeTheme('home', this)" href="<?= $base_url ?>customers/kategori.php?kategori=<?= urlencode($name) ?>" class="<?= $current_kategori == $name ? 'active' : '' ?>"><?= htmlspecialchars($name) ?></a>
-            <?php endforeach; ?>
-            <a href="<?= $base_url ?>customers/keranjang.php" style="display:flex;align-items:center;gap:8px;">🛒 Keranjang <span class="cart-badge"><?= $cart_count ?></span></a>
-            <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true) : ?>
-                <a href="<?= $base_url ?>customers/profil.php">Profil</a>
-            <?php endif; ?>
+            <a onclick="changeTheme('home', this)" class="<?= ($current_page == 'index.php') ? 'active' : '' ?>" href="<?= $base_url ?>index.php">Home</a>
+            <a onclick="changeTheme('pakaian', this)" class="<?= ($current_page == 'kategori.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/kategori.php">Kategori</a>
+            <a onclick="changeTheme('mainan', this)" class="<?= ($current_page == 'chat.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/chat.php">Chat</a>
+            <a onclick="changeTheme('perlengkapan', this)" class="<?= ($current_page == 'keranjang.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/keranjang.php">Keranjang</a>
         </div>
 
         <div class="nav-links">
-            <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true) : ?>
-                <a href="<?= $base_url ?>customers/logout.php"
-                    class="login-btn"
-                    style="background-color: #d32f2f;"
-                    onclick="return confirm('Apakah Anda yakin ingin keluar dari akun ini?');">
-                    🚪 Logout
+            <?php
+            // Cek apakah session sudah dimulai (pastikan session_start() ada di file utama)
+            if (isset($_SESSION['login']) && $_SESSION['login'] === true) :
+            ?>
+                <a href="<?= $base_url ?>customers/profil.php" class="login-btn <?= ($current_page == 'profil.php') ? 'active' : '' ?>" style="background-color: var(--pink);">
+                    👤 Profil
                 </a>
             <?php else : ?>
                 <a href="<?= $base_url ?>customers/login.php" class="login-btn">🔐 Login</a>
             <?php endif; ?>
         </div>
+
+        <!-- <div class="search-container">
+            <input type="text" placeholder="Cari baju lucu...">
+            <button class="search-btn">🔍</button>
+        </div> -->
     </div>
 </nav>
 
@@ -256,7 +202,7 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
         // Update class active pada link navigasi
         const links = document.querySelectorAll('.nav-links a');
         links.forEach(link => link.classList.remove('active'));
-        if (element) element.classList.add('active');
+        element.classList.add('active');
 
         // Update Judul Halaman (Jika ada elemen id="pageTitle")
         const title = document.getElementById('pageTitle');

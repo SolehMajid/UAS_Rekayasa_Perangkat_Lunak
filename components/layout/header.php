@@ -172,9 +172,6 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
             <a onclick="changeTheme('pakaian', this)" class="<?= ($current_page == 'kategori.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/kategori.php">Kategori</a>
             <a onclick="changeTheme('mainan', this)" class="<?= ($current_page == 'chat.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/chat.php">Chat</a>
             <a onclick="changeTheme('perlengkapan', this)" class="<?= ($current_page == 'keranjang.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/keranjang.php">Keranjang</a>
-            <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true) : ?>
-                <a class="<?= ($current_page == 'profil.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/profil.php">Profil</a>
-            <?php endif; ?>
         </div>
 
         <div class="nav-links">
@@ -182,11 +179,8 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
             // Cek apakah session sudah dimulai (pastikan session_start() ada di file utama)
             if (isset($_SESSION['login']) && $_SESSION['login'] === true) :
             ?>
-                <a href="<?= $base_url ?>customers/logout.php"
-                    class="login-btn"
-                    style="background-color: #d32f2f;"
-                    onclick="return confirm('Apakah Anda yakin ingin keluar dari akun ini?');">
-                    🚪 Logout
+                <a href="<?= $base_url ?>customers/profil.php" class="login-btn <?= ($current_page == 'profil.php') ? 'active' : '' ?>" style="background-color: var(--pink);">
+                    👤 Profil
                 </a>
             <?php else : ?>
                 <a href="<?= $base_url ?>customers/login.php" class="login-btn">🔐 Login</a>

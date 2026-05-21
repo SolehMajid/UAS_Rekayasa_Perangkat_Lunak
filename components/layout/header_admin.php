@@ -111,6 +111,10 @@ if (!isset($active_page)) {
             class="menu-item <?= $active_page == 'status' ? 'active' : '' ?>">
             💳 Kelola Pembayaran
         </a>
+        <a href="kelola_chat.php"
+            class="menu-item <?= $active_page == 'chat' ? 'active' : '' ?>">
+            💬 Kelola Chat
+        </a>
         <a href="../customers/logout.php" class="menu-item">
             🚪 Logout
         </a>

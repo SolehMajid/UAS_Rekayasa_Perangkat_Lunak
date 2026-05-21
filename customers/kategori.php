@@ -126,99 +126,62 @@ if ($kategori == "Mainan") {
         }
 
         /* ===================================
-           NAVBAR
+           CATEGORY TABS (PREMIUM SQUASHY STYLE)
         =================================== */
-
-        nav {
-
-            background: transparent;
-
-            height: 85px;
-
+        .category-tabs-container {
             display: flex;
-
             justify-content: center;
-
             align-items: center;
-
-            position: sticky;
-
-            top: 0;
-
-            z-index: 999;
-
-            box-shadow: none;
-
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            gap: 12px;
+            margin: 0 auto 40px auto;
+            max-width: 820px;
+            overflow-x: auto;
+            padding: 10px 20px;
+            scrollbar-width: none; /* Hide scrollbar Firefox */
+            -webkit-overflow-scrolling: touch;
         }
 
-        nav.scrolled {
-            background: rgba(255, 255, 255, 0.95) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-            backdrop-filter: blur(10px);
+        .category-tabs-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar Chrome/Safari */
         }
 
-        .nav-container {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 30px;
-
-            max-width: 1200px;
-
-            width: 100%;
-
-            justify-content: center;
-        }
-
-        .logo img {
-
-            width: 120px;
-        }
-
-        .nav-links {
-
-            display: flex;
-
-            gap: 10px;
-
-            align-items: center;
-        }
-
-        .nav-links a {
-
+        .category-tab {
             text-decoration: none;
-
-            color: var(--dark);
-
             font-weight: 700;
-
-            padding: 10px 18px;
-
+            font-size: 15px;
+            padding: 10px 24px;
             border-radius: 25px;
-
-            transition: 0.3s;
+            color: var(--dark);
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid white;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
         }
 
-        .nav-links a:hover {
-
-            transform: translateY(-2px);
+        .category-tab:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-color: var(--header-active);
+            color: var(--pink);
         }
 
-        .nav-links a.active {
-
-            background: var(--header-active);
-
-            color: white;
-        }
-
-        .login-btn {
-
-            background: var(--orange);
-
+        .category-tab.active {
+            background-color: var(--header-active);
+            border-color: var(--header-active);
             color: white !important;
+            box-shadow: 0 10px 20px rgba(255, 111, 183, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .category-tabs-container {
+                justify-content: flex-start;
+            }
         }
 
         /* ===================================
@@ -435,82 +398,7 @@ if ($kategori == "Mainan") {
             padding: 80px;
         }
 
-        /* ===================================
-           SEARCH BAR
-        =================================== */
-        .search-container {
-            max-width: 650px;
-            width: 90%;
-            margin: -20px auto 40px auto;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
 
-        .search-form {
-            display: flex;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 6px 8px 6px 16px;
-            border-radius: 40px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
-            border: 3px solid white;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .search-form:focus-within {
-            border-color: var(--header-active);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .search-input {
-            flex: 1;
-            border: none;
-            outline: none;
-            background: transparent;
-            padding: 8px 10px;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .search-input::placeholder {
-            color: #bbb;
-            font-weight: 500;
-        }
-
-        .search-btn {
-            background: var(--header-active);
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .search-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-        }
-
-        .clear-search-btn {
-            text-decoration: none;
-            color: #aaa;
-            font-size: 16px;
-            padding: 0 12px;
-            font-weight: 800;
-            transition: color 0.2s;
-        }
-
-        .clear-search-btn:hover {
-            color: var(--pink);
-        }
 
         /* ===================================
            RESPONSIVE
@@ -888,82 +776,125 @@ if ($kategori == "Mainan") {
                 padding: 20px;
             }
         }
+
+        /* ===================================
+           SEARCH BAR (PREMIUM SQUASHY STYLE)
+        =================================== */
+        .search-bar-container {
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .search-form-body {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 35px;
+            border: 3px solid white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            align-items: center;
+        }
+
+        .search-form-body:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--header-active);
+            background: white;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+        }
+
+        .search-icon {
+            font-size: 18px;
+            color: var(--dark);
+            opacity: 0.6;
+            margin-right: 10px;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            outline: none;
+        }
+
+        .search-input-wrapper input::placeholder {
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .clear-search-btn {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: bold;
+            font-size: 14px;
+            padding: 5px;
+            margin-right: 10px;
+            opacity: 0.5;
+            transition: 0.2s;
+        }
+
+        .clear-search-btn:hover {
+            opacity: 1;
+            color: var(--pink);
+        }
+
+        .search-submit-btn {
+            background: var(--header-active);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0.95;
+        }
+
+        @media (max-width: 576px) {
+            .search-form-body {
+                flex-direction: column;
+                border-radius: 20px;
+                padding: 10px;
+                gap: 8px;
+            }
+            .search-input-wrapper {
+                width: 100%;
+                padding-left: 5px;
+            }
+            .search-submit-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 
 </head>
 
 <body data-theme="<?= $theme ?>">
 
-    <!-- ===================================
-         NAVBAR
-    ==================================== -->
-
-    <nav>
-
-        <div class="nav-container">
-
-            <div class="logo">
-
-                <a href="../index.php">
-
-                    <img src="../assets/images/logo.png">
-
-                </a>
-
-            </div>
-
-            <div class="nav-links">
-
-                <a href="kategori.php?kategori=all<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
-                    class="<?= $kategori == 'all' ? 'active' : '' ?>">
-                    Home
-                </a>
-
-                <a href="kategori.php?kategori=Pakaian<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
-                    class="<?= $kategori == 'Pakaian' ? 'active' : '' ?>">
-                    Pakaian
-                </a>
-
-                <a href="kategori.php?kategori=Mainan<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
-                    class="<?= $kategori == 'Mainan' ? 'active' : '' ?>">
-                    Mainan
-                </a>
-
-                <a href="kategori.php?kategori=Perlengkapan<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
-                    class="<?= $kategori == 'Perlengkapan' ? 'active' : '' ?>">
-                    Perlengkapan
-                </a>
-
-            </div>
-
-            <div class="nav-links">
-
-                <?php if (isset($_SESSION['login'])) : ?>
-
-                    <a href="logout.php"
-                        class="login-btn"
-                        onclick="return confirm('Yakin logout?')">
-
-                        🚪 Logout
-
-                    </a>
-
-                <?php else : ?>
-
-                    <a href="login.php"
-                        class="login-btn">
-
-                        🔐 Login
-
-                    </a>
-
-                <?php endif; ?>
-
-            </div>
-
-        </div>
-
-    </nav>
+    <?php require_once __DIR__ . '/../components/layout/header_kategori.php'; ?>
 
     <!-- ===================================
          HERO
@@ -996,23 +927,42 @@ if ($kategori == "Mainan") {
     </section>
 
     <!-- ===================================
-         PENCARIAN PRODUK
+         SEARCH BAR
     ==================================== -->
-    <div class="search-container">
-        <form action="kategori.php" method="GET" class="search-form">
-            <!-- Simpan filter kategori saat mencari -->
+    <div class="search-bar-container">
+        <form action="kategori.php" method="GET" class="search-form-body">
             <input type="hidden" name="kategori" value="<?= htmlspecialchars($kategori) ?>">
-            
-            <input type="text" name="keyword" class="search-input" 
-                   placeholder="Cari produk anak impian Anda..." 
-                   value="<?= htmlspecialchars($keyword) ?>">
-            
-            <?php if ($keyword !== '') : ?>
-                <a href="kategori.php?kategori=<?= htmlspecialchars($kategori) ?>" class="clear-search-btn" title="Hapus Pencarian">✕</a>
-            <?php endif; ?>
-            
-            <button type="submit" class="search-btn">🔍 Cari</button>
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" name="keyword" placeholder="Cari barang lucu favoritmu..." value="<?= htmlspecialchars($keyword) ?>">
+                <?php if ($keyword !== '') : ?>
+                    <a href="kategori.php?kategori=<?= htmlspecialchars($kategori) ?>" class="clear-search-btn" title="Hapus pencarian">✕</a>
+                <?php endif; ?>
+            </div>
+            <button type="submit" class="search-submit-btn">Cari</button>
         </form>
+    </div>
+
+    <!-- ===================================
+         CATEGORY TABS FILTER
+    ==================================== -->
+    <div class="category-tabs-container">
+        <a href="kategori.php?kategori=all"
+           class="category-tab <?= $kategori == 'all' ? 'active' : '' ?>">
+           ✨ Semua Produk
+        </a>
+        <a href="kategori.php?kategori=Pakaian"
+           class="category-tab <?= $kategori == 'Pakaian' ? 'active' : '' ?>">
+           👕 Pakaian Anak
+        </a>
+        <a href="kategori.php?kategori=Mainan"
+           class="category-tab <?= $kategori == 'Mainan' ? 'active' : '' ?>">
+           🎈 Mainan Anak
+        </a>
+        <a href="kategori.php?kategori=Perlengkapan"
+           class="category-tab <?= $kategori == 'Perlengkapan' ? 'active' : '' ?>">
+           👶 Perlengkapan Bayi
+        </a>
     </div>
 
     <!-- ===================================

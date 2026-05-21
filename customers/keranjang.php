@@ -224,7 +224,30 @@ if ($cartQuery) {
             background: #fff;
             border-radius: 28px;
             padding: 24px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 12px 30px rgba(58, 48, 99, 0.06);
+            max-height: 520px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pink) #FFF0F8;
+            border: 4px solid #fff;
+            transition: all 0.3s ease;
+        }
+
+        /* Custom Scrollbar for modern browsers */
+        .cart-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .cart-list::-webkit-scrollbar-track {
+            background: #FFF0F8;
+            border-radius: 10px;
+        }
+        .cart-list::-webkit-scrollbar-thumb {
+            background: var(--pink);
+            border-radius: 10px;
+            border: 2px solid #FFF0F8;
+        }
+        .cart-list::-webkit-scrollbar-thumb:hover {
+            background: #FF4D9C;
         }
 
         .cart-item {
@@ -263,6 +286,7 @@ if ($cartQuery) {
         .item-details h3 {
             font-size: 18px;
             margin-bottom: 8px;
+            color: var(--dark);
         }
 
         .item-details p {
@@ -278,38 +302,79 @@ if ($cartQuery) {
             background: #fff;
             border-radius: 28px;
             padding: 24px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 12px 30px rgba(58, 48, 99, 0.06);
+            position: sticky;
+            top: 110px;
+            align-self: start;
+            border: 4px solid #fff;
         }
 
         .summary h2 {
             margin-bottom: 18px;
+            color: var(--dark);
+            font-family: 'Nunito', sans-serif;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 16px;
+            color: #555;
         }
 
         .summary-row.total {
             font-weight: 800;
             font-size: 18px;
+            color: var(--dark);
         }
 
-        .btn-primary {
-            display: inline-block;
-            background: #FF6FB7;
-            color: #fff;
+        .btn-checkout-custom {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
+            color: #fff !important;
             text-decoration: none;
-            padding: 12px 22px;
+            padding: 14px 20px;
             border-radius: 20px;
             font-weight: 800;
-            transition: all 0.2s ease;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(255, 111, 183, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
         }
 
-        .btn-primary:hover {
+        .btn-checkout-custom:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(255, 111, 183, 0.5);
+            opacity: 0.95;
+        }
+
+        .btn-checkout-custom:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary-custom {
+            display: block;
+            width: 100%;
+            background: #FFF0F8;
+            color: var(--pink) !important;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            border: 2px dashed var(--pink);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 111, 183, 0.05);
+        }
+
+        .btn-secondary-custom:hover {
+            background: #FFE3F1;
             transform: translateY(-2px);
-            opacity: 0.9;
+            border-style: solid;
         }
 
         .btn-delete {
@@ -364,12 +429,117 @@ if ($cartQuery) {
             color: #3A3063;
         }
 
+        /* Empty State Premium */
         .empty-state {
             background: #fff;
-            border-radius: 28px;
-            padding: 40px;
+            border-radius: 35px;
+            padding: 50px 40px;
             text-align: center;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 15px 40px rgba(58, 48, 99, 0.08);
+            max-width: 600px;
+            margin: 40px auto;
+            border: 6px solid #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empty-state-img {
+            width: 200px;
+            height: auto;
+            margin-bottom: 24px;
+            animation: bounceSlow 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 15px rgba(255, 111, 183, 0.15));
+        }
+
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .empty-state h2 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 26px;
+            color: var(--dark);
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* CTA Shop Now Button */
+        .btn-shop-now {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
+            color: #fff !important;
+            text-decoration: none;
+            padding: 16px 36px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 8px 25px rgba(255, 111, 183, 0.35);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shop-now:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 12px 30px rgba(255, 111, 183, 0.55);
+        }
+
+        .btn-shop-now:active {
+            transform: translateY(-2px);
+        }
+
+        .btn-shop-now::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-shop-now:hover::after {
+            left: 100%;
+            transition: 0.6s ease-in-out;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .cart-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .summary {
+                position: static;
+                margin-top: 10px;
+            }
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .item-actions {
+                width: 100%;
+                flex-direction: row !important;
+                justify-content: space-between;
+                align-items: center !important;
+                border-top: 1px dashed #F0F0F0;
+                padding-top: 12px;
+            }
         }
     </style>
 </head>
@@ -429,18 +599,28 @@ if ($cartQuery) {
                 <div class="summary">
                     <h2>Ringkasan Pesanan</h2>
                     <div class="summary-row"><span>Total Item</span><span><?= $totalItems; ?></span></div>
-                    <div class="summary-row total"><span>Total Bayar</span><span>Rp <?= number_format($totalPrice, 0, ',', '.'); ?></span></div>
-                    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-                        <a href="<?= $base_url ?>customers/checkout.php" class="btn-primary">Lanjut Pembayaran</a>
-                        <a href="<?= $base_url ?>customers/kategori.php" class="btn-primary" style="background:#6C63FF;">Tambah Produk Lagi</a>
+                    <div class="summary-row total" style="border-bottom: 2px dashed #F0F0F0; padding-bottom: 16px; margin-bottom: 20px;">
+                        <span>Total Bayar</span>
+                        <span style="color: var(--pink); font-size: 20px; font-weight: 800;">Rp <?= number_format($totalPrice, 0, ',', '.'); ?></span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                        <a href="<?= $base_url ?>customers/kategori.php" class="btn-secondary-custom">
+                            ✨ Tambah Produk Lagi
+                        </a>
+                        <a href="<?= $base_url ?>customers/checkout.php" class="btn-checkout-custom">
+                            🚀 Lanjut Pembayaran
+                        </a>
                     </div>
                 </div>
             </div>
         <?php else : ?>
             <div class="empty-state">
-                <h2>Keranjang Kosong</h2>
-                <p>Tambahkan produk terlebih dahulu. Pastikan Anda sudah login agar bisa menambah ke keranjang.</p>
-                <a href="<?= $base_url ?>customers/kategori.php" class="btn-primary">Lihat Kategori</a>
+                <img src="../assets/images/empty_cart.png" alt="Keranjang Belanja Squashy Kosong" class="empty-state-img">
+                <h2>Keranjang Belanja Kosong 🥺</h2>
+                <p>Wah, keranjang belanjamu masih kosong nih, Bunda! Yuk, jelajahi berbagai produk mainan seru, pakaian anak lucu, dan perlengkapan bayi gemas di Squashy untuk si Kecil.</p>
+                <a href="<?= $base_url ?>customers/kategori.php" class="btn-shop-now">
+                    🛍️ Mulai Belanja Sekarang
+                </a>
             </div>
         <?php endif; ?>
     </main>

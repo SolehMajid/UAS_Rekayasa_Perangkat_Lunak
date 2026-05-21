@@ -91,337 +91,676 @@ function orderStatusLabel($status)
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(180deg, #FFE6F3 0%, #FFF5E8 100%);
-            color: #333;
+            color: var(--dark, #3A3063);
             min-height: 100vh;
         }
 
         main {
-            max-width: 1120px;
-            margin: 24px auto 40px;
-            padding: 0 18px;
+            max-width: 1200px;
+            margin: 24px auto 60px;
+            padding: 0 20px;
         }
 
-        .hero {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 18px;
-            margin-bottom: 28px;
-        }
-
-        .hero-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid #FFD8E8;
+        /* ── Glassmorphism Card ── */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
             border-radius: 28px;
-            box-shadow: 0 14px 40px rgba(255, 139, 194, 0.18);
+            box-shadow: 0 10px 30px rgba(58, 48, 99, 0.06);
             padding: 28px;
+            transition: all 0.3s ease;
         }
 
-        .hero-card h1 {
-            font-size: 2.2rem;
+        .glass-card:hover {
+            box-shadow: 0 15px 35px rgba(58, 48, 99, 0.1);
+        }
+
+        /* ── Hero Banner ── */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--pink, #FF6FB7) 0%, var(--orange, #FF852D) 100%);
+            border-radius: 32px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(255, 111, 183, 0.25);
+            animation: fadeIn 0.6s ease;
+        }
+
+        .hero-banner-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-banner h1 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .hero-card p {
-            color: #7A5C7F;
-            line-height: 1.75;
+        .hero-banner p {
+            font-size: 1.05rem;
+            opacity: 0.95;
+            line-height: 1.6;
+            max-width: 750px;
         }
 
+        .hero-banner-decor {
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 11rem;
+            opacity: 0.12;
+            transform: rotate(-15deg);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* ── Grid Layout ── */
         .profile-grid {
             display: grid;
-            grid-template-columns: 1.2fr 1.8fr;
+            grid-template-columns: 1.1fr 1.9fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* ── Profile Summary Card ── */
+        .profile-summary {
+            display: grid;
             gap: 24px;
         }
 
-        .profile-summary,
-        .order-history {
-            background: #ffffff;
-            border-radius: 32px;
-            border: 1px solid #ffe6f1;
-            box-shadow: 0 18px 40px rgba(255, 155, 201, 0.18);
-            padding: 28px;
+        .avatar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 10px;
         }
 
-        .profile-card {
-            display: grid;
-            gap: 18px;
+        .avatar-ring {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--pink, #FF6FB7), var(--yellow, #FFD93D), var(--blue, #4DC8F0), var(--green, #6EDB8F));
+            animation: rotateRing 8s linear infinite;
         }
 
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            border-radius: 999px;
-            background: #FFF0F8;
-            color: #d24c7d;
-            font-weight: 700;
-            font-size: 0.95rem;
-            width: fit-content;
+        @keyframes rotateRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .profile-avatar {
-            width: 120px;
-            height: 120px;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 50%;
             display: grid;
             place-items: center;
-            background: linear-gradient(135deg, #FFB9E3, #FF85CD);
-            color: white;
-            font-size: 3rem;
-            border-radius: 36px;
-            box-shadow: 0 14px 24px rgba(255, 129, 214, 0.25);
-            margin-bottom: 8px;
+            font-size: 3.5rem;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 4px solid white;
+            z-index: 2;
+        }
+
+        .profile-info {
+            text-align: center;
         }
 
         .profile-info h2 {
+            font-family: 'Nunito', sans-serif;
             font-size: 1.8rem;
-            margin-bottom: 8px;
+            color: var(--dark, #3A3063);
+            margin-bottom: 6px;
         }
 
         .profile-info p {
-            color: #6b5d75;
-            font-size: 0.98rem;
-            margin-bottom: 10px;
+            color: #7A5C7F;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
         }
 
-        .profile-details {
-            display: grid;
-            gap: 12px;
-        }
-
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            background: #FFF7FB;
-            border-radius: 18px;
-            padding: 14px 18px;
-            color: #5d4862;
-            font-weight: 600;
-        }
-
+        /* ── Buttons ── */
         .btn-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 10px;
+            gap: 10px;
+            justify-content: center;
         }
 
-        .btn {
+        .btn-pill {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 13px 22px;
-            border-radius: 24px;
-            border: none;
-            text-decoration: none;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: 25px;
             font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+            font-size: 0.92rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-pill:active {
+            transform: translateY(0);
+        }
+
+        .btn-pink {
+            background: var(--pink, #FF6FB7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 111, 183, 0.25);
+        }
+
+        .btn-pink:hover {
+            background: #ff56a5;
+        }
+
+        .btn-outline-pink {
+            background: transparent;
+            border: 2px solid var(--pink, #FF6FB7);
+            color: var(--pink, #FF6FB7);
+        }
+
+        .btn-outline-pink:hover {
+            background: rgba(255, 111, 183, 0.08);
+        }
+
+        .btn-red {
+            background: #FF5C5C;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 92, 92, 0.25);
+        }
+
+        .btn-red:hover {
+            background: #ff4242;
+        }
+
+        /* ── Detail List ── */
+        .detail-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 12px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .detail-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #7A5C7F;
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            color: var(--dark, #3A3063);
+            font-size: 0.92rem;
+            max-width: 60%;
+            text-align: right;
+            word-break: break-all;
+        }
+
+        /* ── Statistics Grid ── */
+        .stats-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--dark, #3A3063);
+            margin: 15px 0 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-left: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 14px 8px;
+            border-radius: 18px;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
             transition: transform 0.2s ease;
         }
 
-        .btn:hover {
-            transform: translateY(-1px);
+        .stat-item:hover {
+            transform: scale(1.03);
         }
 
-        .btn-primary {
-            background: #ff82b8;
-            color: #fff;
+        .stat-item-blue {
+            background: rgba(77, 200, 240, 0.1);
+            color: #1b89ab;
+            border-color: rgba(77, 200, 240, 0.2);
         }
 
-        .btn-secondary {
-            background: #ffe4f2;
-            color: #c03e84;
+        .stat-item-orange {
+            background: rgba(255, 133, 45, 0.1);
+            color: #cb5900;
+            border-color: rgba(255, 133, 45, 0.2);
         }
 
-        .btn-logout {
-            background: #ff5f7a;
-            color: #fff;
+        .stat-item-green {
+            background: rgba(110, 219, 143, 0.12);
+            color: #276d37;
+            border-color: rgba(110, 219, 143, 0.2);
         }
 
-        .summary-stats {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-            margin-top: 20px;
-        }
-
-        .stat-card {
-            background: #FFF1F8;
-            border-radius: 22px;
-            padding: 18px;
-            text-align: center;
-            border: 1px solid #ffd7ea;
-        }
-
-        .stat-card strong {
+        .stat-num {
             display: block;
-            font-size: 1.4rem;
-            margin-bottom: 6px;
-            color: #d3487e;
-        }
-
-        .stat-card span {
-            color: #83526d;
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .order-header h3 {
-            margin: 0;
             font-size: 1.5rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 2px;
         }
 
-        .order-header p {
-            color: #6b5d75;
-        }
-
-        .orders-scroll-container {
-            max-height: 520px;
-            overflow-y: auto;
-            padding-right: 12px;
-            margin-right: -12px;
-            scrollbar-width: thin;
-            scrollbar-color: #FFB9D2 #FFF0F8;
-        }
-
-        .orders-scroll-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .orders-scroll-container::-webkit-scrollbar-track {
-            background: #FFF0F8;
-            border-radius: 10px;
-        }
-
-        .orders-scroll-container::-webkit-scrollbar-thumb {
-            background: #FFB9D2;
-            border-radius: 10px;
-            border: 2px solid #FFF0F8;
-        }
-
-        .orders-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #ff82b8;
-        }
-
-        .order-card {
-            border-radius: 28px;
-            border: 1px solid #ffd6e8;
-            padding: 20px;
-            margin-bottom: 18px;
-            background: #fff;
-        }
-
-        .order-card h4 {
-            margin-bottom: 10px;
-            font-size: 1.12rem;
-        }
-
-        .order-meta {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 12px;
-            color: #6d4b6b;
-            font-size: 0.95rem;
-        }
-
-        .order-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .order-status {
-            padding: 8px 14px;
-            border-radius: 999px;
-            font-size: 0.95rem;
+        .stat-name {
+            font-size: 0.72rem;
             font-weight: 700;
+            display: block;
+            line-height: 1.2;
+        }
+
+        /* ── Order History Panel ── */
+        .order-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        .order-history-header h3 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            color: var(--dark, #3A3063);
+        }
+
+        .order-history-header p {
+            color: #7A5C7F;
+            font-size: 0.92rem;
+            margin-top: 3px;
+        }
+
+        /* ── Tabs Filter ── */
+        .tabs-filter {
+            display: flex;
+            background: rgba(58, 48, 99, 0.05);
+            padding: 5px;
+            border-radius: 999px;
+            margin: 20px 0;
+            gap: 2px;
+            width: fit-content;
+            overflow-x: auto;
+            max-width: 100%;
+            scrollbar-width: none;
+        }
+
+        .tabs-filter::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--dark, #3A3063);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap;
         }
 
-        .status-pending {
-            background: #fff2f6;
-            color: #d46c85;
+        .tab-btn:hover {
+            color: var(--pink, #FF6FB7);
         }
 
-        .status-dikirim,
-        .status-selesai {
-            background: #e5f8f0;
-            color: #2f7f5e;
+        .tab-btn.active {
+            background: white;
+            color: var(--pink, #FF6FB7);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
-        .order-items {
+        /* ── Order Card List ── */
+        .orders-container {
+            max-height: 650px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-right: -10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pink, #FF6FB7) rgba(255, 111, 183, 0.05);
+        }
+
+        .orders-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .orders-container::-webkit-scrollbar-track {
+            background: rgba(255, 111, 183, 0.05);
+            border-radius: 10px;
+        }
+
+        .orders-container::-webkit-scrollbar-thumb {
+            background: var(--pink, #FF6FB7);
+            border-radius: 10px;
+        }
+
+        /* ── Order Card ── */
+        .order-card {
+            background: white;
+            border-radius: 24px;
+            padding: 22px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(238, 238, 238, 0.7);
+            box-shadow: 0 4px 15px rgba(58, 48, 99, 0.015);
+            transition: all 0.3s ease;
+            border-left: 6px solid var(--blue, #4DC8F0);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(58, 48, 99, 0.04);
+        }
+
+        /* Border highlights based on status */
+        .order-card.status-selesai {
+            border-left-color: var(--green, #6EDB8F);
+        }
+
+        .order-card.status-dikirim {
+            border-left-color: #9B5DE5; /* Purple for delivery */
+        }
+
+        .order-card.status-pending {
+            border-left-color: var(--orange, #FF852D);
+        }
+
+        .order-card.status-dibayar,
+        .order-card.status-diproses {
+            border-left-color: var(--yellow, #FFD93D);
+        }
+
+        .order-card.status-dibatalkan {
+            border-left-color: #A0A0A0;
+        }
+
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1.5px dashed rgba(58, 48, 99, 0.08);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-id {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            color: var(--dark, #3A3063);
+            font-size: 1.05rem;
+        }
+
+        .order-date {
+            color: #7A5C7F;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .order-status-badge {
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-pending {
+            background: rgba(255, 133, 45, 0.1);
+            color: #d66400;
+        }
+
+        .badge-dibayar,
+        .badge-diproses {
+            background: rgba(255, 217, 61, 0.12);
+            color: #ab8000;
+        }
+
+        .badge-dikirim {
+            background: rgba(155, 93, 229, 0.1);
+            color: #7e3bd4;
+        }
+
+        .badge-selesai {
+            background: rgba(110, 219, 143, 0.12);
+            color: #276d37;
+        }
+
+        .badge-dibatalkan {
+            background: rgba(160, 160, 160, 0.1);
+            color: #555555;
+        }
+
+        /* ── Order Item Row ── */
+        .order-products {
             display: grid;
             gap: 12px;
+            margin-bottom: 16px;
         }
 
-        .order-item {
+        .order-product-row {
             display: grid;
-            grid-template-columns: 72px 1fr;
-            gap: 14px;
+            grid-template-columns: 68px 1fr auto;
+            gap: 15px;
             align-items: center;
-            border-radius: 20px;
-            padding: 14px;
-            background: #fff5fb;
-            border: 1px solid #ffdeec;
+            background: #FAF9FC;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 111, 183, 0.03);
+            transition: all 0.2s ease;
         }
 
-        .order-item img {
-            width: 72px;
-            height: 72px;
-            border-radius: 18px;
+        .order-product-row:hover {
+            background: #F6F4FA;
+        }
+
+        .order-product-img {
+            width: 68px;
+            height: 68px;
+            border-radius: 12px;
             object-fit: cover;
-            background: #f8e6f2;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            background: #f5f5f5;
         }
 
-        .order-item-details {
+        .order-product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .order-product-name {
+            font-weight: 700;
+            color: var(--dark, #3A3063);
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .order-product-price {
+            color: #7A5C7F;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .order-product-subtotal {
+            color: var(--pink, #FF6FB7);
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+
+        .order-product-action {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-ulas {
+            background-color: var(--pink, #FF6FB7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 18px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 111, 183, 0.15);
+            white-space: nowrap;
+        }
+
+        .btn-ulas:hover {
+            background-color: #ff509e;
+            transform: scale(1.03) translateY(-1px);
+            box-shadow: 0 6px 12px rgba(255, 111, 183, 0.25);
+        }
+
+        .badge-reviewed {
+            background-color: rgba(110, 219, 143, 0.12);
+            color: #276d37;
+            padding: 6px 12px;
+            border-radius: 18px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
+            border: 1px solid rgba(110, 219, 143, 0.2);
+        }
+
+        /* ── Order Card Footer ── */
+        .order-card-footer {
+            border-top: 1.5px dashed rgba(58, 48, 99, 0.08);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .order-payment-meta {
+            font-size: 0.85rem;
+            color: #6d5e75;
             display: grid;
             gap: 4px;
         }
 
-        .order-item-details strong {
-            font-size: 0.98rem;
+        .order-payment-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .order-item-details span {
-            color: #7a5c7f;
-            font-size: 0.92rem;
+        .order-total-info {
+            text-align: right;
         }
 
-        .no-orders {
-            background: #fff6f9;
-            border: 1px dashed #ffb6d2;
-            border-radius: 26px;
-            padding: 28px;
-            text-align: center;
-            color: #8f5f7f;
+        .order-total-label {
+            font-size: 0.82rem;
+            color: #7A5C7F;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
         }
 
-        .no-orders h4 {
-            margin-bottom: 12px;
+        .order-total-amount {
             font-size: 1.25rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            color: var(--orange, #FF852D);
         }
 
-        @media (max-width: 960px) {
-            .profile-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .summary-stats {
-                grid-template-columns: 1fr;
-            }
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 26px;
+            border: 2px dashed rgba(255, 111, 183, 0.25);
+            animation: fadeIn 0.5s ease;
         }
 
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: floatEmpty 3s ease-in-out infinite;
+        }
+
+        @keyframes floatEmpty {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .empty-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.35rem;
+            color: var(--dark, #3A3063);
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .empty-desc {
+            color: #7A5C7F;
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        /* ── Animations ── */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -433,130 +772,166 @@ function orderStatusLabel($status)
             }
         }
 
-        .btn-ulas {
-            background-color: var(--pink, #ff82b8);
-            color: white;
-            padding: 8px 14px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(255, 130, 184, 0.2);
-            white-space: nowrap;
-        }
-
-        .btn-ulas:hover {
-            background-color: #ff5e9f;
-            transform: scale(1.05);
-            color: white;
-        }
-
-        .badge-reviewed {
-            background-color: #e5f8f0;
-            color: #2f7f5e;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            display: inline-block;
-            white-space: nowrap;
-        }
-
-        .order-item-action {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+        /* ── Responsive Styling ── */
+        @media (max-width: 992px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
         }
 
         @media (max-width: 576px) {
-            .order-item {
-                grid-template-columns: 72px 1fr !important;
-                gap: 10px;
+            .hero-banner {
+                padding: 25px;
             }
-            .order-item-action {
+
+            .hero-banner h1 {
+                font-size: 1.8rem;
+            }
+
+            .profile-grid {
+                gap: 20px;
+            }
+
+            .order-product-row {
+                grid-template-columns: 60px 1fr;
+                gap: 12px;
+                position: relative;
+            }
+
+            .order-product-action {
                 grid-column: 1 / -1;
                 justify-content: flex-start;
-                margin-top: 10px;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px dashed rgba(58, 48, 99, 0.05);
+            }
+
+            .order-card-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .order-total-info {
+                text-align: left;
+                margin-bottom: 10px;
+            }
+            
+            .order-card-footer .btn-pill {
+                width: 100%;
             }
         }
     </style>
 </head>
 
 <body>
-    <?= require_once __DIR__ . '/../components/layout/header.php' ?>
+    <?php require_once __DIR__ . '/../components/layout/header.php'; ?>
 
     <main>
-        <section class="hero">
-            <div class="hero-card">
-                <span class="tag">✨ Profil Lucu</span>
+        <!-- Banner Hero -->
+        <section class="hero-banner">
+            <div class="hero-banner-content">
+                <span class="btn-pill btn-pink" style="padding: 6px 14px; font-size: 0.8rem; pointer-events: none; margin-bottom: 15px; box-shadow: none;">✨ Member Squashy</span>
                 <h1>Halo, <?= htmlspecialchars($user['nama_lengkap']); ?>!</h1>
-                <p>Ini adalah halaman profilmu. Kamu bisa melihat informasi akun, menonton status logout jika sudah login, dan memeriksa pesanan yang sudah dibeli dengan desain yang ceria.</p>
+                <p>Senang melihatmu kembali! Di halaman profil ini, kamu bisa melihat info detail akunmu, ringkasan belanjaanmu, dan status pesanan dengan desain yang ceria.</p>
             </div>
+            <div class="hero-banner-decor">🐰</div>
         </section>
 
+        <!-- Pesan Sukses Ulasan -->
         <?php if (isset($_GET['success']) && $_GET['success'] === 'ulasan') : ?>
-            <div style="background-color: #e5f8f0; border: 2px solid #a3e4cd; color: #2f7f5e; padding: 15px 20px; border-radius: 20px; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease;">
-                🎉 Ulasan Anda berhasil dikirimkan! Terima kasih atas feedback Anda.
+            <div style="background-color: rgba(110, 219, 143, 0.15); border: 2px solid rgba(110, 219, 143, 0.3); color: #276d37; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease;">
+                🎉 Ulasan berhasil dikirim! Terima kasih atas feedback berhargamu untuk Squashy!
             </div>
         <?php endif; ?>
 
-        <section class="profile-grid">
+        <div class="profile-grid">
+            <!-- Kiri: Detail Pengguna & Statistik -->
             <div class="profile-summary">
-                <div class="profile-card">
-                    <div class="profile-avatar">🐰</div>
+                <div class="glass-card">
+                    <div class="avatar-wrapper">
+                        <div class="avatar-ring"></div>
+                        <div class="profile-avatar">🐰</div>
+                    </div>
                     <div class="profile-info">
                         <h2><?= htmlspecialchars($user['nama_lengkap']); ?></h2>
                         <p><?= htmlspecialchars($user['email']); ?></p>
                         <div class="btn-group">
-                            <a href="<?= $base_url ?>customers/logout.php" class="btn btn-logout" onclick="return confirm('Yakin ingin logout?');">🚪 Logout</a>
-                            <a href="<?= $base_url ?>customers/kategori.php" class="btn btn-secondary">Belanja Lagi</a>
+                            <a href="<?= $base_url ?>customers/logout.php" class="btn-pill btn-red" onclick="return confirm('Yakin ingin logout dari Squashy?');">🚪 Keluar</a>
+                            <a href="<?= $base_url ?>customers/kategori.php" class="btn-pill btn-pink">🛍️ Belanja</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="profile-details">
-                    <div class="detail-item"><span>Nama Lengkap</span><strong><?= htmlspecialchars($user['nama_lengkap']); ?></strong></div>
-                    <div class="detail-item"><span>Email</span><strong><?= htmlspecialchars($user['email']); ?></strong></div>
-                    <div class="detail-item"><span>Total Pesanan</span><strong><?= $totalOrders; ?></strong></div>
-                </div>
+                <div class="glass-card">
+                    <h3 class="stats-title" style="margin-top:0;">🔑 Detail Akun</h3>
+                    <div class="detail-list">
+                        <div class="detail-row">
+                            <span class="detail-label">👤 Nama Lengkap</span>
+                            <strong class="detail-value"><?= htmlspecialchars($user['nama_lengkap']); ?></strong>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">✉️ Email Aktif</span>
+                            <strong class="detail-value"><?= htmlspecialchars($user['email']); ?></strong>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">⭐ Level Member</span>
+                            <strong class="detail-value" style="color: var(--pink, #FF6FB7);">Squashy Lover 💖</strong>
+                        </div>
+                    </div>
 
-                <div class="summary-stats">
-                    <div class="stat-card">
-                        <strong><?= $totalOrders; ?></strong>
-                        <span>Pesanan</span>
-                    </div>
-                    <div class="stat-card">
-                        <strong><?= $pendingOrders; ?></strong>
-                        <span>Menunggu / Diproses</span>
-                    </div>
-                    <div class="stat-card">
-                        <strong><?= $completedOrders; ?></strong>
-                        <span>Selesai / Dikirim</span>
+                    <h3 class="stats-title">📊 Statistik Pesanan</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item stat-item-blue">
+                            <strong class="stat-num"><?= $totalOrders; ?></strong>
+                            <span class="stat-name">Total Pesan</span>
+                        </div>
+                        <div class="stat-item stat-item-orange">
+                            <strong class="stat-num"><?= $pendingOrders; ?></strong>
+                            <span class="stat-name">Diproses</span>
+                        </div>
+                        <div class="stat-item stat-item-green">
+                            <strong class="stat-num"><?= $completedOrders; ?></strong>
+                            <span class="stat-name">Selesai</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="order-history">
-                <div class="order-header">
+            <!-- Kanan: Riwayat Pesanan -->
+            <div class="glass-card">
+                <div class="order-history-header">
                     <div>
-                        <h3>Riwayat Pesanan</h3>
-                        <p>Semua pembelianmu ditampilkan di sini. Ketuk 'Detail' untuk melihat produk yang dibeli.</p>
+                        <h3>📦 Riwayat Pesanan</h3>
+                        <p>Pantau semua daftar transaksi dan status pengiriman barangmu di sini.</p>
                     </div>
-                    <div class="btn-group">
-                        <a href="<?= $base_url ?>customers/keranjang.php" class="btn btn-primary">Lihat Keranjang</a>
-                    </div>
+                    <a href="<?= $base_url ?>customers/keranjang.php" class="btn-pill btn-outline-pink" style="padding: 10px 18px;">🛒 Keranjang Saya</a>
                 </div>
 
                 <?php if ($totalOrders === 0) : ?>
-                    <div class="no-orders">
-                        <h4>Belum ada pesanan.</h4>
-                        <p>Yuk mulai belanja! Semua pesanan yang kamu lakukan akan muncul di halaman ini setelah checkout.</p>
-                        <a href="<?= $base_url ?>customers/kategori.php" class="btn btn-primary">Cari Produk Lucu</a>
+                    <div class="empty-state" style="margin-top: 20px;">
+                        <span class="empty-icon">🛍️</span>
+                        <h4 class="empty-title">Belum ada pesanan</h4>
+                        <p class="empty-desc">Wah, sepertinya kamu belum pernah memesan produk di Squashy. Yuk, mulai cari produk favoritmu sekarang juga!</p>
+                        <a href="<?= $base_url ?>customers/kategori.php" class="btn-pill btn-pink">Cari Produk Lucu</a>
                     </div>
                 <?php else : ?>
-                    <div class="orders-scroll-container">
+                    <!-- Tab Filter interaktif -->
+                    <div class="tabs-filter">
+                        <button class="tab-btn active" data-filter="all">✨ Semua</button>
+                        <button class="tab-btn" data-filter="proses">⏳ Diproses</button>
+                        <button class="tab-btn" data-filter="selesai">🟢 Selesai</button>
+                        <button class="tab-btn" data-filter="dibatalkan">❌ Dibatalkan</button>
+                    </div>
+
+                    <!-- Tempat Filter Kosong -->
+                    <div class="no-orders-filtered" style="display: none; padding: 40px 20px; text-align: center; background: rgba(255, 255, 255, 0.4); border-radius: 20px; border: 2px dashed rgba(58,48,99,0.1); color: #7A5C7F; margin-bottom: 20px;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 12px; animation: floatEmpty 3s ease-in-out infinite;">🔍</span>
+                        <strong style="font-family: 'Nunito', sans-serif; font-size: 1.15rem; color: var(--dark, #3A3063);">Tidak Ada Pesanan</strong>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Belum ada riwayat transaksi dengan status ini.</p>
+                    </div>
+
+                    <div class="orders-container">
                         <?php 
                         foreach ($orders as $order) :
                             $orderIdValue = intval($order['id_order']);
@@ -567,38 +942,44 @@ function orderStatusLabel($status)
                                     $orderItems[] = $detail;
                                 }
                             }
-                            $statusClass = 'status-pending';
                             $statusText = orderStatusLabel($order['status_pesanan']);
-                            if (strtolower($order['status_pesanan']) === 'selesai' || strtolower($order['status_pesanan']) === 'dikirim') {
-                                $statusClass = 'status-selesai';
-                            }
                         ?>
-                            <article class="order-card">
-                                <div class="order-meta">
-                                    <span>Pesanan #<?= str_pad($orderIdValue, 5, '0', STR_PAD_LEFT); ?></span>
-                                    <span><?= date('d M Y', strtotime($order['tanggal_pesanan'])); ?></span>
-                                    <span class="order-status <?= $statusClass; ?>">📦 <?= htmlspecialchars($statusText); ?></span>
-                                </div>
-                                <h4>Total Pembayaran: <?= formatRupiah($order['total_tagihan']); ?></h4>
-                                <div class="order-meta">
-                                    <span>Metode: <?= htmlspecialchars($order['metode_pembayaran']); ?></span>
-                                    <span>Status Pembayaran: <?= htmlspecialchars(ucfirst($order['status_pembayaran'])); ?></span>
+                            <article class="order-card status-<?= strtolower($order['status_pesanan']); ?>" data-status="<?= strtolower($order['status_pesanan']); ?>">
+                                <div class="order-card-header">
+                                    <div>
+                                        <span class="order-id">Pesanan #<?= str_pad($orderIdValue, 5, '0', STR_PAD_LEFT); ?></span>
+                                        <span class="order-date" style="margin-left: 10px;">📅 <?= date('d M Y', strtotime($order['tanggal_pesanan'])); ?></span>
+                                    </div>
+                                    <div>
+                                        <span class="order-status-badge badge-<?= strtolower($order['status_pesanan']); ?>">
+                                            <?php 
+                                            $statusIcon = '📦';
+                                            $statusLower = strtolower($order['status_pesanan']);
+                                            if ($statusLower === 'pending') $statusIcon = '⏳';
+                                            else if ($statusLower === 'dibayar' || $statusLower === 'diproses') $statusIcon = '⚙️';
+                                            else if ($statusLower === 'dikirim') $statusIcon = '🚚';
+                                            else if ($statusLower === 'selesai') $statusIcon = '🟢';
+                                            else if ($statusLower === 'dibatalkan') $statusIcon = '❌';
+                                            echo $statusIcon . ' ' . htmlspecialchars($statusText);
+                                            ?>
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <?php if (!empty($orderItems)) : ?>
-                                    <div class="order-items">
+                                    <div class="order-products">
                                         <?php foreach ($orderItems as $item) : ?>
                                             <?php 
                                             $reviewed = isset($reviewedItems[$orderIdValue][$item['id_produk']]);
                                             ?>
-                                            <div class="order-item" style="grid-template-columns: 72px 1fr auto; gap: 14px; align-items: center;">
-                                                <img src="../<?= htmlspecialchars($item['foto_produk']); ?>" alt="<?= htmlspecialchars($item['nama_produk']); ?>">
-                                                <div class="order-item-details">
-                                                    <strong><?= htmlspecialchars($item['nama_produk']); ?></strong>
-                                                    <span><?= intval($item['kuantitas']); ?> x <?= formatRupiah($item['harga_saat_order']); ?></span>
-                                                    <span>Subtotal: <?= formatRupiah($item['subtotal']); ?></span>
+                                            <div class="order-product-row">
+                                                <img class="order-product-img" src="../<?= htmlspecialchars($item['foto_produk']); ?>" alt="<?= htmlspecialchars($item['nama_produk']); ?>">
+                                                <div class="order-product-info">
+                                                    <span class="order-product-name"><?= htmlspecialchars($item['nama_produk']); ?></span>
+                                                    <span class="order-product-price"><?= intval($item['kuantitas']); ?> x <?= formatRupiah($item['harga_saat_order']); ?></span>
+                                                    <span class="order-product-subtotal">Subtotal: <?= formatRupiah($item['subtotal']); ?></span>
                                                 </div>
-                                                <div class="order-item-action">
+                                                <div class="order-product-action">
                                                     <?php if (strtolower($order['status_pesanan']) === 'selesai') : ?>
                                                         <?php if ($reviewed) : ?>
                                                             <span class="badge-reviewed">✓ Sudah Diulas</span>
@@ -612,15 +993,86 @@ function orderStatusLabel($status)
                                     </div>
                                 <?php endif; ?>
 
-                                <div class="btn-group" style="justify-content: flex-end; margin-top: 14px;">
-                                    <a href="<?= $base_url ?>customers/checkout.php" class="btn btn-secondary">Beli Lagi</a>
+                                <div class="order-card-footer">
+                                    <div class="order-payment-meta">
+                                        <span>💳 Metode: <strong><?= htmlspecialchars($order['metode_pembayaran']); ?></strong></span>
+                                        <span>🪙 Status Bayar: <strong><?= htmlspecialchars(ucfirst($order['status_pembayaran'])); ?></strong></span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                        <div class="order-total-info">
+                                            <span class="order-total-label">Total Tagihan</span>
+                                            <span class="order-total-amount"><?= formatRupiah($order['total_tagihan']); ?></span>
+                                        </div>
+                                        <a href="<?= $base_url ?>customers/checkout.php" class="btn-pill btn-outline-pink" style="padding: 8px 16px; font-size: 0.85rem;">Beli Lagi</a>
+                                    </div>
                                 </div>
                             </article>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
             </div>
-        </section>
+        </div>
+    </main>
+
+    <!-- JavaScript Filter Tab Interaktif -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const orderCards = document.querySelectorAll('.order-card');
+            const noOrdersDiv = document.querySelector('.no-orders-filtered');
+
+            if (tabBtns.length > 0) {
+                tabBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        // Hilangkan kelas aktif dari semua tab
+                        tabBtns.forEach(b => b.classList.remove('active'));
+                        // Tambahkan kelas aktif pada tab yang di-klik
+                        this.classList.add('active');
+
+                        const filterValue = this.getAttribute('data-filter');
+                        let visibleCount = 0;
+
+                        orderCards.forEach(card => {
+                            const status = card.getAttribute('data-status');
+                            
+                            // Logika Pencocokan
+                            let isMatch = false;
+                            if (filterValue === 'all') {
+                                isMatch = true;
+                            } else if (filterValue === 'proses') {
+                                // pending, dibayar, diproses, dikirim
+                                isMatch = ['pending', 'dibayar', 'diproses', 'dikirim'].includes(status);
+                            } else if (filterValue === 'selesai') {
+                                isMatch = (status === 'selesai');
+                            } else if (filterValue === 'dibatalkan') {
+                                isMatch = (status === 'dibatalkan');
+                            }
+
+                            if (isMatch) {
+                                card.style.display = 'block';
+                                card.style.animation = 'fadeIn 0.4s ease forwards';
+                                visibleCount++;
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+
+                        // Tampilkan pesan kosong jika tidak ada pesanan yang sesuai filter
+                        if (visibleCount === 0) {
+                            if (noOrdersDiv) {
+                                noOrdersDiv.style.display = 'block';
+                                noOrdersDiv.style.animation = 'fadeIn 0.4s ease forwards';
+                            }
+                        } else {
+                            if (noOrdersDiv) {
+                                noOrdersDiv.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

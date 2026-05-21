@@ -3,6 +3,12 @@ session_start();
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../config/database.php';
 
+// Pastikan user sudah login sebagai customer
+if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'customer' || !isset($_SESSION['id_user'])) {
+    header("Location: login.php?redirect=/squashy/customers/chat.php");
+    exit;
+}
+
 $theme = "mainan"; // Green theme for friendly CS chat
 ?>
 <!DOCTYPE html>
@@ -128,13 +134,16 @@ $theme = "mainan"; // Green theme for friendly CS chat
 
         .message {
             max-width: 75%;
-            padding: 14px 20px;
+            padding: 12px 18px;
             border-radius: 20px;
             font-size: 15px;
             font-weight: 700;
             line-height: 1.5;
             position: relative;
             animation: slideUp 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
         }
 
         @keyframes slideUp {
@@ -157,6 +166,34 @@ $theme = "mainan"; // Green theme for friendly CS chat
             align-self: flex-end;
             border-bottom-right-radius: 5px;
             box-shadow: 0 4px 12px rgba(255, 111, 183, 0.2);
+        }
+
+        .sender-tag {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .bot-message .sender-tag {
+            color: var(--orange);
+        }
+
+        .admin-message .sender-tag {
+            color: var(--blue);
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: #AAA;
+            align-self: flex-end;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .message.outgoing .message-time {
+            color: rgba(255, 255, 255, 0.8);
         }
 
         /* Typing Indicator */
@@ -270,7 +307,7 @@ $theme = "mainan"; // Green theme for friendly CS chat
 </head>
 <body data-theme="<?= $theme ?>">
 
-    <?= require_once __DIR__ . '/../components/layout/header.php' ?>
+    <?php require_once __DIR__ . '/../components/layout/header.php'; ?>
 
     <div class="chat-container">
         <div class="chat-card">
@@ -287,8 +324,11 @@ $theme = "mainan"; // Green theme for friendly CS chat
             </div>
 
             <div class="chat-body" id="chatContainer">
-                <div class="message incoming">
-                    Halo Bunda/Ayah! 👋 Selamat datang di Squashy! Ada yang bisa kami bantu hari ini?
+                <!-- Welcome Message (hanya tampil jika tidak ada riwayat chat) -->
+                <div class="message incoming bot-message" id="welcomeMessage" style="display:none;">
+                    <span class="sender-tag">🤖 Bot Squashy</span>
+                    <div>Halo Bunda/Ayah! 👋 Selamat datang di Squashy! Ada yang bisa kami bantu hari ini?</div>
+                    <div class="message-time"><?= date('H:i') ?></div>
                 </div>
                 
                 <!-- Typing indicator -->
@@ -307,70 +347,153 @@ $theme = "mainan"; // Green theme for friendly CS chat
             </div>
 
             <div class="chat-input-area">
-                <input type="text" id="chatInputMessage" placeholder="Ketik pesan Bunda..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
-                <button class="send-btn" onclick="sendMessage()">➤</button>
+                <input type="text" id="chatInputMessage" placeholder="Ketik pesan Bunda..." onkeydown="if(event.key==='Enter') sendManualMessage()" autocomplete="off">
+                <button class="send-btn" onclick="sendManualMessage()">➤</button>
             </div>
         </div>
     </div>
 
     <script>
-        const autoReplies = [
-            "Terima kasih atas pertanyaannya! Tim admin kami akan segera membalas pesan Bunda/Ayah dalam beberapa menit ya 😊",
-            "Tentu! Semua produk Squashy terbuat dari bahan premium yang 100% aman dan sangat nyaman digunakan si kecil 🌟",
-            "Tenang saja Bun, Squashy menyediakan garansi retur 7 hari jika produk tidak pas atau rusak. Uang kembali penuh! 🔄",
-            "Squashy juga punya promo Gratis Ongkir lho untuk minimal belanja Rp 100.000! Yuk buruan checkout 🚚",
-            "Bunda bisa cek halaman Promo Spesial kami di Kategori untuk melihat diskon-diskon seru hingga 50%! 🎁"
-        ];
-        let replyIndex = 0;
+        let loadedMessageIds = new Set();
+        let isPolling = true;
 
         function scrollChatToBottom() {
             const chatContainer = document.getElementById('chatContainer');
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function sendQuickMessage(text) {
-            const inputField = document.getElementById('chatInputMessage');
-            inputField.value = text;
-            sendMessage();
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
-        function sendMessage() {
+        // Ambil riwayat chat secara berkala (polling)
+        async function fetchMessages() {
+            if (!isPolling) return;
+            try {
+                const response = await fetch('ajax_chat.php?action=get_messages');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const chatContainer = document.getElementById('chatContainer');
+                    const typingIndicator = document.getElementById('typingIndicator');
+                    const welcomeMessage = document.getElementById('welcomeMessage');
+                    let hasNewMessages = false;
+
+                    if (data.messages.length === 0) {
+                        welcomeMessage.style.display = 'flex';
+                    } else {
+                        welcomeMessage.style.display = 'none';
+                    }
+
+                    data.messages.forEach(msg => {
+                        if (!loadedMessageIds.has(msg.id_chat)) {
+                            loadedMessageIds.add(msg.id_chat);
+                            
+                            const msgDiv = document.createElement('div');
+                            
+                            if (msg.pengirim === 'customer') {
+                                msgDiv.className = 'message outgoing';
+                                msgDiv.innerHTML = `
+                                    <div class="message-text">${escapeHtml(msg.isi_chat)}</div>
+                                    <div class="message-time">${msg.waktu}</div>
+                                `;
+                            } else if (msg.pengirim === 'bot') {
+                                msgDiv.className = 'message incoming bot-message';
+                                msgDiv.innerHTML = `
+                                    <span class="sender-tag">🤖 Bot Squashy</span>
+                                    <div class="message-text">${escapeHtml(msg.isi_chat)}</div>
+                                    <div class="message-time">${msg.waktu}</div>
+                                `;
+                            } else { // admin
+                                msgDiv.className = 'message incoming admin-message';
+                                msgDiv.innerHTML = `
+                                    <span class="sender-tag">👩‍💼 Admin Squashy</span>
+                                    <div class="message-text">${escapeHtml(msg.isi_chat)}</div>
+                                    <div class="message-time">${msg.waktu}</div>
+                                `;
+                            }
+                            
+                            chatContainer.insertBefore(msgDiv, typingIndicator);
+                            hasNewMessages = true;
+                        }
+                    });
+
+                    if (hasNewMessages) {
+                        scrollChatToBottom();
+                    }
+                }
+            } catch (error) {
+                console.error("Gagal memuat pesan:", error);
+            }
+        }
+
+        // Kirim pesan cepat (Quick Button) -> Diproses Bot
+        async function sendQuickMessage(text) {
+            await sendMessage(true, text);
+        }
+
+        // Kirim pesan manual -> Diteruskan ke Admin (tanpa respons otomatis spesifik Bot)
+        async function sendManualMessage() {
             const inputField = document.getElementById('chatInputMessage');
             const messageText = inputField.value.trim();
             if (!messageText) return;
 
-            const chatContainer = document.getElementById('chatContainer');
-            const typingIndicator = document.getElementById('typingIndicator');
-
-            // 1. Add outgoing message
-            const outgoingMsg = document.createElement('div');
-            outgoingMsg.className = 'message outgoing';
-            outgoingMsg.innerText = messageText;
-            chatContainer.insertBefore(outgoingMsg, typingIndicator);
             inputField.value = '';
-            scrollChatToBottom();
-
-            // 2. Show typing indicator
-            typingIndicator.style.display = 'flex';
-            scrollChatToBottom();
-
-            // 3. Simulate CS response
-            setTimeout(() => {
-                typingIndicator.style.display = 'none';
-                
-                const incomingMsg = document.createElement('div');
-                incomingMsg.className = 'message incoming';
-                incomingMsg.innerText = autoReplies[replyIndex % autoReplies.length];
-                replyIndex++;
-                
-                chatContainer.insertBefore(incomingMsg, typingIndicator);
-                scrollChatToBottom();
-            }, 1000 + Math.random() * 800); // randomize response time slightly
+            await sendMessage(false, messageText);
         }
 
-        // Initialize scroll position
+        // Helper fungsi AJAX untuk mengirim pesan
+        async function sendMessage(isQuick, text) {
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            if (isQuick) {
+                // Tampilkan animasi mengetik bot agar terasa natural
+                typingIndicator.style.display = 'flex';
+                scrollChatToBottom();
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('message', text);
+                formData.append('is_quick', isQuick ? '1' : '0');
+
+                const response = await fetch('ajax_chat.php?action=send_message', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Beri jeda kecil untuk mensimulasikan bot mengetik
+                    setTimeout(async () => {
+                        await fetchMessages();
+                        typingIndicator.style.display = 'none';
+                        scrollChatToBottom();
+                    }, isQuick ? 800 : 100);
+                } else {
+                    alert("Gagal mengirim: " + data.message);
+                    typingIndicator.style.display = 'none';
+                }
+            } catch (error) {
+                console.error("Gagal mengirim pesan:", error);
+                typingIndicator.style.display = 'none';
+            }
+        }
+
+        // Setup Polling & Scroll Awal
         window.addEventListener('DOMContentLoaded', () => {
+            fetchMessages();
             scrollChatToBottom();
+            
+            // Lakukan polling setiap 2 detik
+            setInterval(fetchMessages, 2000);
         });
     </script>
 </body>
