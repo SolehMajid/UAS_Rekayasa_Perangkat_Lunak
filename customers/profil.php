@@ -21,6 +21,17 @@ if ($userId > 0) {
     }
 }
 
+// Ambil semua ulasan yang sudah dibuat oleh user ini
+$reviewedItems = [];
+if ($userId > 0) {
+    $reviewedQuery = mysqli_query($conn, "SELECT id_produk, id_order FROM review_produk WHERE id_user = $userId");
+    if ($reviewedQuery) {
+        while ($row = mysqli_fetch_assoc($reviewedQuery)) {
+            $reviewedItems[$row['id_order']][$row['id_produk']] = true;
+        }
+    }
+}
+
 $orderQuery = mysqli_query($conn, "SELECT o.id_order, o.tanggal_pesanan, o.total_tagihan, o.status_pesanan, COALESCE(p.metode_pembayaran, '-') AS metode_pembayaran, COALESCE(p.status_pembayaran, 'pending') AS status_pembayaran
     FROM `order` o
     LEFT JOIN payment p ON o.id_order = p.id_order
@@ -421,6 +432,55 @@ function orderStatusLabel($status)
                 transform: translateY(0);
             }
         }
+
+        .btn-ulas {
+            background-color: var(--pink, #ff82b8);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 130, 184, 0.2);
+            white-space: nowrap;
+        }
+
+        .btn-ulas:hover {
+            background-color: #ff5e9f;
+            transform: scale(1.05);
+            color: white;
+        }
+
+        .badge-reviewed {
+            background-color: #e5f8f0;
+            color: #2f7f5e;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .order-item-action {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 576px) {
+            .order-item {
+                grid-template-columns: 72px 1fr !important;
+                gap: 10px;
+            }
+            .order-item-action {
+                grid-column: 1 / -1;
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -435,6 +495,12 @@ function orderStatusLabel($status)
                 <p>Ini adalah halaman profilmu. Kamu bisa melihat informasi akun, menonton status logout jika sudah login, dan memeriksa pesanan yang sudah dibeli dengan desain yang ceria.</p>
             </div>
         </section>
+
+        <?php if (isset($_GET['success']) && $_GET['success'] === 'ulasan') : ?>
+            <div style="background-color: #e5f8f0; border: 2px solid #a3e4cd; color: #2f7f5e; padding: 15px 20px; border-radius: 20px; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease;">
+                🎉 Ulasan Anda berhasil dikirimkan! Terima kasih atas feedback Anda.
+            </div>
+        <?php endif; ?>
 
         <section class="profile-grid">
             <div class="profile-summary">
@@ -494,7 +560,7 @@ function orderStatusLabel($status)
                         <?php 
                         foreach ($orders as $order) :
                             $orderIdValue = intval($order['id_order']);
-                            $orderDetailsQuery = mysqli_query($conn, "SELECT nama_produk, foto_produk, harga_saat_order, kuantitas, subtotal FROM order_detail WHERE id_order = $orderIdValue ORDER BY id_detail ASC LIMIT 3");
+                            $orderDetailsQuery = mysqli_query($conn, "SELECT id_produk, nama_produk, foto_produk, harga_saat_order, kuantitas, subtotal FROM order_detail WHERE id_order = $orderIdValue ORDER BY id_detail ASC LIMIT 3");
                             $orderItems = [];
                             if ($orderDetailsQuery) {
                                 while ($detail = mysqli_fetch_assoc($orderDetailsQuery)) {
@@ -522,12 +588,24 @@ function orderStatusLabel($status)
                                 <?php if (!empty($orderItems)) : ?>
                                     <div class="order-items">
                                         <?php foreach ($orderItems as $item) : ?>
-                                            <div class="order-item">
+                                            <?php 
+                                            $reviewed = isset($reviewedItems[$orderIdValue][$item['id_produk']]);
+                                            ?>
+                                            <div class="order-item" style="grid-template-columns: 72px 1fr auto; gap: 14px; align-items: center;">
                                                 <img src="../<?= htmlspecialchars($item['foto_produk']); ?>" alt="<?= htmlspecialchars($item['nama_produk']); ?>">
                                                 <div class="order-item-details">
                                                     <strong><?= htmlspecialchars($item['nama_produk']); ?></strong>
                                                     <span><?= intval($item['kuantitas']); ?> x <?= formatRupiah($item['harga_saat_order']); ?></span>
                                                     <span>Subtotal: <?= formatRupiah($item['subtotal']); ?></span>
+                                                </div>
+                                                <div class="order-item-action">
+                                                    <?php if (strtolower($order['status_pesanan']) === 'selesai') : ?>
+                                                        <?php if ($reviewed) : ?>
+                                                            <span class="badge-reviewed">✓ Sudah Diulas</span>
+                                                        <?php else : ?>
+                                                            <a href="tambah_ulasan.php?id_produk=<?= $item['id_produk'] ?>&id_order=<?= $orderIdValue ?>" class="btn-ulas">✍ Beri Ulasan</a>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         <?php endforeach; ?>
