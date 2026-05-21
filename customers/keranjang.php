@@ -80,6 +80,70 @@ if (isset($_GET['pending_add']) && isset($_SESSION['pending_cart_add'])) {
     }
 }
 
+if (isset($_GET['action']) && $_GET['action'] === 'delete') {
+    $cartId = isset($_GET['id_cart']) ? intval($_GET['id_cart']) : 0;
+    if ($cartId > 0) {
+        $cartId = mysqli_real_escape_string($conn, $cartId);
+        $userId = mysqli_real_escape_string($conn, $userId);
+        
+        $deleteQuery = mysqli_query($conn, "DELETE FROM cart WHERE id_cart = $cartId AND id_user = $userId LIMIT 1");
+        if ($deleteQuery) {
+            $message = 'Produk berhasil dihapus dari keranjang.';
+            $success = true;
+        } else {
+            $message = 'Gagal menghapus produk dari keranjang.';
+        }
+    } else {
+        $message = 'ID keranjang tidak valid.';
+    }
+}
+
+if (isset($_GET['action']) && ($_GET['action'] === 'increase' || $_GET['action'] === 'decrease')) {
+    $cartId = isset($_GET['id_cart']) ? intval($_GET['id_cart']) : 0;
+    if ($cartId > 0) {
+        $cartId = mysqli_real_escape_string($conn, $cartId);
+        $userId = mysqli_real_escape_string($conn, $userId);
+        
+        $checkItemQuery = mysqli_query($conn, "
+            SELECT c.jumlah, p.stok, p.nama_produk 
+            FROM cart c 
+            JOIN produk p ON c.id_produk = p.id_produk 
+            WHERE c.id_cart = $cartId AND c.id_user = $userId 
+            LIMIT 1
+        ");
+        if ($checkItemQuery && mysqli_num_rows($checkItemQuery) > 0) {
+            $item = mysqli_fetch_assoc($checkItemQuery);
+            $currentQty = intval($item['jumlah']);
+            $maxStok = intval($item['stok']);
+            $productName = $item['nama_produk'];
+            
+            if ($_GET['action'] === 'increase') {
+                if ($currentQty < $maxStok) {
+                    $newQty = $currentQty + 1;
+                    mysqli_query($conn, "UPDATE cart SET jumlah = $newQty WHERE id_cart = $cartId LIMIT 1");
+                    $success = true;
+                    $message = "Jumlah produk " . htmlspecialchars($productName) . " berhasil ditambah.";
+                } else {
+                    $message = "Stok untuk produk " . htmlspecialchars($productName) . " tidak mencukupi.";
+                }
+            } else if ($_GET['action'] === 'decrease') {
+                if ($currentQty > 1) {
+                    $newQty = $currentQty - 1;
+                    mysqli_query($conn, "UPDATE cart SET jumlah = $newQty WHERE id_cart = $cartId LIMIT 1");
+                    $success = true;
+                    $message = "Jumlah produk " . htmlspecialchars($productName) . " berhasil dikurangi.";
+                } else {
+                    $deleteQuery = mysqli_query($conn, "DELETE FROM cart WHERE id_cart = $cartId LIMIT 1");
+                    if ($deleteQuery) {
+                        $success = true;
+                        $message = "Produk " . htmlspecialchars($productName) . " dihapus dari keranjang.";
+                    }
+                }
+            }
+        }
+    }
+}
+
 $cartQuery = mysqli_query($conn, "SELECT c.id_cart, c.jumlah, p.id_produk, p.nama_produk, p.harga, p.stok, p.foto
     FROM cart c
     JOIN produk p ON c.id_produk = p.id_produk
@@ -240,6 +304,64 @@ if ($cartQuery) {
             padding: 12px 22px;
             border-radius: 20px;
             font-weight: 800;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-delete {
+            display: inline-block;
+            background: #FF4D4D;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(255, 77, 77, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background: #E03333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 77, 77, 0.3);
+        }
+
+        .btn-qty {
+            display: inline-flex;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #FFF0F8;
+            color: #FF6FB7;
+            text-decoration: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            border: 2px solid #FFB9D2;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .btn-qty:hover {
+            background: #FF6FB7;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .qty-val {
+            font-weight: 800;
+            font-size: 16px;
+            min-width: 24px;
+            text-align: center;
+            color: #3A3063;
         }
 
         .empty-state {
@@ -284,12 +406,23 @@ if ($cartQuery) {
                             </div>
                             <div class="item-details">
                                 <h3><?= htmlspecialchars($item['nama_produk']); ?></h3>
-                                <p>Harga: Rp <?= number_format($item['harga'], 0, ',', '.'); ?> x <?= intval($item['jumlah']); ?></p>
-                                <p>Subtotal: Rp <?= number_format(intval($item['jumlah']) * intval($item['harga']), 0, ',', '.'); ?></p>
+                                <p style="color: #666; margin-bottom: 4px;">Harga: Rp <?= number_format($item['harga'], 0, ',', '.'); ?></p>
+                                <div style="display: flex; align-items: center; gap: 10px; margin: 8px 0;">
+                                    <span style="font-size: 14px; color: #555;">Kuantitas:</span>
+                                    <a href="keranjang.php?action=decrease&id_cart=<?= $item['id_cart']; ?>" class="btn-qty">-</a>
+                                    <span class="qty-val"><?= intval($item['jumlah']); ?></span>
+                                    <a href="keranjang.php?action=increase&id_cart=<?= $item['id_cart']; ?>" class="btn-qty">+</a>
+                                </div>
+                                <p style="font-weight: 700; color: #FF6FB7; margin-top: 6px;">Subtotal: Rp <?= number_format(intval($item['jumlah']) * intval($item['harga']), 0, ',', '.'); ?></p>
                             </div>
-                            <div class="item-actions">
-                                <p>Stok: <?= intval($item['stok']); ?></p>
-                            </div>
+                             <div class="item-actions" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                                 <p style="color: #666; font-size: 14px;">Stok: <?= intval($item['stok']); ?></p>
+                                 <a href="keranjang.php?action=delete&id_cart=<?= $item['id_cart']; ?>" 
+                                    onclick="return confirm('Apakah Anda yakin ingin menghapus <?= htmlspecialchars($item['nama_produk']); ?> dari keranjang?')" 
+                                    class="btn-delete">
+                                     🗑️ Hapus
+                                 </a>
+                             </div>
                         </div>
                     <?php endforeach; ?>
                 </div>

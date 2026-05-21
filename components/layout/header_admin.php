@@ -107,9 +107,9 @@ if (!isset($active_page)) {
             class="menu-item <?= $active_page == 'pesanan' ? 'active' : '' ?>">
             📋 Pesanan
         </a>
-        <a href="kelola_status_pesanan.php"
+        <a href="kelola_pembayaran.php"
             class="menu-item <?= $active_page == 'status' ? 'active' : '' ?>">
-            🚚 Status Pesanan
+            💳 Kelola Pembayaran
         </a>
         <a href="#"
             class="menu-item <?= $active_page == 'pelanggan' ? 'active' : '' ?>">

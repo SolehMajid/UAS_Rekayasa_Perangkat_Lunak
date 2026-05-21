@@ -86,7 +86,7 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
     /* ── NAVBAR ── */
     nav {
         background: transparent;
-        padding: 12px 40px;
+        padding: 12px 10px;
         height: 80px;
         display: flex;
         justify-content: center;
@@ -96,6 +96,14 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
         top: 0;
         z-index: 1000;
         border-top: 6px solid var(--pink);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+    }
+
+    nav.scrolled {
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+        backdrop-filter: blur(10px);
+        padding: 8px 40px;
     }
 
     .nav-container {
@@ -219,6 +227,10 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
                 <?php $name = $k['nama_kategori']; ?>
                 <a onclick="changeTheme('home', this)" href="<?= $base_url ?>customers/kategori.php?kategori=<?= urlencode($name) ?>" class="<?= $current_kategori == $name ? 'active' : '' ?>"><?= htmlspecialchars($name) ?></a>
             <?php endforeach; ?>
+            <a href="<?= $base_url ?>customers/keranjang.php" style="display:flex;align-items:center;gap:8px;">🛒 Keranjang <span class="cart-badge"><?= $cart_count ?></span></a>
+            <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true) : ?>
+                <a href="<?= $base_url ?>customers/profil.php">Profil</a>
+            <?php endif; ?>
         </div>
 
         <div class="nav-links">
@@ -229,8 +241,6 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
                     onclick="return confirm('Apakah Anda yakin ingin keluar dari akun ini?');">
                     🚪 Logout
                 </a>
-
-                <a href="<?= $base_url ?>customers/keranjang.php" style="display:flex;align-items:center;gap:8px;">🛒 Keranjang <span class="cart-badge"><?= $cart_count ?></span></a>
             <?php else : ?>
                 <a href="<?= $base_url ?>customers/login.php" class="login-btn">🔐 Login</a>
             <?php endif; ?>
@@ -260,4 +270,21 @@ if (isset($_SESSION['login']) && !empty($_SESSION['id_user'])) {
             title.innerText = titles[themeName];
         }
     }
+
+    // Efek Header Transparan -> Putih saat scroll
+    function handleNavbarScroll() {
+        const nav = document.querySelector('nav');
+        if (nav) {
+            if (window.scrollY > 20) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }
+    }
+
+    window.addEventListener('scroll', handleNavbarScroll);
+    window.addEventListener('DOMContentLoaded', handleNavbarScroll);
+    // Jalankan langsung untuk mengantisipasi refresh di posisi ter-scroll
+    handleNavbarScroll();
 </script>

@@ -11,14 +11,23 @@ require_once __DIR__ . '/../config/database.php';
 */
 
 $kategori = isset($_GET['kategori']) ? $_GET['kategori'] : 'all';
+$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 
-$where = "";
+$where_clauses = [];
 
 if ($kategori != 'all') {
-
     $kategori_safe = mysqli_real_escape_string($conn, $kategori);
+    $where_clauses[] = "kategori.nama_kategori = '$kategori_safe'";
+}
 
-    $where = "WHERE kategori.nama_kategori = '$kategori_safe'";
+if ($keyword !== '') {
+    $keyword_safe = mysqli_real_escape_string($conn, $keyword);
+    $where_clauses[] = "(produk.nama_produk LIKE '%$keyword_safe%' OR produk.deskripsi LIKE '%$keyword_safe%')";
+}
+
+$where = "";
+if (count($where_clauses) > 0) {
+    $where = "WHERE " . implode(" AND ", $where_clauses);
 }
 
 /*
@@ -122,9 +131,7 @@ if ($kategori == "Mainan") {
 
         nav {
 
-            background: rgba(255, 255, 255, 0.95);
-
-            backdrop-filter: blur(10px);
+            background: transparent;
 
             height: 85px;
 
@@ -140,22 +147,30 @@ if ($kategori == "Mainan") {
 
             z-index: 999;
 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: none;
+
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+            backdrop-filter: blur(10px);
         }
 
         .nav-container {
-
-            width: 100%;
-
-            max-width: 1300px;
 
             display: flex;
 
             align-items: center;
 
-            justify-content: space-between;
+            gap: 30px;
 
-            padding: 0 30px;
+            max-width: 1200px;
+
+            width: 100%;
+
+            justify-content: center;
         }
 
         .logo img {
@@ -247,9 +262,15 @@ if ($kategori == "Mainan") {
 
             display: grid;
 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 
             gap: 30px;
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            width: 100%;
         }
 
         .product-card {
@@ -415,6 +436,83 @@ if ($kategori == "Mainan") {
         }
 
         /* ===================================
+           SEARCH BAR
+        =================================== */
+        .search-container {
+            max-width: 650px;
+            width: 90%;
+            margin: -20px auto 40px auto;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-form {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 8px 6px 16px;
+            border-radius: 40px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+            border: 3px solid white;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-form:focus-within {
+            border-color: var(--header-active);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 8px 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .search-input::placeholder {
+            color: #bbb;
+            font-weight: 500;
+        }
+
+        .search-btn {
+            background: var(--header-active);
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        .clear-search-btn {
+            text-decoration: none;
+            color: #aaa;
+            font-size: 16px;
+            padding: 0 12px;
+            font-weight: 800;
+            transition: color 0.2s;
+        }
+
+        .clear-search-btn:hover {
+            color: var(--pink);
+        }
+
+        /* ===================================
            RESPONSIVE
         =================================== */
 
@@ -479,22 +577,22 @@ if ($kategori == "Mainan") {
 
             <div class="nav-links">
 
-                <a href="kategori.php?kategori=all"
+                <a href="kategori.php?kategori=all<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
                     class="<?= $kategori == 'all' ? 'active' : '' ?>">
                     Home
                 </a>
 
-                <a href="kategori.php?kategori=Pakaian"
+                <a href="kategori.php?kategori=Pakaian<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
                     class="<?= $kategori == 'Pakaian' ? 'active' : '' ?>">
                     Pakaian
                 </a>
 
-                <a href="kategori.php?kategori=Mainan"
+                <a href="kategori.php?kategori=Mainan<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
                     class="<?= $kategori == 'Mainan' ? 'active' : '' ?>">
                     Mainan
                 </a>
 
-                <a href="kategori.php?kategori=Perlengkapan"
+                <a href="kategori.php?kategori=Perlengkapan<?= $keyword !== '' ? '&keyword=' . urlencode($keyword) : '' ?>"
                     class="<?= $kategori == 'Perlengkapan' ? 'active' : '' ?>">
                     Perlengkapan
                 </a>
@@ -559,6 +657,26 @@ if ($kategori == "Mainan") {
         <?php endif; ?>
 
     </section>
+
+    <!-- ===================================
+         PENCARIAN PRODUK
+    ==================================== -->
+    <div class="search-container">
+        <form action="kategori.php" method="GET" class="search-form">
+            <!-- Simpan filter kategori saat mencari -->
+            <input type="hidden" name="kategori" value="<?= htmlspecialchars($kategori) ?>">
+            
+            <input type="text" name="keyword" class="search-input" 
+                   placeholder="Cari produk anak impian Anda..." 
+                   value="<?= htmlspecialchars($keyword) ?>">
+            
+            <?php if ($keyword !== '') : ?>
+                <a href="kategori.php?kategori=<?= htmlspecialchars($kategori) ?>" class="clear-search-btn" title="Hapus Pencarian">✕</a>
+            <?php endif; ?>
+            
+            <button type="submit" class="search-btn">🔍 Cari</button>
+        </form>
+    </div>
 
     <!-- ===================================
          PRODUK
@@ -626,8 +744,22 @@ if ($kategori == "Mainan") {
 
         <?php endif; ?>
 
-    </section>
+    <script>
+        function handleNavbarScroll() {
+            const nav = document.querySelector('nav');
+            if (nav) {
+                if (window.scrollY > 20) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            }
+        }
 
+        window.addEventListener('scroll', handleNavbarScroll);
+        window.addEventListener('DOMContentLoaded', handleNavbarScroll);
+        handleNavbarScroll();
+    </script>
 </body>
 
 </html>

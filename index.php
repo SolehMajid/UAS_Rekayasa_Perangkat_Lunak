@@ -252,10 +252,11 @@ if ($query_best) {
         /* Grid Produk yang Konsisten */
         .product-grid-seru {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .product-card-seru {
@@ -267,11 +268,25 @@ if ($query_best) {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 350px;
+            min-height: 380px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            animation: float 4s ease-in-out infinite;
         }
 
         .product-card-seru:hover {
-            transform: translateY(-10px);
+            transform: translateY(-10px) scale(1.03);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         .product-img-box-seru {
@@ -283,17 +298,26 @@ if ($query_best) {
             align-items: center;
             justify-content: center;
             margin-bottom: 15px;
+            overflow: hidden;
         }
 
         .btn-buy-seru {
             background: var(--orange);
-            color: white;
+            color: white !important;
             border: none;
             padding: 12px;
             border-radius: 15px;
             font-weight: 800;
             cursor: pointer;
             margin-top: 15px;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn-buy-seru:hover {
+            transform: scale(1.05);
         }
 
         /* ── FOOTER ABOUT US (KONSISTEN DI KIRI) ── */
@@ -410,7 +434,14 @@ if ($query_best) {
                             <p style="color:var(--pink); font-weight:800">Rp <?= number_format($product['harga'], 0, ',', '.'); ?></p>
                             <p style="font-size:12px; color:#777; margin-top:6px;">Terjual <?= number_format($product['total_sold'], 0, ',', '.'); ?> pcs</p>
                         </div>
-                        <button class="btn-buy-seru">BELI SEKARANG</button>
+                        <?php if (isset($_SESSION['login'])) : ?>
+                            <form action="customers/keranjang.php?action=add" method="POST" style="margin: 0; width: 100%;">
+                                <input type="hidden" name="id_produk" value="<?= $product['id_produk']; ?>">
+                                <button type="submit" class="btn-buy-seru">BELI SEKARANG</button>
+                            </form>
+                        <?php else : ?>
+                            <a href="customers/login.php" class="btn-buy-seru">BELI SEKARANG</a>
+                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             <?php else : ?>

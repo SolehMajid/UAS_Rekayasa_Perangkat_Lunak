@@ -4,7 +4,7 @@ session_start();
 require_once '../config/app.php';
 require_once '../config/database.php';
 
-$active_page = 'status';
+$active_page = 'status'; // Keep active sidebar tab aligned
 
 if (isset($_GET['logout'])) {
     session_destroy();
@@ -12,82 +12,80 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// Proses update status pesanan
+// Proses konfirmasi pembayaran
 if (isset($_GET['action'], $_GET['id'])) {
     $order_id = intval($_GET['id']);
     $action = $_GET['action'];
 
     if ($order_id > 0) {
         if ($action === 'confirm') {
-            // Update status_pesanan di tabel order
-            mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'selesai' WHERE id_order = $order_id");
-            // Update status_pembayaran di tabel payment
-            mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'selesai' WHERE id_order = $order_id");
+            // Update tabel order dan payment menjadi dibayar
+            mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dibayar' WHERE id_order = $order_id");
+            mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dibayar', waktu_bayar = NOW() WHERE id_order = $order_id");
+            $_SESSION['success_msg'] = "Pembayaran untuk pesanan #PLG-" . str_pad($order_id, 5, '0', STR_PAD_LEFT) . " berhasil dikonfirmasi!";
         } elseif ($action === 'reset') {
-            // Reset status_pesanan
-            mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dikirim' WHERE id_order = $order_id");
-            mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dikirim' WHERE id_order = $order_id");
+            // Reset tabel order dan payment menjadi pending
+            mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'pending' WHERE id_order = $order_id");
+            mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'pending', waktu_bayar = NULL WHERE id_order = $order_id");
+            $_SESSION['success_msg'] = "Status pembayaran untuk pesanan #PLG-" . str_pad($order_id, 5, '0', STR_PAD_LEFT) . " berhasil dikembalikan ke pending.";
         }
     }
 
-    header('Location: kelola_status_pesanan.php');
+    header('Location: kelola_pembayaran.php');
     exit;
 }
 
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-$status = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['status']) : 'Semua Status';
+$status_pembayaran = isset($_GET['status_pembayaran']) ? mysqli_real_escape_string($conn, $_GET['status_pembayaran']) : 'Semua Status';
 
-$where_clauses = ["o.status_pesanan = 'dikirim' OR o.status_pesanan = 'selesai'"];
+$where_clauses = ["1=1"];
 
 if (!empty($search)) {
-    $search_term = mysqli_real_escape_string($conn, $search);
-    $where_clauses[] = "(o.id_order LIKE '%$search_term%' OR o.nama_pembeli LIKE '%$search_term%')";
+    $where_clauses[] = "(o.id_order LIKE '%$search%' OR o.nama_pembeli LIKE '%$search%')";
 }
 
-if ($status !== 'Semua Status') {
-    $status_lower = strtolower($status);
-    $where_clauses[] = "LOWER(o.status_pesanan) = '$status_lower'";
+if ($status_pembayaran !== 'Semua Status') {
+    $status_lower = strtolower($status_pembayaran);
+    $where_clauses[] = "LOWER(p.status_pembayaran) = '$status_lower'";
 }
 
 $where_sql = implode(' AND ', $where_clauses);
 
-$query_orders = "
+$query_payments = "
 SELECT
     o.id_order,
     o.nama_pembeli,
     o.tanggal_pesanan,
     o.total_tagihan,
-    o.status_pesanan
+    o.status_pesanan,
+    p.id_payment,
+    p.metode_pembayaran,
+    p.status_pembayaran,
+    p.waktu_bayar
 FROM `order` o
+LEFT JOIN payment p ON o.id_order = p.id_order
 WHERE $where_sql
 ORDER BY o.tanggal_pesanan DESC, o.id_order DESC
 ";
 
-$result_orders = mysqli_query($conn, $query_orders);
+$result_payments = mysqli_query($conn, $query_payments);
 
-// Ringkasan status pengiriman
+// Metric summary data
 $summary_sql = "
-SELECT
-    o.status_pesanan
+SELECT 
+    COUNT(*) as total_transaksi,
+    SUM(CASE WHEN LOWER(p.status_pembayaran) = 'dibayar' OR LOWER(p.status_pembayaran) = 'selesai' THEN 1 ELSE 0 END) as total_lunas,
+    SUM(CASE WHEN LOWER(p.status_pembayaran) = 'pending' OR p.status_pembayaran IS NULL THEN 1 ELSE 0 END) as total_pending
 FROM `order` o
-WHERE o.status_pesanan IN ('dikirim', 'selesai')
+LEFT JOIN payment p ON o.id_order = p.id_order
 ";
+$summary_res = mysqli_query($conn, $summary_sql);
+$summary_data = mysqli_fetch_assoc($summary_res);
 
-$summary_result = mysqli_query($conn, $summary_sql);
-$total_selesai = 0;
-$sudah_sampai = 0;
-$belum_sampai = 0;
+$total_transaksi = $summary_data['total_transaksi'] ?? 0;
+$total_lunas = $summary_data['total_lunas'] ?? 0;
+$total_pending = $summary_data['total_pending'] ?? 0;
 
-if ($summary_result) {
-    while ($row = mysqli_fetch_assoc($summary_result)) {
-        $total_selesai++;
-        if (strtolower($row['status_pesanan']) === 'selesai') {
-            $sudah_sampai++;
-        } else {
-            $belum_sampai++;
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -96,7 +94,7 @@ if ($summary_result) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squashy - Status Pesanan</title>
+    <title>Squashy - Kelola Pembayaran</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -109,6 +107,7 @@ if ($summary_result) {
             --soft-green: #A8E6CF;
             --white: #FFFFFF;
             --text-muted: #666;
+            --pink-card: #FF6FB7;
         }
 
         * {
@@ -197,10 +196,6 @@ if ($summary_result) {
             font-weight: 900;
         }
 
-        .stat-card.small {
-            padding: 18px 22px;
-        }
-
         .status-chip {
             display: inline-block;
             padding: 7px 14px;
@@ -212,11 +207,11 @@ if ($summary_result) {
             letter-spacing: 0.3px;
         }
 
-        .chip-belum {
-            background: #FF6FB7;
+        .chip-pending {
+            background: var(--pink-card);
         }
 
-        .chip-sudah {
+        .chip-lunas {
             background: var(--green-card);
         }
 
@@ -250,16 +245,24 @@ if ($summary_result) {
             font-size: 14px;
             min-width: 190px;
             outline: none;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
         }
 
         .filter-form-bar button {
             border: none;
-            background: var(--mint-bg);
-            color: var(--dark-purple);
+            background: var(--dark-purple);
+            color: white;
             border-radius: 16px;
             padding: 12px 20px;
             font-weight: 700;
             cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .filter-form-bar button:hover {
+            opacity: 0.9;
         }
 
         .squashy-table {
@@ -303,6 +306,8 @@ if ($summary_result) {
             font-weight: 700;
             color: var(--white);
             min-width: 95px;
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
         }
 
         .bg-confirm {
@@ -321,6 +326,7 @@ if ($summary_result) {
             margin-bottom: 24px;
             color: #5C4A00;
             font-size: 14px;
+            font-weight: 600;
         }
 
         @media (max-width: 1024px) {
@@ -363,33 +369,40 @@ if ($summary_result) {
 
         <div class="header-dash">
             <div>
-                <h1>STATUS PESANAN</h1>
-                <p style="color: var(--text-muted); margin-top: 8px;">Kelola konfirmasi pengiriman untuk pesanan yang telah selesai. Default status pengiriman adalah <strong>Belum Sampai</strong>.</p>
+                <h1>KELOLA PEMBAYARAN</h1>
+                <p style="color: var(--text-muted); margin-top: 8px;">Validasi konfirmasi transaksi pembayaran yang diajukan oleh pelanggan.</p>
             </div>
             <a href="kelola_pesanan.php" class="btn-status-link">📋 Kembali ke Kelola Pesanan</a>
         </div>
 
+        <?php if (isset($_SESSION['success_msg'])): ?>
+            <div class="alert-success" style="background-color: #D4EDDA; color: #155724; border-left: 5px solid #28A745; padding: 15px 20px; border-radius: 15px; margin-bottom: 25px; font-weight: 700; font-size: 14px;">
+                🎉 <?= $_SESSION['success_msg'] ?>
+            </div>
+            <?php unset($_SESSION['success_msg']); ?>
+        <?php endif; ?>
+
         <div class="top-cards-grid">
             <div class="stat-card">
-                <span>Total Pesanan Selesai</span>
-                <h2><?= number_format($total_selesai, 0, ',', '.') ?></h2>
+                <span>Total Transaksi</span>
+                <h2><?= number_format($total_transaksi, 0, ',', '.') ?></h2>
             </div>
             <div class="stat-card">
-                <span>Sudah Sampai</span>
-                <h2><?= number_format($sudah_sampai, 0, ',', '.') ?></h2>
+                <span>Lunas / Dibayar</span>
+                <h2><?= number_format($total_lunas, 0, ',', '.') ?></h2>
             </div>
             <div class="stat-card">
-                <span>Belum Sampai</span>
-                <h2><?= number_format($belum_sampai, 0, ',', '.') ?></h2>
+                <span>Pending / Menunggu</span>
+                <h2><?= number_format($total_pending, 0, ',', '.') ?></h2>
             </div>
         </div>
 
         <div class="info-note">
-            Klik tombol "Konfirmasi Tiba" untuk menandai pesanan sebagai sudah sampai. Jika status berubah karena kesalahan, gunakan "Reset" untuk mengembalikan ke Belum Sampai.
+            Klik tombol "Konfirmasi Lunas" untuk memverifikasi pembayaran. Gunakan tombol "Batal Konfirmasi" jika terjadi kesalahan validasi transfer/pembayaran.
         </div>
 
         <div class="table-box">
-            <h3>DAFTAR PESANAN SELESAI</h3>
+            <h3>DAFTAR TRANSAKSI PEMBAYARAN</h3>
 
             <form method="GET" class="filter-form-bar">
                 <input
@@ -398,10 +411,11 @@ if ($summary_result) {
                     placeholder="Cari ID / Nama Pelanggan..."
                     value="<?= htmlspecialchars($search) ?>">
 
-                <select name="status">
-                    <option value="Semua Status" <?= $status == 'Semua Status' ? 'selected' : '' ?>>Semua Status</option>
-                    <option value="dikirim" <?= $status == 'dikirim' ? 'selected' : '' ?>>Dikirim</option>
-                    <option value="selesai" <?= $status == 'selesai' ? 'selected' : '' ?>>Selesai</option>
+                <select name="status_pembayaran">
+                    <option value="Semua Status" <?= $status_pembayaran == 'Semua Status' ? 'selected' : '' ?>>Semua Status</option>
+                    <option value="pending" <?= $status_pembayaran == 'pending' ? 'selected' : '' ?>>Pending</option>
+                    <option value="dibayar" <?= $status_pembayaran == 'dibayar' ? 'selected' : '' ?>>Dibayar</option>
+                    <option value="selesai" <?= $status_pembayaran == 'selesai' ? 'selected' : '' ?>>Selesai</option>
                 </select>
 
                 <button type="submit">Terapkan Filter</button>
@@ -413,30 +427,36 @@ if ($summary_result) {
                         <th>ID Pesanan</th>
                         <th>Tanggal</th>
                         <th>Nama Pelanggan</th>
-                        <th>Total Harga</th>
-                        <th>Status Pesanan</th>
+                        <th>Metode Bayar</th>
+                        <th>Total Tagihan</th>
+                        <th>Status Pembayaran</th>
                         <th style="text-align:center;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if ($result_orders && mysqli_num_rows($result_orders) > 0): ?>
-                        <?php while ($row = mysqli_fetch_assoc($result_orders)): ?>
+                    <?php if ($result_payments && mysqli_num_rows($result_payments) > 0): ?>
+                        <?php while ($row = mysqli_fetch_assoc($result_payments)): ?>
                             <?php $display_id = "PLG-" . str_pad($row['id_order'], 5, "0", STR_PAD_LEFT); ?>
                             <tr>
                                 <td><?= $display_id ?></td>
                                 <td><?= date('d M Y', strtotime($row['tanggal_pesanan'])) ?></td>
                                 <td><?= htmlspecialchars(strtoupper($row['nama_pembeli'])) ?></td>
+                                <td><strong><?= htmlspecialchars(strtoupper($row['metode_pembayaran'] ?? '-')) ?></strong></td>
                                 <td>Rp. <?= number_format($row['total_tagihan'], 0, ',', '.') ?></td>
                                 <td>
-                                    <?php $status_label = strtolower($row['status_pesanan']) === 'selesai' ? 'chip-sudah' : 'chip-belum'; ?>
-                                    <span class="status-chip <?= $status_label ?>"><?= ucfirst(htmlspecialchars($row['status_pesanan'])) ?></span>
+                                    <?php 
+                                    $is_lunas = strtolower($row['status_pembayaran']) === 'dibayar' || strtolower($row['status_pembayaran']) === 'selesai';
+                                    $status_label = $is_lunas ? 'chip-lunas' : 'chip-pending'; 
+                                    $status_text = $is_lunas ? 'Lunas' : 'Pending';
+                                    ?>
+                                    <span class="status-chip <?= $status_label ?>"><?= $status_text ?></span>
                                 </td>
                                 <td style="text-align:center;">
                                     <div class="actions-cell">
-                                        <?php if (strtolower($row['status_pesanan']) !== 'selesai'): ?>
-                                            <a href="kelola_status_pesanan.php?id=<?= $row['id_order'] ?>&action=confirm" class="btn-action bg-confirm">Konfirmasi Selesai</a>
+                                        <?php if (!$is_lunas): ?>
+                                            <a href="kelola_pembayaran.php?id=<?= $row['id_order'] ?>&action=confirm" class="btn-action bg-confirm">Konfirmasi Lunas</a>
                                         <?php else: ?>
-                                            <a href="kelola_status_pesanan.php?id=<?= $row['id_order'] ?>&action=reset" class="btn-action bg-reset">Reset</a>
+                                            <a href="kelola_pembayaran.php?id=<?= $row['id_order'] ?>&action=reset" class="btn-action bg-reset">Batal Konfirmasi</a>
                                         <?php endif; ?>
                                     </div>
                                 </td>
@@ -444,7 +464,7 @@ if ($summary_result) {
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" style="text-align:center; padding:32px; color:#888;">Tidak ada pesanan dikirim/selesai ditemukan.</td>
+                            <td colspan="7" style="text-align:center; padding:32px; color:#888;">Tidak ada data transaksi pembayaran ditemukan.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>

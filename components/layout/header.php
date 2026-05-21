@@ -63,6 +63,14 @@
         top: 0;
         z-index: 1000;
         border-top: 6px solid var(--pink);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+    }
+
+    nav.scrolled {
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+        backdrop-filter: blur(10px);
+        padding: 8px 40px;
     }
 
     .nav-container {
@@ -211,4 +219,21 @@
             title.innerText = titles[themeName];
         }
     }
+
+    // Efek Header Transparan -> Putih saat scroll
+    function handleNavbarScroll() {
+        const nav = document.querySelector('nav');
+        if (nav) {
+            if (window.scrollY > 20) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }
+    }
+
+    window.addEventListener('scroll', handleNavbarScroll);
+    window.addEventListener('DOMContentLoaded', handleNavbarScroll);
+    // Jalankan langsung untuk mengantisipasi refresh di posisi ter-scroll
+    handleNavbarScroll();
 </script>

@@ -271,6 +271,34 @@ function orderStatusLabel($status)
             color: #6b5d75;
         }
 
+        .orders-scroll-container {
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 12px;
+            margin-right: -12px;
+            scrollbar-width: thin;
+            scrollbar-color: #FFB9D2 #FFF0F8;
+        }
+
+        .orders-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .orders-scroll-container::-webkit-scrollbar-track {
+            background: #FFF0F8;
+            border-radius: 10px;
+        }
+
+        .orders-scroll-container::-webkit-scrollbar-thumb {
+            background: #FFB9D2;
+            border-radius: 10px;
+            border: 2px solid #FFF0F8;
+        }
+
+        .orders-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #ff82b8;
+        }
+
         .order-card {
             border-radius: 28px;
             border: 1px solid #ffd6e8;
@@ -382,6 +410,17 @@ function orderStatusLabel($status)
                 grid-template-columns: 1fr;
             }
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -451,57 +490,59 @@ function orderStatusLabel($status)
                         <a href="<?= $base_url ?>customers/kategori.php" class="btn btn-primary">Cari Produk Lucu</a>
                     </div>
                 <?php else : ?>
-                    <?php foreach ($orders as $order) :
-                        $orderIdValue = intval($order['id_order']);
-                        $orderDetailsQuery = mysqli_query($conn, "SELECT nama_produk, foto_produk, harga_saat_order, kuantitas, subtotal FROM order_detail WHERE id_order = $orderIdValue ORDER BY id_detail ASC LIMIT 3");
-                        $orderItems = [];
-                        if ($orderDetailsQuery) {
-                            while ($detail = mysqli_fetch_assoc($orderDetailsQuery)) {
-                                $orderItems[] = $detail;
+                    <div class="orders-scroll-container">
+                        <?php 
+                        foreach ($orders as $order) :
+                            $orderIdValue = intval($order['id_order']);
+                            $orderDetailsQuery = mysqli_query($conn, "SELECT nama_produk, foto_produk, harga_saat_order, kuantitas, subtotal FROM order_detail WHERE id_order = $orderIdValue ORDER BY id_detail ASC LIMIT 3");
+                            $orderItems = [];
+                            if ($orderDetailsQuery) {
+                                while ($detail = mysqli_fetch_assoc($orderDetailsQuery)) {
+                                    $orderItems[] = $detail;
+                                }
                             }
-                        }
-                        $statusClass = 'status-pending';
-                        $statusText = orderStatusLabel($order['status_pesanan']);
-                        if (strtolower($order['status_pesanan']) === 'selesai' || strtolower($order['status_pesanan']) === 'dikirim') {
-                            $statusClass = 'status-selesai';
-                        }
-                    ?>
-                        <article class="order-card">
-                            <div class="order-meta">
-                                <span>Pesanan #<?= str_pad($orderIdValue, 5, '0', STR_PAD_LEFT); ?></span>
-                                <span><?= date('d M Y', strtotime($order['tanggal_pesanan'])); ?></span>
-                                <span class="order-status <?= $statusClass; ?>">📦 <?= htmlspecialchars($statusText); ?></span>
-                            </div>
-                            <h4>Total Pembayaran: <?= formatRupiah($order['total_tagihan']); ?></h4>
-                            <div class="order-meta">
-                                <span>Metode: <?= htmlspecialchars($order['metode_pembayaran']); ?></span>
-                                <span>Status Pembayaran: <?= htmlspecialchars(ucfirst($order['status_pembayaran'])); ?></span>
-                            </div>
-
-                            <?php if (!empty($orderItems)) : ?>
-                                <div class="order-items">
-                                    <?php foreach ($orderItems as $item) : ?>
-                                        <div class="order-item">
-                                            <img src="../<?= htmlspecialchars($item['foto_produk']); ?>" alt="<?= htmlspecialchars($item['nama_produk']); ?>">
-                                            <div class="order-item-details">
-                                                <strong><?= htmlspecialchars($item['nama_produk']); ?></strong>
-                                                <span><?= intval($item['kuantitas']); ?> x <?= formatRupiah($item['harga_saat_order']); ?></span>
-                                                <span>Subtotal: <?= formatRupiah($item['subtotal']); ?></span>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                            $statusClass = 'status-pending';
+                            $statusText = orderStatusLabel($order['status_pesanan']);
+                            if (strtolower($order['status_pesanan']) === 'selesai' || strtolower($order['status_pesanan']) === 'dikirim') {
+                                $statusClass = 'status-selesai';
+                            }
+                        ?>
+                            <article class="order-card">
+                                <div class="order-meta">
+                                    <span>Pesanan #<?= str_pad($orderIdValue, 5, '0', STR_PAD_LEFT); ?></span>
+                                    <span><?= date('d M Y', strtotime($order['tanggal_pesanan'])); ?></span>
+                                    <span class="order-status <?= $statusClass; ?>">📦 <?= htmlspecialchars($statusText); ?></span>
                                 </div>
-                            <?php endif; ?>
+                                <h4>Total Pembayaran: <?= formatRupiah($order['total_tagihan']); ?></h4>
+                                <div class="order-meta">
+                                    <span>Metode: <?= htmlspecialchars($order['metode_pembayaran']); ?></span>
+                                    <span>Status Pembayaran: <?= htmlspecialchars(ucfirst($order['status_pembayaran'])); ?></span>
+                                </div>
 
-                            <div class="btn-group" style="justify-content: flex-end; margin-top: 14px;">
-                                <a href="<?= $base_url ?>customers/checkout.php" class="btn btn-secondary">Beli Lagi</a>
-                            </div>
-                        </article>
-                    <?php endforeach; ?>
+                                <?php if (!empty($orderItems)) : ?>
+                                    <div class="order-items">
+                                        <?php foreach ($orderItems as $item) : ?>
+                                            <div class="order-item">
+                                                <img src="../<?= htmlspecialchars($item['foto_produk']); ?>" alt="<?= htmlspecialchars($item['nama_produk']); ?>">
+                                                <div class="order-item-details">
+                                                    <strong><?= htmlspecialchars($item['nama_produk']); ?></strong>
+                                                    <span><?= intval($item['kuantitas']); ?> x <?= formatRupiah($item['harga_saat_order']); ?></span>
+                                                    <span>Subtotal: <?= formatRupiah($item['subtotal']); ?></span>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="btn-group" style="justify-content: flex-end; margin-top: 14px;">
+                                    <a href="<?= $base_url ?>customers/checkout.php" class="btn btn-secondary">Beli Lagi</a>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
                 <?php endif; ?>
             </div>
         </section>
-    </main>
 </body>
 
 </html>

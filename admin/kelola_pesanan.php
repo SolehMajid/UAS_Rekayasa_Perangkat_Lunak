@@ -508,8 +508,15 @@ $result_orders = mysqli_query($conn, $query_orders);
 
         <div class="header-dash">
             <h1>KELOLA PESANAN</h1>
-            <a href="kelola_status_pesanan.php" class="btn-status-link">🚚 Kelola Status Pesanan</a>
+            <a href="kelola_pembayaran.php" class="btn-status-link">💳 Kelola Pembayaran</a>
         </div>
+
+        <?php if (isset($_SESSION['success_msg'])): ?>
+            <div class="alert-success" style="background-color: #D4EDDA; color: #155724; border-left: 5px solid #28A745; padding: 15px 20px; border-radius: 15px; margin-bottom: 25px; font-weight: 700; font-size: 14px;">
+                🎉 <?= $_SESSION['success_msg'] ?>
+            </div>
+            <?php unset($_SESSION['success_msg']); ?>
+        <?php endif; ?>
 
         <!-- TOP CARDS -->
 
