@@ -49,6 +49,17 @@ $r_pending = mysqli_query($conn, $q_pending);
 $menunggu_validasi = mysqli_fetch_assoc($r_pending)['total'] ?? 0;
 
 
+// Dibayar
+$q_dibayar = "
+SELECT COUNT(*) as total
+FROM payment
+WHERE LOWER(status_pembayaran) = 'dibayar'
+";
+
+$r_dibayar = mysqli_query($conn, $q_dibayar);
+$dibayar = mysqli_fetch_assoc($r_dibayar)['total'] ?? 0;
+
+
 // Diproses
 $q_proses = "
 SELECT COUNT(*) as total
@@ -69,6 +80,28 @@ WHERE LOWER(status_pembayaran) = 'dikirim'
 
 $r_kirim = mysqli_query($conn, $q_kirim);
 $dikirim = mysqli_fetch_assoc($r_kirim)['total'] ?? 0;
+
+
+// Selesai
+$q_selesai = "
+SELECT COUNT(*) as total
+FROM payment
+WHERE LOWER(status_pembayaran) = 'selesai'
+";
+
+$r_selesai = mysqli_query($conn, $q_selesai);
+$selesai = mysqli_fetch_assoc($r_selesai)['total'] ?? 0;
+
+
+// Dibatalkan
+$q_batal = "
+SELECT COUNT(*) as total
+FROM payment
+WHERE LOWER(status_pembayaran) = 'dibatalkan'
+";
+
+$r_batal = mysqli_query($conn, $q_batal);
+$dibatalkan = mysqli_fetch_assoc($r_batal)['total'] ?? 0;
 
 
 // =========================
@@ -262,7 +295,7 @@ $result_orders = mysqli_query($conn, $query_orders);
 
         .top-cards-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -298,6 +331,14 @@ $result_orders = mysqli_query($conn, $query_orders);
 
         .pink {
             background-color: #FF6FB7;
+        }
+
+        .purple {
+            background-color: #7d5fff;
+        }
+
+        .red {
+            background-color: #EB5757;
         }
 
         .stat-info span {
@@ -433,6 +474,11 @@ $result_orders = mysqli_query($conn, $query_orders);
             color: #5D4037;
         }
 
+        .dibayar {
+            background-color: #B2DFDB;
+            color: #004D40;
+        }
+
         .diproses {
             background-color: #FFCC80;
             color: #6D4C41;
@@ -446,6 +492,11 @@ $result_orders = mysqli_query($conn, $query_orders);
         .selesai {
             background-color: #A5D6A7;
             color: #1B5E20;
+        }
+
+        .dibatalkan {
+            background-color: #FFCDD2;
+            color: #B71C1C;
         }
 
         /* ================= ACTION BUTTONS ================= */
@@ -523,7 +574,7 @@ $result_orders = mysqli_query($conn, $query_orders);
         <div class="top-cards-grid">
 
             <div class="stat-card">
-                <div class="color-block orange"></div>
+                <div class="color-block purple"></div>
                 <div class="stat-info">
                     <span>Total Pesanan</span>
                     <h2><?= number_format($total_pesanan, 0, ',', '.') ?></h2>
@@ -535,6 +586,14 @@ $result_orders = mysqli_query($conn, $query_orders);
                 <div class="stat-info">
                     <span>Pending</span>
                     <h2><?= number_format($menunggu_validasi, 0, ',', '.') ?></h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="color-block blue" style="background-color: #B2DFDB;"></div>
+                <div class="stat-info">
+                    <span>Dibayar</span>
+                    <h2><?= number_format($dibayar, 0, ',', '.') ?></h2>
                 </div>
             </div>
 
@@ -551,6 +610,22 @@ $result_orders = mysqli_query($conn, $query_orders);
                 <div class="stat-info">
                     <span>Dikirim</span>
                     <h2><?= number_format($dikirim, 0, ',', '.') ?></h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="color-block green"></div>
+                <div class="stat-info">
+                    <span>Selesai</span>
+                    <h2><?= number_format($selesai, 0, ',', '.') ?></h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="color-block red"></div>
+                <div class="stat-info">
+                    <span>Dibatalkan</span>
+                    <h2><?= number_format($dibatalkan, 0, ',', '.') ?></h2>
                 </div>
             </div>
 
@@ -574,9 +649,11 @@ $result_orders = mysqli_query($conn, $query_orders);
                 <select name="status" class="select-status">
                     <option value="Semua Status" <?= $status == 'Semua Status' ? 'selected' : '' ?>>Semua Status</option>
                     <option value="Pending" <?= $status == 'Pending' ? 'selected' : '' ?>>Pending</option>
+                    <option value="Dibayar" <?= $status == 'Dibayar' ? 'selected' : '' ?>>Dibayar</option>
                     <option value="Diproses" <?= $status == 'Diproses' ? 'selected' : '' ?>>Diproses</option>
                     <option value="Dikirim" <?= $status == 'Dikirim' ? 'selected' : '' ?>>Dikirim</option>
                     <option value="Selesai" <?= $status == 'Selesai' ? 'selected' : '' ?>>Selesai</option>
+                    <option value="Dibatalkan" <?= $status == 'Dibatalkan' ? 'selected' : '' ?>>Dibatalkan</option>
                 </select>
 
                 <input

@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Update tabel payment
         // Jika status baru adalah selesai, kita juga set waktu_bayar jika kosong
         $waktu_bayar_clause = "";
-        if ($new_status === 'selesai' || $new_status === 'diproses' || $new_status === 'dikirim') {
+        if ($new_status === 'dibayar' || $new_status === 'selesai' || $new_status === 'diproses' || $new_status === 'dikirim') {
             // Set waktu bayar jika statusnya berlanjut dari pending
             $waktu_bayar_clause = ", waktu_bayar = NOW()";
         }
@@ -411,6 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="status_pesanan">Pilih Status Baru</label>
                     <select name="status_pesanan" id="status_pesanan" class="select-status" required>
                         <option value="pending" <?= strtolower($order['status_pesanan']) === 'pending' ? 'selected' : '' ?>>⏳ Pending (Menunggu Pembayaran / Validasi)</option>
+                        <option value="dibayar" <?= strtolower($order['status_pesanan']) === 'dibayar' ? 'selected' : '' ?>>💳 Dibayar (Pembayaran Terkonfirmasi)</option>
                         <option value="diproses" <?= strtolower($order['status_pesanan']) === 'diproses' ? 'selected' : '' ?>>⚙️ Diproses (Sedang Dipersiapkan)</option>
                         <option value="dikirim" <?= strtolower($order['status_pesanan']) === 'dikirim' ? 'selected' : '' ?>>🚚 Dikirim (Dalam Perjalanan)</option>
                         <option value="selesai" <?= strtolower($order['status_pesanan']) === 'selesai' ? 'selected' : '' ?>>🟢 Selesai (Sudah Diterima)</option>

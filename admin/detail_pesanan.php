@@ -360,6 +360,11 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
             color: #5D4037;
         }
 
+        .dibayar {
+            background-color: #B2DFDB;
+            color: #004D40;
+        }
+
         .diproses {
             background-color: #FFCC80;
             color: #6D4C41;

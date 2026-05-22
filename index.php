@@ -34,8 +34,12 @@ if ($query_best) {
             --green: #6EDB8F;
             --orange: #FF852D;
             --white: #FFFFFF;
-            --soft-bg: #A3D8F4;
+            --soft-bg: #BCE7FC; /* Warna langit biru cerah yang hangat */
+            --cream-yellow: #FFF9E3;
+            --mint-green: #E2FBE9;
+            --soft-pink: #FFEAF2;
             --dark: #3A3063;
+            --jelly-shadow: rgba(255, 133, 45, 0.4);
         }
 
         * {
@@ -48,7 +52,6 @@ if ($query_best) {
             font-family: 'Quicksand', sans-serif;
             background-color: var(--soft-bg);
             background-image: url('assets/images/tbg.png');
-            /* Motif awan transparan */
             background-size: cover;
             background-attachment: fixed;
             color: var(--dark);
@@ -98,83 +101,110 @@ if ($query_best) {
             color: white;
         }
 
-        /* ── MAIN CONTENT (PERSIS GAMBAR BUNDA) ── */
+        /* ── MAIN CONTENT ── */
         .main-wrapper {
             flex: 1;
             padding: 40px 20px 100px;
-            /* Padding bawah untuk space footer */
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Banner Diskon Seru */
+        /* Banner Cloud Playground */
         .promo-banner-seru {
-            background: white;
+            background: linear-gradient(135deg, #FFFDFD 0%, #F5FBFD 100%);
             width: 100%;
             max-width: 1100px;
-            border-radius: 40px;
+            border-radius: 50px;
             border: 8px solid white;
-            padding: 50px;
-            text-align: center;
+            padding: 50px 40px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            margin-bottom: 40px;
+            box-shadow: 0 20px 50px rgba(58, 48, 99, 0.08);
+            margin-bottom: 50px;
         }
 
-        /* Elemen Ceria (Awan & Balon) di Banner */
-        .cloud-seru {
+        /* Floating Decors */
+        .floating-decor {
             position: absolute;
-            background: white;
-            border-radius: 50px;
-            opacity: .6;
+            pointer-events: none;
+            user-select: none;
+            z-index: 1;
         }
 
-        .cloud-seru.c1 {
-            width: 120px;
-            height: 40px;
+        .fd-cloud-1 {
+            font-size: 45px;
             top: 20px;
             left: 5%;
+            animation: floatAnim 6s ease-in-out infinite;
         }
 
-        .cloud-seru.c2 {
-            width: 90px;
-            height: 30px;
-            top: 40px;
+        .fd-cloud-2 {
+            font-size: 55px;
+            bottom: 30px;
             right: 8%;
+            animation: floatAnim 8s ease-in-out infinite 1s;
         }
 
-        .balloon-seru {
-            position: absolute;
-            font-size: 30px;
+        .fd-balloon {
+            font-size: 48px;
+            top: 40px;
+            right: 25%;
+            animation: floatAnim 7s ease-in-out infinite 0.5s;
         }
 
-        .b1-seru {
-            bottom: 20px;
-            left: 10%;
+        .fd-star-1 {
+            font-size: 26px;
+            top: 100px;
+            left: 25%;
+            animation: pulseAnim 4s ease-in-out infinite;
         }
 
-        .b2-seru {
-            top: 30px;
-            left: 18%;
+        .fd-star-2 {
+            font-size: 32px;
+            bottom: 120px;
+            left: 45%;
+            animation: pulseAnim 3s ease-in-out infinite 0.5s;
         }
 
-        .b3-seru {
-            bottom: 40px;
-            right: 12%;
+        .fd-bear {
+            font-size: 40px;
+            bottom: 25px;
+            left: 3%;
+            animation: floatAnim 9s ease-in-out infinite;
         }
 
-        .b4-seru {
-            top: 50px;
-            right: 22%;
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(5deg); }
+        }
+
+        @keyframes pulseAnim {
+            0%, 100% { transform: scale(1) opacity: 0.6; }
+            50% { transform: scale(1.2) opacity: 1; }
+        }
+
+        /* Banner Content Layout */
+        .banner-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            align-items: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        .hero-text-seru {
+            text-align: left;
         }
 
         .hero-text-seru h1 {
             font-family: 'Nunito', sans-serif;
-            font-size: 48px;
+            font-size: 44px;
             color: var(--dark);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0px var(--yellow), 4px 4px 0px rgba(58, 48, 99, 0.05);
         }
 
         .hero-text-seru h1 span {
@@ -182,78 +212,381 @@ if ($query_best) {
         }
 
         .hero-text-seru .subtitle {
-            font-size: 18px;
-            color: #666;
+            font-size: 16px;
+            color: #615E7A;
             font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
 
-        .discount-badge-seru {
-            background: var(--yellow);
+        /* Tips Ceria Box */
+        .tips-container-box {
+            background: var(--cream-yellow);
+            border: 3px dashed var(--orange);
+            border-radius: 24px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(58, 48, 99, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .tips-badge {
+            background: var(--orange);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 12px;
             display: inline-block;
-            padding: 15px 30px;
-            border-radius: 20px;
+            position: absolute;
+            top: -14px;
+            left: 20px;
+            box-shadow: 0 4px 10px rgba(255, 133, 45, 0.2);
+        }
+
+        #parenting-tip-text {
+            font-size: 14.5px;
+            color: var(--dark);
+            font-weight: 700;
+            margin-top: 5px;
+            line-height: 1.6;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .tips-btn-next {
+            background: var(--white);
+            border: 2px solid var(--orange);
+            color: var(--orange);
+            font-weight: 800;
+            font-size: 12px;
+            padding: 5px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            float: right;
+        }
+
+        .tips-btn-next:hover {
+            background: var(--orange);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .tips-btn-next:active {
+            transform: scale(0.95);
+        }
+
+        /* Mascot Bunny Styles */
+        .mascot-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            height: 100%;
+        }
+
+        .mascot-speech-bubble {
+            position: absolute;
+            bottom: 160px;
+            background: var(--white);
+            border: 4px solid var(--dark);
+            padding: 12px 18px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 13.5px;
+            color: var(--dark);
+            box-shadow: 0 10px 25px rgba(58, 48, 99, 0.08);
+            z-index: 100;
+            width: 210px;
+            text-align: center;
+            animation: bubbleFloat 4s ease-in-out infinite;
+        }
+
+        .mascot-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 15px 12px 0;
+            border-style: solid;
+            border-color: var(--dark) transparent;
+            display: block;
+            width: 0;
+        }
+
+        .mascot-speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 11px 9px 0;
+            border-style: solid;
+            border-color: var(--white) transparent;
+            display: block;
+            width: 0;
+            z-index: 1;
+        }
+
+        @keyframes bubbleFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.02); }
+        }
+
+        .squashy-bunny-mascot {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 50px;
+        }
+
+        .squashy-bunny-mascot:hover {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .bunny-ear {
+            width: 34px;
+            height: 75px;
+            background: #FFFFFF;
+            border: 5px solid var(--dark);
+            border-radius: 50% 50% 0 0;
+            position: absolute;
+            top: -48px;
+            z-index: 1;
+            transform-origin: bottom center;
+            transition: transform 0.3s ease;
+        }
+
+        .bunny-ear::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 48px;
+            background: var(--pink);
+            border-radius: 50% 50% 0 0;
+            top: 12px;
+            left: 4px;
+        }
+
+        .ear-left {
+            left: 28px;
+            transform: rotate(-10deg);
+        }
+
+        .ear-right {
+            right: 28px;
+            transform: rotate(10deg);
+        }
+
+        .bunny-body {
+            width: 124px;
+            height: 114px;
+            background: #FFFFFF;
+            border: 6px solid var(--dark);
+            border-radius: 50% 50% 45% 45%;
+            position: absolute;
+            bottom: 0;
+            left: 13px;
+            box-shadow: 0 12px 30px rgba(58, 48, 99, 0.15);
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .bunny-eyes {
+            display: flex;
+            justify-content: space-between;
+            width: 58px;
+            position: absolute;
+            top: 36px;
+            left: 33px;
+        }
+
+        .eye {
+            width: 14px;
+            height: 14px;
+            background: var(--dark);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pupil {
+            width: 5px;
+            height: 5px;
+            background: #FFF;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+        }
+
+        .bunny-blush {
+            width: 18px;
+            height: 9px;
+            background: rgba(255, 111, 183, 0.5);
+            border-radius: 50%;
+            position: absolute;
+            top: 52px;
+        }
+
+        .blush-left { left: 16px; }
+        .blush-right { right: 16px; }
+
+        .bunny-nose {
+            width: 8px;
+            height: 6px;
+            background: var(--pink);
+            border-radius: 50%;
+            position: absolute;
+            top: 50px;
+            left: 58px;
+        }
+
+        .bunny-mouth {
+            position: absolute;
+            top: 51px;
+            left: 55px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--dark);
+            user-select: none;
+            transform: scaleX(1.3);
+        }
+
+        .bunny-hands {
+            display: flex;
+            justify-content: space-between;
+            width: 96px;
+            position: absolute;
+            bottom: 8px;
+            left: 14px;
+        }
+
+        .hand {
+            width: 24px;
+            height: 16px;
+            background: #FFF;
+            border: 4px solid var(--dark);
+            border-radius: 50%;
+        }
+
+        .squashy-bunny-mascot.jump {
+            animation: bunnyJump 0.6s ease;
+        }
+
+        @keyframes bunnyJump {
+            0%, 100% { transform: scaleY(1) translateY(0); }
+            20% { transform: scaleY(0.8) scaleX(1.1) translateY(0); }
+            50% { transform: scaleY(1.1) scaleX(0.9) translateY(-40px) rotate(15deg); }
+            80% { transform: scaleY(0.9) scaleX(1.05) translateY(0); }
+        }
+
+        /* Bouncy Jelly Buttons */
+        .btn-jelly-cta {
+            background: var(--pink);
+            color: white !important;
+            border: none;
+            padding: 16px 36px;
+            border-radius: 30px;
             font-weight: 900;
-            font-size: 24px;
-            margin: 20px 0;
-            transform: rotate(-2deg);
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 22px rgba(255, 111, 183, 0.3);
+            margin-top: 15px;
+            letter-spacing: 0.5px;
         }
 
-        .discount-badge-seru .pct {
-            color: var(--pink);
+        .btn-jelly-cta:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 28px rgba(255, 111, 183, 0.45);
+            background: #FF85C4;
         }
 
-        /* Kategori Cards */
+        .btn-jelly-cta:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 10px rgba(255, 111, 183, 0.3);
+        }
+
+        /* ── KATEGORI BALON CELESTIAL ── */
         .categories-seru {
             display: flex;
-            gap: 16px;
-            margin-bottom: 40px;
+            gap: 20px;
+            margin-bottom: 50px;
             flex-wrap: wrap;
             justify-content: center;
+            width: 100%;
         }
 
         .cat-card-seru {
             background: white;
-            width: 140px;
-            height: 90px;
-            border-radius: 20px;
+            width: 180px;
+            height: 110px;
+            border-radius: 35px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 12px;
-            color: #555;
+            font-size: 14px;
+            color: var(--dark);
             text-decoration: none;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(58, 48, 99, 0.05);
+            position: relative;
+            overflow: hidden;
         }
 
+        /* Kategori Color Themes */
+        .cat-card-seru:nth-child(1) { background-color: var(--soft-pink); border-color: #FFAAD2; }
+        .cat-card-seru:nth-child(2) { background-color: var(--mint-green); border-color: #A7FFC3; }
+        .cat-card-seru:nth-child(3) { background-color: var(--cream-yellow); border-color: #FFE69F; }
+        .cat-card-seru:nth-child(4) { background-color: #E8F7FE; border-color: #BBE5FB; }
+
         .cat-card-seru:hover {
-            transform: translateY(-3px);
+            transform: translateY(-8px) rotate(2deg) scale(1.05);
+            box-shadow: 0 15px 30px rgba(58, 48, 99, 0.1);
         }
 
         .cat-card-seru span {
-            font-size: 30px;
+            font-size: 38px;
             margin-bottom: 5px;
+            transition: transform 0.4s ease;
+            display: inline-block;
         }
 
-        /* Judul Section */
+        .cat-card-seru:hover span {
+            transform: rotate(360deg) scale(1.2);
+        }
+
+        /* Judul Section Ceria */
         .section-title-seru {
             font-family: 'Nunito', sans-serif;
             text-align: center;
-            font-size: 28px;
-            margin-bottom: 30px;
+            font-size: 32px;
+            margin-bottom: 40px;
+            text-shadow: 1px 1px 0px var(--yellow), 2px 2px 0px rgba(58, 48, 99, 0.02);
         }
 
         .section-title-seru span {
             color: var(--pink);
         }
 
-        /* Grid Produk yang Konsisten */
+        /* ── DUSTY-PINK CLOUD PRODUCTS GRID ── */
         .product-grid-seru {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 35px;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
@@ -261,133 +594,90 @@ if ($query_best) {
 
         .product-card-seru {
             background: white;
-            border-radius: 30px;
-            padding: 20px;
+            border-radius: 40px;
+            padding: 24px;
             text-align: center;
-            transition: 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 380px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            animation: float 4s ease-in-out infinite;
+            min-height: 420px;
+            box-shadow: 0 12px 30px rgba(58, 48, 99, 0.05);
+            border: 4px dashed var(--soft-pink);
+            position: relative;
+            cursor: pointer;
         }
 
         .product-card-seru:hover {
-            transform: translateY(-10px) scale(1.03);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 45px rgba(58, 48, 99, 0.1);
+            border-color: var(--pink);
+            background: #FFFDFE;
         }
 
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
-            100% {
-                transform: translateY(0px);
-            }
+        .product-card-seru::after {
+            content: '⭐';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .product-card-seru:hover::after {
+            opacity: 1;
+            transform: scale(1.2) rotate(15deg);
         }
 
         .product-img-box-seru {
-            font-size: 70px;
-            background: #f9f9f9;
-            border-radius: 20px;
-            height: 180px;
+            background: #FFFBFB;
+            border-radius: 30px;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
+            border: 3px solid #FFF5F7;
+            transition: 0.3s;
+        }
+
+        .product-card-seru:hover .product-img-box-seru {
+            border-color: var(--soft-pink);
+            transform: scale(0.98);
         }
 
         .btn-buy-seru {
             background: var(--orange);
             color: white !important;
             border: none;
-            padding: 12px;
-            border-radius: 15px;
+            padding: 14px;
+            border-radius: 25px;
             font-weight: 800;
+            font-size: 14px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 18px;
             text-decoration: none;
             display: inline-block;
             width: 100%;
-            transition: 0.3s;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 15px var(--jelly-shadow);
+            letter-spacing: 0.5px;
         }
 
         .btn-buy-seru:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 133, 45, 0.5);
+            background: #FF9240;
         }
 
-        /* ── FOOTER ABOUT US (KONSISTEN DI KIRI) ── */
-        .custom-footer-seru {
-            background: white;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            padding: 0 50px;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 100;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+        .btn-buy-seru:active {
+            transform: scale(0.92);
+            box-shadow: 0 3px 8px var(--jelly-shadow);
         }
 
-        .footer-left-content-seru {
-            display: flex;
-            align-items: center;
-            z-index: 2;
-        }
-
-        .about-us-link-seru {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: 20px;
-            /* Jarak agar tidak tertutup bunga kiri */
-            transition: color 0.3s;
-        }
-
-        .about-us-link-seru:hover {
-            color: var(--pink);
-        }
-
-        .info-circle-seru {
-            border: 2px solid currentColor;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        /* Dekorasi Tanaman di Footer */
-        .decor-flower-seru {
-            position: absolute;
-            bottom: 0;
-            height: 110px;
-            pointer-events: none;
-        }
-
-        .flower-left-seru {
-            left: 0;
-        }
-
-        .flower-right-seru {
-            right: 0;
-        }
-
-        /* ===================================
-           MODAL DETAIL PRODUK (SQUASHY THEME)
-        =================================== */
+        /* ── MODAL DETAIL PRODUK (SQUASHY THEME) ── */
         .modal {
             display: none;
             position: fixed;
@@ -469,7 +759,6 @@ if ($query_best) {
             background: #eee;
         }
 
-        /* Grid Layout */
         .modal-product-grid {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
@@ -669,7 +958,6 @@ if ($query_best) {
             object-fit: cover;
         }
 
-        /* Balasan Admin */
         .admin-reply {
             margin-top: 15px;
             padding: 15px;
@@ -700,10 +988,6 @@ if ($query_best) {
             font-size: 15px;
         }
 
-        .product-card-seru {
-            cursor: pointer;
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -720,14 +1004,31 @@ if ($query_best) {
             .modal-content {
                 padding: 20px;
             }
+            .banner-layout {
+                grid-template-columns: 1fr;
+            }
+            .mascot-wrapper {
+                margin-top: 20px;
+            }
+            .squashy-bunny-mascot {
+                margin-top: 20px;
+            }
+            .mascot-speech-bubble {
+                position: relative;
+                bottom: 0;
+                margin-bottom: 10px;
+                right: 0;
+                width: 100%;
+            }
+            .mascot-speech-bubble::after, .mascot-speech-bubble::before {
+                display: none;
+            }
         }
 
-        /* ===================================
-           SEARCH BAR (PREMIUM SQUASHY STYLE)
-        =================================== */
+        /* ── SEARCH BAR PREMIUM ── */
         .search-bar-container {
             max-width: 600px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 40px auto;
             padding: 0 20px;
             width: 100%;
         }
@@ -826,19 +1127,55 @@ if ($query_best) {
 
     <div class="main-wrapper">
         <section class="promo-banner-seru">
-            <div class="cloud-seru c1"></div>
-            <div class="cloud-seru c2"></div>
-            <span class="balloon-seru b1-seru">🎈</span>
-            <span class="balloon-seru b2-seru">🎀</span>
-            <span class="balloon-seru b3-seru">🎁</span>
-            <span class="balloon-seru b4-seru">🌟</span>
+            <!-- Floating Accents -->
+            <div class="floating-decor fd-cloud-1">🌤️</div>
+            <div class="floating-decor fd-cloud-2">☁️</div>
+            <div class="floating-decor fd-balloon">🎈</div>
+            <div class="floating-decor fd-star-1">⭐</div>
+            <div class="floating-decor fd-star-2">✨</div>
+            <div class="floating-decor fd-bear">🧸</div>
 
-            <div class="hero-text-seru">
-                <h1>Diskon <span>Seru!</span></h1>
-                <p class="subtitle">Ayo Belanja Hemat di Squashy!</p>
-                <div class="discount-badge-seru">Up To <span class="pct">50%</span> OFF</div>
-                <br>
-                <a href="#produk" style="color: var(--pink); font-weight: 800; text-decoration: none;">Belanja Sekarang →</a>
+            <div class="banner-layout">
+                <div class="hero-text-seru">
+                    <h1>Dunia Ceria <span>Si Kecil!</span> 🧸🍭</h1>
+                    <p class="subtitle">Tempat keajaiban tumbuh! Temukan mainan edukatif yang menyenangkan & pakaian gemas berkualitas premium untuk buah hati tercinta.</p>
+                    
+                    <!-- Tips Ceria Box (Mengganti Promo Membosankan) -->
+                    <div class="tips-container-box">
+                        <div class="tips-badge">💡 Tips Ceria Bunda Hari Ini</div>
+                        <p id="parenting-tip-text">Ajak si kecil bermain di luar selama 15 menit hari ini untuk melatih motorik kasarnya! 🌳</p>
+                        <button class="tips-btn-next" onclick="nextParentingTip()">Tips Lain ✨</button>
+                    </div>
+                    
+                    <a href="#produk" class="btn-jelly-cta">Main & Belanja Sekarang ➔</a>
+                </div>
+
+                <!-- Squashy Mascot Bunny -->
+                <div class="mascot-wrapper">
+                    <!-- Speech bubble for Squashy mascot -->
+                    <div class="mascot-speech-bubble" id="mascotBubble">
+                        Halo Bunda! Yuk, main bareng Squashy! Pencet aku dong! 🐰✨
+                    </div>
+                    <div class="squashy-bunny-mascot" id="squashyBunny" onclick="triggerMascotFun()">
+                        <!-- CSS Bunny Shapes -->
+                        <div class="bunny-ear ear-left"></div>
+                        <div class="bunny-ear ear-right"></div>
+                        <div class="bunny-body">
+                            <div class="bunny-eyes">
+                                <div class="eye eye-left"><div class="pupil"></div></div>
+                                <div class="eye eye-right"><div class="pupil"></div></div>
+                            </div>
+                            <div class="bunny-blush blush-left"></div>
+                            <div class="bunny-blush blush-right"></div>
+                            <div class="bunny-nose"></div>
+                            <div class="bunny-mouth">w</div>
+                            <div class="bunny-hands">
+                                <div class="hand hand-left"></div>
+                                <div class="hand hand-right"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -849,9 +1186,7 @@ if ($query_best) {
             <a href="<?= $base_url ?>customers/kategori.php?kategori=all" class="cat-card-seru"><span>🎁</span>Promo Spesial</a>
         </div>
 
-        <!-- ===================================
-             SEARCH BAR
-        ==================================== -->
+        <!-- SEARCH BAR -->
         <div class="search-bar-container">
             <form action="customers/kategori.php" method="GET" class="search-form-body">
                 <input type="hidden" name="kategori" value="all">
@@ -863,7 +1198,7 @@ if ($query_best) {
             </form>
         </div>
 
-        <h2 class="section-title-seru" id="produk">Produk <span>Pilihan</span> Bunda</h2>
+        <h2 class="section-title-seru" id="produk">Produk <span>Terfavorit</span> Pilihan Bunda 🌟</h2>
 
         <div class="product-grid-seru" id="productGridSeru">
             <?php if (!empty($top_products)) : ?>
@@ -877,9 +1212,9 @@ if ($query_best) {
                             <div class="product-img-box-seru">🎁</div>
                         <?php endif; ?>
                         <div>
-                            <h4 style="margin-bottom:5px"><?= htmlspecialchars($product['nama_produk']); ?></h4>
-                            <p style="color:var(--pink); font-weight:800">Rp <?= number_format($product['harga'], 0, ',', '.'); ?></p>
-                            <p style="font-size:12px; color:#777; margin-top:6px;">Terjual <?= number_format($product['total_sold'], 0, ',', '.'); ?> pcs</p>
+                            <h4 style="margin-bottom:8px; font-weight: 800; font-size:16px; color: var(--dark);"><?= htmlspecialchars($product['nama_produk']); ?></h4>
+                            <p style="color:var(--pink); font-weight:900; font-size:17px;">Rp <?= number_format($product['harga'], 0, ',', '.'); ?></p>
+                            <p style="font-size:12.5px; color:#777; margin-top:6px; font-weight:700;">🔥 Terjual <?= number_format($product['total_sold'], 0, ',', '.'); ?> pcs</p>
                         </div>
                         <?php if (isset($_SESSION['login'])) : ?>
                             <form action="customers/keranjang.php?action=add" method="POST" style="margin: 0; width: 100%;">
@@ -911,6 +1246,98 @@ if ($query_best) {
     </div>
 
     <script>
+        // Parenting Tips Switching
+        const parentingTips = [
+            "Ajak si kecil bermain di luar selama 15 menit hari ini untuk melatih motorik kasarnya! 🌳",
+            "Membaca dongeng sebelum tidur meningkatkan imajinasi si kecil secara luar biasa! 📚✨",
+            "Pura-pura jadi koki bersama si kecil melatih kreativitas dan kerja sama lho, Bun! 🍳",
+            "Puji usaha si kecil, bukan hanya hasil akhir, untuk melatih growth mindset. 🌟",
+            "Bermain cilukba membantu si kecil memahami konsep kepermanenan objek secara menyenangkan. 🙈",
+            "Batasi screen time si kecil dan ganti dengan menggambar atau menyusun balok lego bersama! 🎨",
+            "Minum susu hangat dan memeluk si kecil sebelum tidur membuatnya merasa dicintai & aman. 🍼💕"
+        ];
+
+        let currentTipIndex = 0;
+
+        function nextParentingTip() {
+            const tipTextEl = document.getElementById('parenting-tip-text');
+            
+            // Add fade-out effect
+            tipTextEl.style.opacity = 0;
+            tipTextEl.style.transform = 'translateY(5px)';
+            
+            setTimeout(() => {
+                currentTipIndex = (currentTipIndex + 1) % parentingTips.length;
+                tipTextEl.innerText = parentingTips[currentTipIndex];
+                
+                // Fade-in
+                tipTextEl.style.opacity = 1;
+                tipTextEl.style.transform = 'translateY(0)';
+            }, 200);
+        }
+
+        // Mascot Squashy click and jump behavior
+        function triggerMascotFun() {
+            const bunny = document.getElementById('squashyBunny');
+            const bubble = document.getElementById('mascotBubble');
+            
+            // Play jump animation
+            bunny.classList.remove('jump');
+            void bunny.offsetWidth; // Trigger reflow
+            bunny.classList.add('jump');
+            
+            // Change speech bubble text randomly
+            const messages = [
+                "Yeeay! Kakak pencet aku! Lompat! 🐰💖",
+                "Baju Squashy lucu banget loh Bun! 👗",
+                "Yuk mainan bareng Squashy, asik! 🚂⭐",
+                "Peralatan bayi di sini lengkap banget! 🍼",
+                "Squashy sayang Bunda & Adek! 💕",
+                "Wuiih! Banyak bintang bertebaran! ✨",
+                "Ada promo spesial tersembunyi loh! 🎁"
+            ];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            bubble.innerText = randomMsg;
+            
+            // Generate star particle burst
+            const rect = bunny.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            createBurst(x, y);
+        }
+
+        function createBurst(x, y) {
+            const emojis = ['✨', '⭐', '🎈', '🍬', '🎨', '🎉'];
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2 + Math.random() * 4;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed - 1.5; // Upward bias
+                
+                particle.style.left = (x + window.scrollX) + 'px';
+                particle.style.top = (y + window.scrollY) + 'px';
+                particle.style.position = 'absolute';
+                particle.style.fontSize = '22px';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '10000';
+                particle.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
+                
+                document.body.appendChild(particle);
+                
+                void particle.offsetWidth; // Force reflow
+                
+                particle.style.transform = `translate(${vx * 25}px, ${vy * 25}px) scale(0)`;
+                particle.style.opacity = '0';
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 600);
+            }
+        }
+
         // Modal logic
         const modal = document.getElementById('productDetailModal');
         const modalBody = document.getElementById('modalBody');
@@ -932,7 +1359,7 @@ if ($query_best) {
                 modalLoading.style.display = 'block';
                 modalBody.innerHTML = '';
 
-                // Fetch detail (prefix kosong karena dari index.php berada di root)
+                // Fetch detail
                 fetch('customers/get_product_detail.php?id=' + idProduk + '&prefix=')
                     .then(response => response.text())
                     .then(html => {
