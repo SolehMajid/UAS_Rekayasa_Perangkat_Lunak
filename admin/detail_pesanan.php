@@ -19,6 +19,27 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 }
 
 $id_order = intval($_GET['id']);
+$error_msg = "";
+
+// Handle direct cancel by admin
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_cancel_order'])) {
+    mysqli_begin_transaction($conn);
+    try {
+        // Update status_pesanan in order table
+        mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dibatalkan' WHERE id_order = $id_order");
+        
+        // Update status_pembayaran in payment table
+        mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dibatalkan' WHERE id_order = $id_order");
+        
+        mysqli_commit($conn);
+        $_SESSION['admin_cancel_success'] = "Pesanan #PLG-" . str_pad($id_order, 5, '0', STR_PAD_LEFT) . " berhasil dibatalkan oleh Admin.";
+        header("Location: detail_pesanan.php?id=" . $id_order);
+        exit;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        $error_msg = "Gagal membatalkan pesanan: " . $e->getMessage();
+    }
+}
 
 // Ambil data order
 $query_order = "
@@ -449,6 +470,25 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
             <a href="kelola_pesanan.php" class="btn-back-link">📋 Kembali ke Pesanan</a>
         </div>
 
+        <?php if (!empty($error_msg)): ?>
+            <div style="background-color: #FFEBEE; border: 2px solid #FFCDD2; color: #C62828; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                ⚠️ <?= htmlspecialchars($error_msg) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['admin_cancel_success'])): ?>
+            <div style="background-color: rgba(110, 219, 143, 0.15); border: 2px solid rgba(110, 219, 143, 0.3); color: #276d37; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                🎉 <?= htmlspecialchars($_SESSION['admin_cancel_success']) ?>
+            </div>
+            <?php unset($_SESSION['admin_cancel_success']); ?>
+        <?php endif; ?>
+
+        <?php if (strtolower($order['status_pesanan'] ?? 'pending') === 'dibatalkan') : ?>
+            <div style="background-color: #FFEBEE; border: 2px solid #FFCDD2; color: #C62828; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                ❌ KETERANGAN: Pesanan ini telah dibatalkan.
+            </div>
+        <?php endif; ?>
+
         <div class="detail-grid">
 
             <!-- LEFT COLUMN: ITEMS -->
@@ -591,6 +631,13 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
                         <a href="update_status.php?id=<?= $order['id_order'] ?>" class="btn-action-button btn-update-status">
                             🔄 Perbarui Status Pesanan
                         </a>
+                        <?php if (strtolower($order['status_pesanan'] ?? 'pending') !== 'dibatalkan') : ?>
+                            <form method="POST" action="" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');" style="width: 100%; display: block;">
+                                <button type="submit" name="admin_cancel_order" class="btn-action-button" style="background-color: #EB5757; color: white; width: 100%; border: none; box-shadow: 0 6px 15px rgba(235, 87, 87, 0.3);">
+                                    ❌ Batalkan Pesanan
+                                </button>
+                            </form>
+                        <?php endif; ?>
                         <a href="cetak_invoice.php?id=<?= $order['id_order'] ?>" target="_blank" class="btn-action-button btn-print-invoice">
                             🖨 Cetak Struk / Invoice
                         </a>

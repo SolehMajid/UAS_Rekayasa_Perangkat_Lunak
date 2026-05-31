@@ -7,6 +7,49 @@ require_once '../includes/auth.php';
 checkLogin();
 
 $userId = intval($_SESSION['id_user'] ?? 0);
+
+// Handle pembatalan pesanan oleh user
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order']) && $userId > 0) {
+    $orderIdToCancel = intval($_POST['id_order'] ?? 0);
+    if ($orderIdToCancel > 0) {
+        // Validasi kepemilikan dan status (harus pending)
+        $checkQuery = mysqli_query($conn, "
+            SELECT o.status_pesanan, COALESCE(p.status_pembayaran, 'pending') AS status_pembayaran
+            FROM `order` o
+            LEFT JOIN payment p ON o.id_order = p.id_order
+            WHERE o.id_order = $orderIdToCancel AND o.id_user = $userId LIMIT 1
+        ");
+        
+        if ($checkQuery && mysqli_num_rows($checkQuery) === 1) {
+            $checkRow = mysqli_fetch_assoc($checkQuery);
+            $statusPesanan = strtolower($checkRow['status_pesanan'] ?? 'pending');
+            $statusPembayaran = strtolower($checkRow['status_pembayaran'] ?? 'pending');
+            
+            if ($statusPesanan === 'pending' && $statusPembayaran === 'pending') {
+                mysqli_begin_transaction($conn);
+                try {
+                    // Update order
+                    mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dibatalkan' WHERE id_order = $orderIdToCancel");
+                    
+                    // Update payment
+                    mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dibatalkan' WHERE id_order = $orderIdToCancel");
+                    
+                    mysqli_commit($conn);
+                    $_SESSION['cancel_success'] = "Pesanan #" . str_pad($orderIdToCancel, 5, '0', STR_PAD_LEFT) . " berhasil dibatalkan.";
+                } catch (Exception $e) {
+                    mysqli_rollback($conn);
+                    $_SESSION['cancel_error'] = "Gagal membatalkan pesanan: " . $e->getMessage();
+                }
+            } else {
+                $_SESSION['cancel_error'] = "Pesanan tidak dapat dibatalkan karena sudah dibayar atau diproses.";
+            }
+        } else {
+            $_SESSION['cancel_error'] = "Pesanan tidak ditemukan.";
+        }
+    }
+    header("Location: profil.php");
+    exit;
+}
 $user = [
     'nama_lengkap' => $_SESSION['nama'] ?? 'Bunda',
     'email' => '-',
@@ -845,6 +888,21 @@ function orderStatusLabel($status)
             </div>
         <?php endif; ?>
 
+        <!-- Pesan Pembatalan Pesanan -->
+        <?php if (isset($_SESSION['cancel_success'])) : ?>
+            <div style="background-color: rgba(110, 219, 143, 0.15); border: 2px solid rgba(110, 219, 143, 0.3); color: #276d37; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease;">
+                🎉 <?= htmlspecialchars($_SESSION['cancel_success']); ?>
+            </div>
+            <?php unset($_SESSION['cancel_success']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['cancel_error'])) : ?>
+            <div style="background-color: rgba(255, 92, 92, 0.15); border: 2px solid rgba(255, 92, 92, 0.3); color: #C62828; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease;">
+                ⚠️ <?= htmlspecialchars($_SESSION['cancel_error']); ?>
+            </div>
+            <?php unset($_SESSION['cancel_error']); ?>
+        <?php endif; ?>
+
         <div class="profile-grid">
             <!-- Kiri: Detail Pengguna & Statistik -->
             <div class="profile-summary">
@@ -1003,6 +1061,12 @@ function orderStatusLabel($status)
                                             <span class="order-total-label">Total Tagihan</span>
                                             <span class="order-total-amount"><?= formatRupiah($order['total_tagihan']); ?></span>
                                         </div>
+                                        <?php if (strtolower($order['status_pesanan']) === 'pending' && strtolower($order['status_pembayaran']) === 'pending') : ?>
+                                            <form method="POST" action="" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');" style="display: inline-block;">
+                                                <input type="hidden" name="id_order" value="<?= $orderIdValue; ?>">
+                                                <button type="submit" name="cancel_order" class="btn-pill btn-red" style="padding: 8px 16px; font-size: 0.85rem;">❌ Batalkan Pesanan</button>
+                                            </form>
+                                        <?php endif; ?>
                                         <a href="<?= $base_url ?>customers/checkout.php" class="btn-pill btn-outline-pink" style="padding: 8px 16px; font-size: 0.85rem;">Beli Lagi</a>
                                     </div>
                                 </div>
