@@ -111,7 +111,7 @@ $dibatalkan = mysqli_fetch_assoc($r_batal)['total'] ?? 0;
 $where_clauses = ["1=1"];
 
 if (!empty($search)) {
-    $where_clauses[] = "(o.id_order LIKE '%$search%' OR o.nama_pembeli LIKE '%$search%')";
+    $where_clauses[] = "(o.id_order LIKE '%$search%' OR o.nama_pembeli LIKE '%$search%' OR o.id_user LIKE '%$search%')";
 }
 
 if ($status !== 'Semua Status') {

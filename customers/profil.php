@@ -83,7 +83,47 @@ $orderQuery = mysqli_query($conn, "SELECT o.id_order, o.tanggal_pesanan, o.total
 
 $orders = [];
 if ($orderQuery) {
+    require_once '../config/midtrans.php';
     while ($row = mysqli_fetch_assoc($orderQuery)) {
+        // Sinkronisasi status otomatis ke Midtrans (hanya untuk pesanan yang masih pending di DB kita)
+        if (strtolower($row['status_pesanan']) === 'pending') {
+            $statusData = checkMidtransStatus($row['id_order']);
+            if ($statusData && isset($statusData['transaction_status'])) {
+                $transactionStatus = $statusData['transaction_status'];
+                $paymentType = $statusData['payment_type'] ?? '';
+                
+                $newStatusOrder = 'pending';
+                $newStatusBayar = 'pending';
+                
+                if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
+                    $newStatusOrder = 'dibayar';
+                    $newStatusBayar = 'lunas';
+                } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
+                    $newStatusOrder = 'dibatalkan';
+                    $newStatusBayar = 'dibatalkan';
+                }
+                
+                // Jika status di Midtrans berubah, update database lokal
+                if ($newStatusOrder !== 'pending') {
+                    mysqli_begin_transaction($conn);
+                    $safePaymentType = mysqli_real_escape_string($conn, $paymentType);
+                    $orderIdToUpdate = intval($row['id_order']);
+                    
+                    $updateOrder = mysqli_query($conn, "UPDATE `order` SET status_pesanan = '$newStatusOrder' WHERE id_order = $orderIdToUpdate");
+                    $updatePayment = mysqli_query($conn, "UPDATE payment SET status_pembayaran = '$newStatusBayar', metode_pembayaran = '$safePaymentType', waktu_bayar = NOW() WHERE id_order = $orderIdToUpdate");
+                    
+                    if ($updateOrder && $updatePayment) {
+                        mysqli_commit($conn);
+                        // Update variabel lokal agar langsung tampil perubahan di profil user
+                        $row['status_pesanan'] = $newStatusOrder;
+                        $row['status_pembayaran'] = $newStatusBayar;
+                        $row['metode_pembayaran'] = $paymentType;
+                    } else {
+                        mysqli_rollback($conn);
+                    }
+                }
+            }
+        }
         $orders[] = $row;
     }
 }
@@ -1062,6 +1102,7 @@ function orderStatusLabel($status)
                                             <span class="order-total-amount"><?= formatRupiah($order['total_tagihan']); ?></span>
                                         </div>
                                         <?php if (strtolower($order['status_pesanan']) === 'pending' && strtolower($order['status_pembayaran']) === 'pending') : ?>
+                                            <a href="bayar.php?id=<?= $orderIdValue; ?>" class="btn-pill btn-pink" style="padding: 8px 16px; font-size: 0.85rem; margin-right: 5px;">💳 Bayar Sekarang</a>
                                             <form method="POST" action="" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');" style="display: inline-block;">
                                                 <input type="hidden" name="id_order" value="<?= $orderIdValue; ?>">
                                                 <button type="submit" name="cancel_order" class="btn-pill btn-red" style="padding: 8px 16px; font-size: 0.85rem;">❌ Batalkan Pesanan</button>

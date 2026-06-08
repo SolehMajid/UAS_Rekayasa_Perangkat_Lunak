@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/app.php';
 require_once '../config/database.php';
+require_once '../config/midtrans.php';
 require_once '../includes/auth.php';
 
 checkLogin();
@@ -15,6 +16,7 @@ if ($userId <= 0) {
 $message = '';
 $success = false;
 $orderId = null;
+$snapToken = '';
 
 $cartItems = [];
 $totalItems = 0;
@@ -36,7 +38,7 @@ if ($cartQuery) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $namaPembeli = trim($_POST['nama_pembeli'] ?? $_SESSION['nama'] ?? '');
     $nomerHp = trim($_POST['nomer_hp'] ?? '');
-    $metodePembayaran = trim($_POST['metode_pembayaran'] ?? '');
+    $metodePembayaran = 'Midtrans';
     $maxPhoneLength = 20;
 
     if (empty($namaPembeli) || empty($metodePembayaran)) {
@@ -94,8 +96,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($paymentOk && $detailsOk) {
                     $clearCartSql = "DELETE FROM cart WHERE id_user = $userIdEscaped";
                     mysqli_query($conn, $clearCartSql);
-                    mysqli_commit($conn);
-                    $success = true;
+
+                    // Ambil email user untuk dikirim ke Midtrans
+                    $userEmailQuery = mysqli_query($conn, "SELECT email FROM user WHERE id_user = $userId");
+                    $userRow = mysqli_fetch_assoc($userEmailQuery);
+                    $userEmail = $userRow['email'] ?? '';
+
+                    // Dapatkan detail item belanja untuk rincian Midtrans
+                    $itemsForMidtrans = [];
+                    foreach ($cartItems as $item) {
+                        $itemsForMidtrans[] = [
+                            'id' => $item['id_produk'],
+                            'price' => (int)$item['harga'],
+                            'quantity' => (int)$item['jumlah'],
+                            'name' => substr($item['nama_produk'], 0, 50)
+                        ];
+                    }
+
+                    // Meminta Token ke Midtrans
+                    $customerDetails = [
+                        'nama' => $namaPembeli,
+                        'email' => $userEmail,
+                        'phone' => $nomerHp
+                    ];
+                    $snapToken = getMidtransSnapToken($orderId, $totalPrice, $customerDetails, $itemsForMidtrans);
+
+                    if ($snapToken) {
+                        // Simpan token ke database order
+                        mysqli_query($conn, "UPDATE `order` SET snap_token = '$snapToken' WHERE id_order = $orderId");
+                        mysqli_commit($conn);
+                        $success = true;
+                    } else {
+                        // Jika token gagal didapat, tetap commit order (sebagai pending) dan biarkan user membayar manual atau mencoba lagi nanti
+                        mysqli_commit($conn);
+                        $success = true;
+                    }
                 } else {
                     mysqli_rollback($conn);
                     $message = 'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi.';
@@ -119,6 +154,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran - Squashy</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
+    <!-- Load Script Midtrans Snap.js (Sandbox) -->
+    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<?= MIDTRANS_CLIENT_KEY ?>"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -310,6 +347,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p>Pembayaran sedang menunggu konfirmasi. Silakan cek riwayat pesanan Anda.</p>
                 <a href="<?= $base_url ?>customers/kategori.php" class="btn-secondary">Kembali ke Kategori</a>
             </div>
+            
+            <?php if (!empty($snapToken)) : ?>
+                <script type="text/javascript">
+                    document.addEventListener("DOMContentLoaded", function() {
+                        window.snap.pay('<?= $snapToken ?>', {
+                            onSuccess: function(result){
+                                alert("Pembayaran sukses! Terima kasih.");
+                                window.location.href = "profil.php";
+                            },
+                            onPending: function(result){
+                                alert("Menunggu pembayaran Anda.");
+                                window.location.href = "profil.php";
+                            },
+                            onError: function(result){
+                                alert("Pembayaran gagal, silakan coba lagi.");
+                                window.location.href = "profil.php";
+                            },
+                            onClose: function(){
+                                alert('Anda menutup popup sebelum menyelesaikan pembayaran.');
+                                window.location.href = "profil.php";
+                            }
+                        });
+                    });
+                </script>
+            <?php endif; ?>
         <?php elseif (!empty($cartItems)) : ?>
             <div class="checkout-grid">
                 <div class="card">
@@ -323,16 +385,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="nomer_hp">Nomor HP</label>
                             <input type="text" id="nomer_hp" name="nomer_hp" value="<?= htmlspecialchars($_POST['nomer_hp'] ?? ''); ?>" placeholder="08xxxxxxxxxx" maxlength="20" inputmode="numeric" pattern="[0-9]*" required>
                         </div>
-                        <div class="field-group">
-                            <label for="metode_pembayaran">Metode Pembayaran</label>
-                            <select id="metode_pembayaran" name="metode_pembayaran" required>
-                                <option value="">Pilih metode pembayaran</option>
-                                <option value="Transfer Bank" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'Transfer Bank') ? 'selected' : ''; ?>>Transfer Bank</option>
-                                <option value="Debit/Kredit" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'Debit/Kredit') ? 'selected' : ''; ?>>Debit/Kredit</option>
-                                <option value="E-Wallet" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'E-Wallet') ? 'selected' : ''; ?>>E-Wallet</option>
-                                <option value="COD" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'COD') ? 'selected' : ''; ?>>Bayar di Tempat (COD)</option>
-                            </select>
-                        </div>
+
                         <button type="submit">Proses Pembayaran</button>
                     </form>
                 </div>
