@@ -1,837 +1,869 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sequence Diagram — Squashy</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg: #ffffff;
-        --surface: #f5f5f5;
-        --surface2: #ebebeb;
-        --border: #d0d0d0;
-        --border2: #b0b0b0;
-        --text: #111111;
-        --muted: #666666;
-        --dim: #aaaaaa;
-        --ink: #111111;
-        --accent: #000000;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sequence Diagram — Squashy</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --surface2: #ebebeb;
+      --border: #d0d0d0;
+      --border2: #b0b0b0;
+      --text: #111111;
+      --muted: #666666;
+      --dim: #aaaaaa;
+      --ink: #111111;
+      --accent: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "IBM Plex Mono", monospace;
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 28px 60px;
+    }
+
+    /* ── Header ── */
+    header {
+      margin-bottom: 36px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "IBM Plex Sans", sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: #000;
+    }
+
+    .brand-name {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-name span {
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    h1 {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-weight: 700;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--muted);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── Tabs ── */
+    .tab-switcher {
+      display: inline-flex;
+      border: 2px solid #000;
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      padding: 9px 28px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: "IBM Plex Sans", sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: all 0.15s;
+      border-right: 2px solid #000;
+    }
+
+    .tab-btn:last-child {
+      border-right: none;
+    }
+
+    .tab-btn.active {
+      background: #000;
+      color: #fff;
+    }
+
+    .tab-btn:not(.active):hover {
+      background: var(--surface);
+      color: #000;
+    }
+
+    /* ── Panel ── */
+    .diagram-panel {
+      display: none;
+    }
+
+    .diagram-panel.active {
+      display: block;
+      animation: fadeUp 0.2s ease;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
       }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+      to {
+        opacity: 1;
+        transform: none;
       }
+    }
 
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: "IBM Plex Mono", monospace;
-        min-height: 100vh;
-      }
+    /* ── Section header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      margin: 8px 0 0;
+      border-left: 3px solid #000;
+      background: var(--surface);
+    }
 
-      .page {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 40px 28px 60px;
-      }
+    .sec-num {
+      font-size: 10px;
+      font-weight: 600;
+      color: #fff;
+      background: #000;
+      padding: 1px 6px;
+      letter-spacing: 0.5px;
+    }
 
-      /* ── Header ── */
-      header {
-        margin-bottom: 36px;
-        border-bottom: 2px solid #000;
-        padding-bottom: 20px;
-      }
+    .sec-title {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      color: #000;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
 
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 18px;
-      }
-      .logo {
-        width: 36px;
-        height: 36px;
-        border: 2px solid #000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "IBM Plex Sans", sans-serif;
-        font-weight: 700;
-        font-size: 13px;
-        letter-spacing: 1px;
-        color: #000;
-      }
-      .brand-name {
-        font-family: "IBM Plex Sans", sans-serif;
-        font-weight: 700;
-        font-size: 18px;
-        letter-spacing: -0.5px;
-      }
-      .brand-name span {
-        color: var(--muted);
-        font-weight: 400;
-      }
+    /* ── Actor bar ── */
+    .actor-bar {
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #fff;
+      border-top: 2px solid #000;
+      border-bottom: 2px solid #000;
+      padding: 10px 0 0;
+    }
 
-      h1 {
-        font-family: "IBM Plex Sans", sans-serif;
-        font-weight: 700;
-        font-size: clamp(24px, 4vw, 38px);
-        line-height: 1.1;
-        letter-spacing: -1px;
-        margin-bottom: 6px;
-      }
-      h1 em {
-        font-style: normal;
-        color: var(--muted);
-      }
+    .actor-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
 
-      .subtitle {
-        color: var(--muted);
-        font-size: 12px;
-        letter-spacing: 0.2px;
-      }
+    .actor-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-family: "IBM Plex Sans", sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border: 1.5px solid #000;
+      white-space: nowrap;
+      background: #fff;
+      color: #000;
+    }
 
-      /* ── Tabs ── */
-      .tab-switcher {
-        display: inline-flex;
-        border: 2px solid #000;
-        margin-bottom: 28px;
-      }
-      .tab-btn {
-        padding: 9px 28px;
-        border: none;
-        background: transparent;
-        color: var(--muted);
-        font-family: "IBM Plex Sans", sans-serif;
-        font-weight: 600;
-        font-size: 13px;
-        cursor: pointer;
-        letter-spacing: 0.3px;
-        transition: all 0.15s;
-        border-right: 2px solid #000;
-      }
-      .tab-btn:last-child {
-        border-right: none;
-      }
-      .tab-btn.active {
-        background: #000;
-        color: #fff;
-      }
-      .tab-btn:not(.active):hover {
-        background: var(--surface);
-        color: #000;
-      }
+    .actor-chip.filled {
+      background: #000;
+      color: #fff;
+    }
 
-      /* ── Panel ── */
-      .diagram-panel {
-        display: none;
-      }
-      .diagram-panel.active {
-        display: block;
-        animation: fadeUp 0.2s ease;
-      }
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(4px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
+    .actor-lifeline-top {
+      width: 1px;
+      height: 10px;
+      background: #000;
+    }
 
-      /* ── Section header ── */
-      .section-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 7px 12px;
-        margin: 8px 0 0;
-        border-left: 3px solid #000;
-        background: var(--surface);
-      }
-      .sec-num {
-        font-size: 10px;
-        font-weight: 600;
-        color: #fff;
-        background: #000;
-        padding: 1px 6px;
-        letter-spacing: 0.5px;
-      }
-      .sec-title {
-        font-family: "IBM Plex Sans", sans-serif;
-        font-weight: 600;
-        font-size: 11px;
-        color: #000;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-      }
+    /* ── Messages ── */
+    .messages {
+      position: relative;
+    }
 
-      /* ── Actor bar ── */
-      .actor-bar {
-        display: flex;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: #fff;
-        border-top: 2px solid #000;
-        border-bottom: 2px solid #000;
-        padding: 10px 0 0;
-      }
-      .actor-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-      }
-      .actor-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        font-size: 10px;
-        font-family: "IBM Plex Sans", sans-serif;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        border: 1.5px solid #000;
-        white-space: nowrap;
-        background: #fff;
-        color: #000;
-      }
-      .actor-chip.filled {
-        background: #000;
-        color: #fff;
-      }
-      .actor-lifeline-top {
-        width: 1px;
-        height: 10px;
-        background: #000;
-      }
+    .msg-row {
+      display: flex;
+      align-items: center;
+      min-height: 42px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      transition: background 0.1s;
+    }
 
-      /* ── Messages ── */
-      .messages {
-        position: relative;
-      }
+    .msg-row:hover {
+      background: var(--surface);
+    }
 
-      .msg-row {
-        display: flex;
-        align-items: center;
-        min-height: 42px;
-        border-bottom: 1px solid var(--border);
-        position: relative;
-        transition: background 0.1s;
-      }
-      .msg-row:hover {
-        background: var(--surface);
-      }
+    .lifeline-bg {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border);
+      pointer-events: none;
+    }
 
-      .lifeline-bg {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 1px;
-        background: var(--border);
-        pointer-events: none;
-      }
+    .arrow-area {
+      position: relative;
+      flex: 1;
+      height: 42px;
+    }
 
-      .arrow-area {
-        position: relative;
-        flex: 1;
-        height: 42px;
-      }
-      .arrow-area svg {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        overflow: visible;
-      }
+    .arrow-area svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
 
-      .msg-label {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        pointer-events: none;
-      }
-      .msg-label .lbl {
-        background: #fff;
-        border: 1px solid var(--border2);
-        padding: 2px 7px;
-        font-size: 10px;
-        color: #111;
-        max-width: 100%;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .msg-label .note {
-        font-size: 9px;
-        color: var(--muted);
-        margin-top: 1px;
-        font-style: italic;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-      }
+    .msg-label {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
 
-      /* ── Legend ── */
-      .legend {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-top: 24px;
-        padding: 12px 16px;
-        border: 1.5px solid #000;
-      }
-      .legend-title {
-        font-family: "IBM Plex Sans", sans-serif;
-        font-weight: 700;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #000;
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 11px;
-        color: var(--muted);
-      }
-      .legend-line {
-        width: 32px;
-        height: 2px;
-      }
-      .legend-line.solid {
-        background: #000;
-      }
-      .legend-line.dashed {
-        background: repeating-linear-gradient(
-          to right,
+    .msg-label .lbl {
+      background: #fff;
+      border: 1px solid var(--border2);
+      padding: 2px 7px;
+      font-size: 10px;
+      color: #111;
+      max-width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .msg-label .note {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 1px;
+      font-style: italic;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 24px;
+      padding: 12px 16px;
+      border: 1.5px solid #000;
+    }
+
+    .legend-title {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #000;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .legend-line {
+      width: 32px;
+      height: 2px;
+    }
+
+    .legend-line.solid {
+      background: #000;
+    }
+
+    .legend-line.dashed {
+      background: repeating-linear-gradient(to right,
           #888 0,
           #888 4px,
           transparent 4px,
-          transparent 8px
-        );
+          transparent 8px);
+    }
+
+    .leg-chip {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid #000;
+    }
+
+    .leg-chip.filled {
+      background: #000;
+    }
+
+    @media (max-width: 600px) {
+      .actor-chip {
+        font-size: 8px;
+        padding: 3px 5px;
       }
-      .leg-chip {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        border: 1.5px solid #000;
+
+      .msg-label .lbl {
+        font-size: 9px;
       }
-      .leg-chip.filled {
-        background: #000;
-      }
+    }
+  </style>
+</head>
 
-      @media (max-width: 600px) {
-        .actor-chip {
-          font-size: 8px;
-          padding: 3px 5px;
-        }
-        .msg-label .lbl {
-          font-size: 9px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <header>
-        <div class="brand">
-          <div class="logo">SQ</div>
-          <div class="brand-name">Squashy <span>/ SRS</span></div>
-        </div>
-        <h1>Sequence Diagram<br /><em>Sistem E-Commerce</em></h1>
-        <p class="subtitle">Alur Pembeli &amp; Penjual · Bab 4.2</p>
-      </header>
-
-      <div class="tab-switcher">
-        <button class="tab-btn active" onclick="switchTab('buyer', this)">
-          ⬡ Pembeli
-        </button>
-        <button class="tab-btn" onclick="switchTab('seller', this)">
-          ⬡ Penjual
-        </button>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">SQ</div>
+        <div class="brand-name">Squashy <span>/ SRS</span></div>
       </div>
+      <h1>Sequence Diagram<br /><em>Sistem E-Commerce</em></h1>
+      <p class="subtitle">Alur Pembeli &amp; Penjual · Bab 4.2</p>
+    </header>
 
-      <!-- PEMBELI -->
-      <div class="diagram-panel active" id="panel-buyer">
-        <div class="actor-bar" id="actors-buyer">
-          <div class="actor-col">
-            <div class="actor-chip filled">Pembeli</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-          <div class="actor-col">
-            <div class="actor-chip">Browser</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-          <div class="actor-col">
-            <div class="actor-chip">Sistem</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-          <div class="actor-col">
-            <div class="actor-chip">Database</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-        </div>
-        <div class="messages" id="msgs-buyer"></div>
-      </div>
-
-      <!-- PENJUAL -->
-      <div class="diagram-panel" id="panel-seller">
-        <div class="actor-bar" id="actors-seller">
-          <div class="actor-col">
-            <div class="actor-chip filled">Penjual</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-          <div class="actor-col">
-            <div class="actor-chip">Browser</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-          <div class="actor-col">
-            <div class="actor-chip">Sistem</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-          <div class="actor-col">
-            <div class="actor-chip">Database</div>
-            <div class="actor-lifeline-top"></div>
-          </div>
-        </div>
-        <div class="messages" id="msgs-seller"></div>
-      </div>
-
-      <!-- Legend -->
-      <div class="legend">
-        <span class="legend-title">Keterangan</span>
-        <div class="legend-item">
-          <div class="legend-line solid"></div>
-          Request / aksi (solid)
-        </div>
-        <div class="legend-item">
-          <div class="legend-line dashed"></div>
-          Response / balasan (dashed)
-        </div>
-        <div class="legend-item">
-          <div class="leg-chip filled"></div>
-          Aktor utama
-        </div>
-        <div class="legend-item">
-          <div class="leg-chip"></div>
-          Aktor pendukung
-        </div>
-      </div>
+    <div class="tab-switcher">
+      <button class="tab-btn active" onclick="switchTab('buyer', this)">
+        ⬡ Pembeli
+      </button>
+      <button class="tab-btn" onclick="switchTab('seller', this)">
+        ⬡ Penjual
+      </button>
     </div>
 
-    <script>
-      // ── DATA ─────────────────────────────────────────────────────────
-      const BUYER_ACTORS = ["buyer", "browser", "sistem", "db"];
-      const BUYER_SECTIONS = [
-        { label: "1. Lihat Produk & Kategori", start: 0 },
-        { label: "2. Daftar, Login & Reset Password", start: 12 },
-        { label: "3. Keranjang Belanja", start: 40 },
-        { label: "4. Checkout & Pembayaran", start: 58 },
-        { label: "5. Live Chat CS (AJAX Polling)", start: 74 },
-        { label: "6. Ulasan & Rating Produk", start: 93 },
-      ];
-      const BUYER_MSGS = [
-        [0, 1, "buka website Squashy", "solid", ""],
-        [1, 2, "GET /index.php", "solid", ""],
-        [2, 3, "SELECT * FROM produk LIMIT 8", "solid", "ambil produk terbaru"],
-        [2, 3, "SELECT * FROM kategori", "solid", "ambil kategori produk"],
-        [3, 2, "data produk & kategori", "dashed", ""],
-        [2, 1, "render halaman utama + menu", "dashed", ""],
-        [1, 0, "tampilkan katalog produk", "dashed", ""],
-        [0, 1, "pilih kategori tertentu", "solid", ""],
-        [1, 2, "GET /customers/kategori.php?id=X", "solid", ""],
-        [2, 3, "SELECT * FROM produk WHERE id_kategori = X", "solid", ""],
-        [3, 2, "data produk kategori", "dashed", ""],
-        [2, 1, "render produk per kategori", "dashed", ""],
+    <!-- PEMBELI -->
+    <div class="diagram-panel active" id="panel-buyer">
+      <div class="actor-bar" id="actors-buyer">
+        <div class="actor-col">
+          <div class="actor-chip filled">Pembeli</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+        <div class="actor-col">
+          <div class="actor-chip">Browser</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+        <div class="actor-col">
+          <div class="actor-chip">Sistem</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+        <div class="actor-col">
+          <div class="actor-chip">Database</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+      </div>
+      <div class="messages" id="msgs-buyer"></div>
+    </div>
 
-        [0, 1, "klik menu Daftar", "solid", ""],
-        [1, 2, "GET /customers/register.php", "solid", ""],
-        [2, 1, "tampilkan form register", "dashed", "nama_lengkap, email, password"],
-        [0, 1, "isi data + klik Daftar", "solid", ""],
-        [1, 2, "POST /customers/register.php", "solid", ""],
-        [2, 3, "SELECT email FROM user WHERE email = ?", "solid", "cek duplikasi email"],
-        [3, 2, "email belum terdaftar", "dashed", ""],
-        [2, 3, "INSERT INTO user (nama_lengkap, email, password_hash) VALUES (?, ?, secure_hash)", "solid", "SHA-256 hash password"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "redirect ke login.php + pesan sukses", "dashed", ""],
-        [0, 1, "klik Lupa Password?", "solid", ""],
-        [1, 2, "GET /customers/forgot_password.php", "solid", ""],
-        [2, 1, "tampilkan form reset password", "dashed", "email, password baru"],
-        [0, 1, "isi form + klik Reset", "solid", ""],
-        [1, 2, "POST /customers/forgot_password.php", "solid", ""],
-        [2, 3, "SELECT * FROM user WHERE email = ?", "solid", "cek eksistensi email"],
-        [3, 2, "data user ditemukan", "dashed", ""],
-        [2, 3, "UPDATE user SET password_hash = secure_hash WHERE email = ?", "solid", "SHA-256 hash password baru"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "redirect ke login.php + pesan sukses", "dashed", ""],
-        [0, 1, "masukkan email & password + klik Login", "solid", ""],
-        [1, 2, "POST /customers/login.php", "solid", "email, password"],
-        [2, 3, "SELECT * FROM admin WHERE nama_admin = ? AND password_hash_admin = ?", "solid", "cek tabel admin (SHA-256)"],
-        [3, 2, "tidak ditemukan di admin", "dashed", ""],
-        [2, 3, "SELECT * FROM user WHERE email = ? AND password_hash = ?", "solid", "cek tabel user (SHA-256)"],
-        [3, 2, "data user cocok", "dashed", ""],
-        [2, 1, "set $_SESSION['login', 'id_user', 'role']", "dashed", "set role = customer"],
-        [1, 0, "redirect ke halaman utama (Logged In)", "dashed", ""],
+    <!-- PENJUAL -->
+    <div class="diagram-panel" id="panel-seller">
+      <div class="actor-bar" id="actors-seller">
+        <div class="actor-col">
+          <div class="actor-chip filled">Penjual</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+        <div class="actor-col">
+          <div class="actor-chip">Browser</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+        <div class="actor-col">
+          <div class="actor-chip">Sistem</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+        <div class="actor-col">
+          <div class="actor-chip">Database</div>
+          <div class="actor-lifeline-top"></div>
+        </div>
+      </div>
+      <div class="messages" id="msgs-seller"></div>
+    </div>
 
-        [0, 1, "klik Tambah ke Keranjang", "solid", "jika status tamu / guest"],
-        [1, 2, "POST /customers/keranjang.php?action=add {id_produk}", "solid", ""],
-        [2, 1, "redirect ke login.php (belum login)", "dashed", "simpan $_SESSION['pending_cart_add']"],
-        [0, 1, "lakukan login sukses", "solid", ""],
-        [1, 2, "GET /customers/keranjang.php?pending_add=1", "solid", ""],
-        [2, 3, "INSERT INTO cart (id_user, id_produk, jumlah) VALUES (?, ?, 1)", "solid", "proses item pending dari session"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "tampilkan halaman keranjang", "dashed", ""],
-        [0, 1, "klik Tambah Kuantitas (+)", "solid", "saat berada di keranjang"],
-        [1, 2, "GET /customers/keranjang.php?action=update&id_cart=X&jumlah=Y", "solid", ""],
-        [2, 3, "UPDATE cart SET jumlah = Y WHERE id_cart = X", "solid", ""],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "reload & update total harga", "dashed", ""],
-        [0, 1, "klik Hapus Item (X)", "solid", ""],
-        [1, 2, "GET /customers/keranjang.php?action=delete&id_cart=X", "solid", ""],
-        [2, 3, "DELETE FROM cart WHERE id_cart = X", "solid", ""],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "reload & update list keranjang", "dashed", ""],
+    <!-- Legend -->
+    <div class="legend">
+      <span class="legend-title">Keterangan</span>
+      <div class="legend-item">
+        <div class="legend-line solid"></div>
+        Request / aksi (solid)
+      </div>
+      <div class="legend-item">
+        <div class="legend-line dashed"></div>
+        Response / balasan (dashed)
+      </div>
+      <div class="legend-item">
+        <div class="leg-chip filled"></div>
+        Aktor utama
+      </div>
+      <div class="legend-item">
+        <div class="leg-chip"></div>
+        Aktor pendukung
+      </div>
+    </div>
+  </div>
 
-        [0, 1, "klik Lanjut ke Checkout", "solid", ""],
-        [1, 2, "GET /customers/checkout.php", "solid", ""],
-        [2, 3, "SELECT cart.*, produk.* FROM cart JOIN produk WHERE id_user = ?", "solid", "ambil item checkout"],
-        [3, 2, "data items & total tagihan", "dashed", ""],
-        [2, 1, "tampilkan form checkout", "dashed", "alamat, no HP, metode pembayaran"],
-        [0, 1, "isi alamat, no hp, metode bayar + klik Buat Pesanan", "solid", ""],
-        [1, 2, "POST /customers/checkout.php", "solid", ""],
-        [2, 3, "START TRANSACTION", "solid", "mulai transaksi sql"],
-        [2, 3, "INSERT INTO `order` (id_user, nomer_hp, nama_pembeli, total_tagihan, status_pesanan) VALUES (?, ?, ?, ?, 'pending')", "solid", "tambah order"],
-        [2, 3, "INSERT INTO payment (id_order, metode_pembayaran, status_pembayaran) VALUES (id_order, ?, 'pending')", "solid", "tambah record pembayaran"],
-        [2, 3, "INSERT INTO order_detail (id_order, id_produk, nama_produk, harga_saat_order, foto_produk, kuantitas, subtotal) VALUES (...)", "solid", "loop u/ setiap item di cart"],
-        [2, 3, "DELETE FROM cart WHERE id_user = ?", "solid", "kosongkan keranjang pembeli"],
-        [2, 3, "COMMIT TRANSACTION", "solid", "simpan semua perubahan"],
-        [3, 2, "transaksi sukses", "dashed", ""],
-        [2, 1, "redirect ke profil.php / detail order", "dashed", "tampilkan instruksi transfer manual"],
-        [1, 0, "tampilkan halaman tagihan & nomor rekening", "dashed", ""],
+  <script>
+    // ── DATA ─────────────────────────────────────────────────────────
+    const BUYER_ACTORS = ["buyer", "browser", "sistem", "db"];
+    const BUYER_SECTIONS = [
+      { label: "1. Lihat Produk & Kategori", start: 0 },
+      { label: "2. Daftar, Login & Reset Password", start: 11 },
+      { label: "3. Keranjang Belanja", start: 39 },
+      { label: "4. Checkout & Pembayaran", start: 57 },
+      { label: "5. Batalkan Pesanan Pending", start: 73 },
+      { label: "6. Live Chat CS (AJAX Polling)", start: 82 },
+      { label: "7. Ulasan & Rating Produk", start: 101 },
+    ];
+    const BUYER_MSGS = [
+      [0, 1, "buka website Squashy", "solid", ""],
+      [1, 2, "GET /index.php", "solid", ""],
+      [2, 3, "SELECT p.*, COALESCE(SUM(od.kuantitas), 0) AS total_sold FROM produk p LEFT JOIN order_detail od ON p.id_produk = od.id_produk WHERE p.stok > 0 GROUP BY p.id_produk ORDER BY total_sold DESC LIMIT 4", "solid", "ambil produk terfavorit"],
+      [3, 2, "data produk terfavorit", "dashed", ""],
+      [2, 1, "render halaman utama + menu", "dashed", ""],
+      [1, 0, "tampilkan katalog produk", "dashed", ""],
+      [0, 1, "pilih kategori tertentu", "solid", ""],
+      [1, 2, "GET /customers/kategori.php?kategori=X", "solid", ""],
+      [2, 3, "SELECT produk.*, kategori.nama_kategori FROM produk JOIN kategori ON ... WHERE kategori.nama_kategori = 'X'", "solid", ""],
+      [3, 2, "data produk kategori", "dashed", ""],
+      [2, 1, "render produk per kategori", "dashed", ""],
 
-        [0, 1, "klik Live Chat CS", "solid", ""],
-        [1, 2, "GET /customers/chat.php", "solid", ""],
-        [2, 1, "tampilkan halaman chat", "dashed", ""],
-        [1, 2, "fetch('ajax_chat.php?action=get_messages') [Polling]", "solid", "setiap 2 detik secara berkala"],
-        [2, 3, "SELECT * FROM pesan_chat WHERE id_user = ?", "solid", "ambil riwayat chat"],
-        [3, 2, "daftar pesan chat", "dashed", ""],
-        [2, 1, "kembalikan JSON data chat", "dashed", ""],
-        [1, 0, "render riwayat percakapan", "dashed", ""],
-        [0, 1, "klik tombol pesan cepat (Quick Button)", "solid", "tanya stok / cara beli"],
-        [1, 2, "POST ajax_chat.php?action=send_message {message, is_quick=1}", "solid", ""],
-        [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat) VALUES (?, ?, ?)", "solid", "simpan chat customer"],
-        [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat) VALUES (?, 0, bot_response)", "solid", "simpan balasan otomatis bot"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "kembalikan status success", "dashed", ""],
-        [1, 0, "tampilkan chat + respon bot (🤖)", "dashed", "setelah animasi mengetik 800ms"],
-        [0, 1, "ketik pesan manual + klik Kirim", "solid", "untuk direspon admin"],
-        [1, 2, "POST ajax_chat.php?action=send_message {message, is_quick=0}", "solid", ""],
-        [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat) VALUES (?, 1, ?)", "solid", "simpan chat customer"],
-        [3, 2, "sukses", "dashed", ""],
+      [0, 1, "klik menu Daftar", "solid", ""],
+      [1, 2, "GET /customers/register.php", "solid", ""],
+      [2, 1, "tampilkan form register", "dashed", "nama_lengkap, email, password"],
+      [0, 1, "isi data + klik Daftar", "solid", ""],
+      [1, 2, "POST /customers/register.php", "solid", ""],
+      [2, 3, "SELECT email FROM user WHERE email = ?", "solid", "cek duplikasi email"],
+      [3, 2, "email belum terdaftar", "dashed", ""],
+      [2, 3, "INSERT INTO user (nama_lengkap, email, password_hash) VALUES (?, ?, secure_hash)", "solid", "SHA-256 hash password"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "redirect ke login.php + pesan sukses", "dashed", ""],
+      [0, 1, "klik Lupa Password?", "solid", ""],
+      [1, 2, "GET /customers/forgot_password.php", "solid", ""],
+      [2, 1, "tampilkan form reset password", "dashed", "email, password baru"],
+      [0, 1, "isi form + klik Reset", "solid", ""],
+      [1, 2, "POST /customers/forgot_password.php", "solid", ""],
+      [2, 3, "SELECT * FROM user WHERE email = ?", "solid", "cek eksistensi email"],
+      [3, 2, "data user ditemukan", "dashed", ""],
+      [2, 3, "UPDATE user SET password_hash = secure_hash WHERE email = ?", "solid", "SHA-256 hash password baru"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "redirect ke login.php + pesan sukses", "dashed", ""],
+      [0, 1, "masukkan email & password + klik Login", "solid", ""],
+      [1, 2, "POST /customers/login.php", "solid", "username, password"],
+      [2, 3, "SELECT * FROM admin WHERE nama_admin = ? AND password_hash_admin = ?", "solid", "cek tabel admin (SHA-256)"],
+      [3, 2, "tidak ditemukan di admin", "dashed", ""],
+      [2, 3, "SELECT * FROM user WHERE email = ? AND password_hash = ?", "solid", "cek tabel user (SHA-256)"],
+      [3, 2, "data user cocok", "dashed", ""],
+      [2, 1, "set $_SESSION['login', 'id_user', 'role']", "dashed", "set role = customer"],
+      [1, 0, "redirect ke halaman utama (Logged In)", "dashed", ""],
 
-        [0, 1, "klik Beri Ulasan", "solid", "pada pesanan berstatus selesai"],
-        [1, 2, "GET /customers/tambah_ulasan.php?id_produk=X&id_order=Y", "solid", ""],
-        [2, 3, "SELECT status_pesanan FROM `order` WHERE id_order = Y", "solid", "validasi status pesanan"],
-        [3, 2, "pesanan valid & status selesai", "dashed", ""],
-        [2, 1, "tampilkan form ulasan", "dashed", "rating bintang, komentar, upload foto"],
-        [0, 1, "isi bintang, teks ulasan, pilih foto + Kirim", "solid", ""],
-        [1, 2, "POST /customers/tambah_ulasan.php (multipart/form-data)", "solid", ""],
-        [2, 2, "proses upload foto ke assets/images_sq/", "solid", "simpan file fisik di server"],
-        [2, 3, "INSERT INTO review_produk (id_user, id_produk, id_order, rating, komentar, foto_review) VALUES (?, ?, ?, ?, ?, ?)", "solid", "simpan ulasan di database"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "redirect ke profil.php?success=ulasan", "dashed", ""],
-      ];
+      [0, 1, "klik Tambah ke Keranjang", "solid", "jika status tamu / guest"],
+      [1, 2, "POST /customers/keranjang.php?action=add {id_produk}", "solid", ""],
+      [2, 1, "redirect ke login.php (belum login)", "dashed", "simpan $_SESSION['pending_cart_add']"],
+      [0, 1, "lakukan login sukses", "solid", ""],
+      [1, 2, "GET /customers/keranjang.php?pending_add=1", "solid", ""],
+      [2, 3, "INSERT INTO cart (id_user, id_produk, jumlah) VALUES (?, ?, 1)", "solid", "proses item pending dari session"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "tampilkan halaman keranjang", "dashed", ""],
+      [0, 1, "klik Tambah Kuantitas (+)", "solid", "saat berada di keranjang"],
+      [1, 2, "GET /customers/keranjang.php?action=increase&id_cart=X", "solid", ""],
+      [2, 3, "UPDATE cart SET jumlah = jumlah + 1 WHERE id_cart = X", "solid", "jika jumlah < stok"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "reload & update total harga", "dashed", ""],
+      [0, 1, "klik Hapus Item (X)", "solid", ""],
+      [1, 2, "GET /customers/keranjang.php?action=delete&id_cart=X", "solid", ""],
+      [2, 3, "DELETE FROM cart WHERE id_cart = X", "solid", ""],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "reload & update list keranjang", "dashed", ""],
 
-      const SELLER_ACTORS = ["penjual", "browser", "sistem", "db"];
-      const SELLER_SECTIONS = [
-        { label: "1. Login Penjual", start: 0 },
-        { label: "2. Kelola Produk", start: 5 },
-        { label: "3. Kelola Pesanan & Cetak Invoice", start: 22 },
-        { label: "4. Kelola Pembayaran (Verifikasi Manual)", start: 43 },
-        { label: "5. Kelola Chat Customer (AJAX Polling)", start: 60 },
-        { label: "6. Kelola Ulasan", start: 75 },
-        { label: "7. Dashboard & Laporan PDF", start: 90 },
-      ];
-      const SELLER_MSGS = [
-        [0, 1, "akses halaman login", "solid", ""],
-        [1, 2, "POST /customers/login.php", "solid", "username, password"],
-        [2, 3, "SELECT * FROM admin WHERE nama_admin = ? AND password_hash_admin = ?", "solid", "cek tabel admin (SHA-256)"],
-        [3, 2, "data cocok & terdaftar", "dashed", ""],
-        [2, 1, "set $_SESSION['login', 'id_admin', 'role'='admin']", "dashed", "redirect ke admin/admin_dashboard.php"],
+      [0, 1, "klik Lanjut ke Checkout", "solid", ""],
+      [1, 2, "GET /customers/checkout.php", "solid", ""],
+      [2, 3, "SELECT c.id_cart, c.jumlah, p.id_produk, p.nama_produk, p.harga, p.stok, p.foto FROM cart c JOIN produk p ON c.id_produk = p.id_produk WHERE c.id_user = ?", "solid", "ambil item checkout"],
+      [3, 2, "data items & total tagihan", "dashed", ""],
+      [2, 1, "tampilkan form checkout", "dashed", "nama, no HP, metode pembayaran"],
+      [0, 1, "isi nama, no hp, metode bayar + klik Proses Pembayaran", "solid", ""],
+      [1, 2, "POST /customers/checkout.php", "solid", ""],
+      [2, 3, "START TRANSACTION", "solid", "mulai transaksi sql"],
+      [2, 3, "INSERT INTO `order` (id_user, nomer_hp, nama_pembeli, total_tagihan, status_pesanan) VALUES (?, ?, ?, ?, 'pending')", "solid", "tambah order"],
+      [2, 3, "INSERT INTO payment (id_order, metode_pembayaran, status_pembayaran) VALUES (id_order, ?, 'pending')", "solid", "tambah record pembayaran"],
+      [2, 3, "INSERT INTO order_detail (id_order, id_produk, nama_produk, harga_saat_order, foto_produk, kuantitas, subtotal) VALUES (...)", "solid", "loop u/ setiap item di cart"],
+      [2, 3, "DELETE FROM cart WHERE id_user = ?", "solid", "kosongkan keranjang pembeli"],
+      [2, 3, "COMMIT TRANSACTION", "solid", "simpan semua perubahan"],
+      [3, 2, "transaksi sukses", "dashed", ""],
+      [2, 1, "redirect ke profil.php / detail order", "dashed", "tampilkan instruksi transfer manual"],
+      [1, 0, "tampilkan halaman tagihan & nomor rekening", "dashed", ""],
 
-        [0, 1, "klik menu Kelola Produk", "solid", ""],
-        [1, 2, "GET /admin/kelola_produk.php", "solid", ""],
-        [2, 3, "SELECT * FROM produk JOIN kategori ON ...", "solid", "ambil semua data produk"],
-        [3, 2, "data list produk", "dashed", ""],
-        [2, 1, "render tabel produk", "dashed", ""],
-        [0, 1, "isi form tambah produk + klik Simpan", "solid", "nama, kategori, harga, stok, deskripsi, foto"],
-        [1, 2, "POST /admin/produk_action.php?action=add", "solid", ""],
-        [2, 2, "proses simpan file foto produk", "solid", "upload ke server"],
-        [2, 3, "INSERT INTO produk (id_kategori, nama_produk, harga, stok, deskripsi, foto) VALUES (?, ?, ?, ?, ?, ?)", "solid", ""],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "redirect ke kelola_produk.php + alert sukses", "dashed", ""],
-        [0, 1, "klik Hapus pada salah satu produk", "solid", ""],
-        [1, 2, "GET /admin/produk_action.php?action=delete&id=X", "solid", ""],
-        [2, 3, "DELETE FROM produk WHERE id_produk = X", "solid", ""],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "redirect + reload tabel produk", "dashed", ""],
+      [0, 1, "klik Batal Pesanan (X)", "solid", "pada pesanan pending di profil"],
+      [1, 2, "POST /customers/profil.php {cancel_order, id_order}", "solid", ""],
+      [2, 3, "SELECT status_pesanan, status_pembayaran FROM `order` ...", "solid", "validasi status pending"],
+      [3, 2, "status pending cocok", "dashed", ""],
+      [2, 3, "UPDATE `order` SET status_pesanan = 'dibatalkan' WHERE id_order = X", "solid", ""],
+      [2, 3, "UPDATE payment SET status_pembayaran = 'dibatalkan' WHERE id_order = X", "solid", ""],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "redirect ke profil.php + pesan sukses", "dashed", ""],
+      [1, 0, "tampilkan riwayat pesanan terupdate", "dashed", ""],
 
-        [0, 1, "klik menu Kelola Pesanan", "solid", ""],
-        [1, 2, "GET /admin/kelola_pesanan.php", "solid", ""],
-        [2, 3, "SELECT * FROM `order` ORDER BY tanggal_pesanan DESC", "solid", "ambil daftar pesanan"],
-        [3, 2, "daftar pesanan masuk", "dashed", ""],
-        [2, 1, "render tabel pesanan", "dashed", ""],
-        [0, 1, "klik Detail Pesanan #PLG-X", "solid", ""],
-        [1, 2, "GET /admin/detail_pesanan.php?id=X", "solid", ""],
-        [2, 3, "SELECT * FROM order_detail WHERE id_order = X", "solid", "ambil item rincian pesanan"],
-        [3, 2, "data detail item pesanan", "dashed", ""],
-        [2, 1, "tampilkan detail lengkap pesanan", "dashed", ""],
-        [0, 1, "ubah status pesanan (misal: dikirim) + klik Update", "solid", ""],
-        [1, 2, "POST /admin/update_status.php?id=X", "solid", ""],
-        [2, 3, "UPDATE `order` SET status_pesanan = 'dikirim' WHERE id_order = X", "solid", ""],
-        [2, 3, "UPDATE payment SET status_pembayaran = 'dikirim', waktu_bayar = NOW() WHERE id_order = X", "solid", "update status pembayaran sinkron"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "redirect ke kelola_pesanan.php + alert sukses", "dashed", ""],
-        [0, 1, "klik Cetak Invoice", "solid", ""],
-        [1, 2, "GET /admin/cetak_invoice.php?id=X", "solid", ""],
-        [2, 3, "SELECT o.*, od.*, a.* FROM `order` o JOIN order_detail od ...", "solid", "ambil data invoice lengkap"],
-        [3, 2, "data lengkap invoice", "dashed", ""],
-        [2, 1, "generate format cetak (HTML/PDF print view)", "dashed", ""],
+      [0, 1, "klik Live Chat CS", "solid", ""],
+      [1, 2, "GET /customers/chat.php", "solid", ""],
+      [2, 1, "tampilkan halaman chat", "dashed", ""],
+      [1, 2, "fetch('ajax_chat.php?action=get_messages') [Polling]", "solid", "setiap 2 detik secara berkala"],
+      [2, 3, "SELECT * FROM pesan_chat WHERE id_user = ? ORDER BY waktu_kirim ASC", "solid", "ambil riwayat chat"],
+      [3, 2, "daftar pesan chat", "dashed", ""],
+      [2, 1, "kembalikan JSON data chat", "dashed", ""],
+      [1, 0, "render riwayat percakapan", "dashed", ""],
+      [0, 1, "klik tombol pesan cepat (Quick Button)", "solid", "tanya stok / cara beli"],
+      [1, 2, "POST ajax_chat.php?action=send_message {message, is_quick=1}", "solid", ""],
+      [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat, pengirim) VALUES (?, NULL, ?, 'customer')", "solid", "simpan chat customer"],
+      [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat, pengirim) VALUES (?, NULL, ?, 'bot')", "solid", "simpan balasan otomatis bot"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "kembalikan status success", "dashed", ""],
+      [1, 0, "tampilkan chat + respon bot (🤖)", "dashed", "setelah animasi mengetik 800ms"],
+      [0, 1, "ketik pesan manual + klik Kirim", "solid", "untuk direspon admin"],
+      [1, 2, "POST ajax_chat.php?action=send_message {message, is_quick=0}", "solid", ""],
+      [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat, pengirim) VALUES (?, NULL, ?, 'customer')", "solid", "simpan chat customer"],
+      [3, 2, "sukses", "dashed", ""],
 
-        [0, 1, "klik menu Kelola Pembayaran", "solid", ""],
-        [1, 2, "GET /admin/kelola_pembayaran.php", "solid", ""],
-        [2, 3, "SELECT p.*, o.total_tagihan, o.nama_pembeli FROM payment p JOIN `order` o ...", "solid", "ambil data pembayaran"],
-        [3, 2, "daftar pembayaran pembeli", "dashed", ""],
-        [2, 1, "render tabel pembayaran", "dashed", ""],
-        [0, 1, "verifikasi bukti & klik Konfirmasi Lunas", "solid", "jika transfer manual valid"],
-        [1, 2, "GET /admin/kelola_pembayaran.php?action=confirm&id=X", "solid", ""],
-        [2, 3, "UPDATE `order` SET status_pesanan = 'dibayar' WHERE id_order = X", "solid", "set status order lunas"],
-        [2, 3, "UPDATE payment SET status_pembayaran = 'dibayar', waktu_bayar = NOW() WHERE id_order = X", "solid", "set status payment lunas"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "reload halaman + alert konfirmasi lunas", "dashed", ""],
-        [0, 1, "klik Reset ke Pending", "solid", "jika ingin membatalkan/mengulang status"],
-        [1, 2, "GET /admin/kelola_pembayaran.php?action=reset&id=X", "solid", ""],
-        [2, 3, "UPDATE `order` SET status_pesanan = 'pending' WHERE id_order = X", "solid", ""],
-        [2, 3, "UPDATE payment SET status_pembayaran = 'pending', waktu_bayar = NULL WHERE id_order = X", "solid", ""],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "reload halaman + alert reset pending", "dashed", ""],
+      [0, 1, "klik Beri Ulasan", "solid", "pada pesanan berstatus selesai"],
+      [1, 2, "GET /customers/tambah_ulasan.php?id_produk=X&id_order=Y", "solid", ""],
+      [2, 3, "SELECT o.id_order, o.status_pesanan, od.nama_produk, od.foto_produk FROM `order` o JOIN order_detail od ON o.id_order = od.id_order WHERE o.id_order = Y AND o.id_user = Z AND od.id_produk = X LIMIT 1", "solid", "validasi status selesai & item"],
+      [3, 2, "pesanan valid & status selesai", "dashed", ""],
+      [2, 1, "tampilkan form ulasan", "dashed", "rating bintang, komentar, upload foto"],
+      [0, 1, "isi bintang, teks ulasan, pilih foto + Kirim", "solid", ""],
+      [1, 2, "POST /customers/tambah_ulasan.php (multipart/form-data)", "solid", ""],
+      [2, 2, "proses upload foto ke assets/images_sq/", "solid", "simpan file fisik di server"],
+      [2, 3, "INSERT INTO review_produk (id_user, id_produk, id_order, rating, komentar, foto_review) VALUES (?, ?, ?, ?, ?, ?)", "solid", "simpan ulasan di database"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "redirect ke profil.php?success=ulasan", "dashed", ""],
+    ];
 
-        [0, 1, "klik menu Kelola Chat", "solid", ""],
-        [1, 2, "GET /admin/kelola_chat.php", "solid", ""],
-        [2, 3, "SELECT DISTINCT id_user FROM pesan_chat", "solid", "ambil daftar customer yang chat"],
-        [3, 2, "daftar customer", "dashed", ""],
-        [2, 1, "tampilkan list percakapan di sidebar", "dashed", ""],
-        [0, 1, "pilih salah satu customer untuk dibaca", "solid", ""],
-        [1, 2, "fetch('ajax_admin_chat.php?action=get_messages&id_user=Y') [Polling]", "solid", "setiap 2 detik berkala"],
-        [2, 3, "SELECT * FROM pesan_chat WHERE id_user = Y", "solid", ""],
-        [3, 2, "riwayat pesan chat", "dashed", ""],
-        [2, 1, "kembalikan JSON data chat customer Y", "dashed", ""],
-        [1, 0, "render chat history di panel utama", "dashed", ""],
-        [0, 1, "ketik pesan balasan + klik Balas", "solid", ""],
-        [1, 2, "POST /admin/ajax_admin_chat.php?action=send_message", "solid", "id_user=Y, message"],
-        [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat) VALUES (Y, id_admin, ?)", "solid", "simpan balasan admin"],
-        [3, 2, "sukses", "dashed", ""],
+    const SELLER_ACTORS = ["penjual", "browser", "sistem", "db"];
+    const SELLER_SECTIONS = [
+      { label: "1. Login Penjual", start: 0 },
+      { label: "2. Kelola Produk", start: 5 },
+      { label: "3. Kelola Pesanan & Cetak Invoice", start: 22 },
+      { label: "4. Kelola Pembayaran (Verifikasi Manual)", start: 43 },
+      { label: "5. Kelola Chat Customer (AJAX Polling)", start: 60 },
+      { label: "6. Kelola Ulasan", start: 75 },
+      { label: "7. Dashboard & Laporan", start: 90 },
+    ];
+    const SELLER_MSGS = [
+      [0, 1, "akses halaman login", "solid", ""],
+      [1, 2, "POST /customers/login.php", "solid", "username, password"],
+      [2, 3, "SELECT * FROM admin WHERE nama_admin = ? AND password_hash_admin = ?", "solid", "cek tabel admin (SHA-256)"],
+      [3, 2, "data cocok & terdaftar", "dashed", ""],
+      [2, 1, "set $_SESSION['login', 'id_admin', 'role'='admin']", "dashed", "redirect ke admin/admin_dashboard.php"],
 
-        [0, 1, "klik menu Kelola Ulasan", "solid", ""],
-        [1, 2, "GET /admin/kelola_ulasan.php", "solid", ""],
-        [2, 3, "SELECT r.*, u.nama_lengkap, p.nama_produk FROM review_produk r ...", "solid", "ambil ulasan & rating"],
-        [3, 2, "data ulasan produk", "dashed", ""],
-        [2, 1, "render list ulasan & rating bintang", "dashed", ""],
-        [0, 1, "ketik balasan admin + klik Simpan Balasan", "solid", ""],
-        [1, 2, "POST /admin/kelola_ulasan.php?action=reply", "solid", "id_review, balasan_admin"],
-        [2, 3, "UPDATE review_produk SET balasan_admin = ? WHERE id_review = ?", "solid", "simpan balasan di database"],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "reload + tampilkan balasan admin", "dashed", ""],
-        [0, 1, "klik Hapus Ulasan", "solid", "jika ulasan melanggar aturan"],
-        [1, 2, "GET /admin/kelola_ulasan.php?action=delete&id=X", "solid", ""],
-        [2, 3, "DELETE FROM review_produk WHERE id_review = X", "solid", ""],
-        [3, 2, "sukses", "dashed", ""],
-        [2, 1, "reload halaman + alert ulasan terhapus", "dashed", ""],
+      [0, 1, "klik menu Kelola Produk", "solid", ""],
+      [1, 2, "GET /admin/kelola_produk.php", "solid", ""],
+      [2, 3, "SELECT * FROM produk JOIN kategori ON ...", "solid", "ambil semua data produk"],
+      [3, 2, "data list produk", "dashed", ""],
+      [2, 1, "render tabel produk", "dashed", ""],
+      [0, 1, "isi form tambah produk + klik Simpan", "solid", "nama, kategori, harga, stok, deskripsi, foto"],
+      [1, 2, "POST /admin/produk_action.php?action=create", "solid", ""],
+      [2, 2, "proses simpan file foto produk", "solid", "upload ke server"],
+      [2, 3, "INSERT INTO produk (id_kategori, nama_produk, harga, stok, deskripsi, foto) VALUES (?, ?, ?, ?, ?, ?)", "solid", ""],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "redirect ke kelola_produk.php + alert sukses", "dashed", ""],
+      [0, 1, "klik Hapus pada salah satu produk", "solid", ""],
+      [1, 2, "POST /admin/produk_action.php?action=delete", "solid", "id=X"],
+      [2, 3, "DELETE FROM produk WHERE id_produk = X", "solid", ""],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "redirect + reload tabel produk", "dashed", ""],
 
-        [0, 1, "klik menu Dashboard", "solid", ""],
-        [1, 2, "GET /admin/admin_dashboard.php", "solid", ""],
-        [2, 3, "SELECT SUM(total_tagihan) FROM `order` WHERE status_pesanan IN ('dibayar', 'diproses', 'dikirim', 'selesai')", "solid", "hitung total omset/revenue"],
-        [2, 3, "SELECT COUNT(*) FROM `order` / `user` / `produk` / `review_produk`", "solid", "hitung ringkasan statistik"],
-        [3, 2, "data ringkasan omset & statistik", "dashed", ""],
-        [2, 1, "render dashboard + grafik visual", "dashed", ""],
-        [0, 1, "klik Ekspor PDF", "solid", "unduh laporan penjualan"],
-        [1, 2, "GET /admin/admin_dashboard.php?export=pdf", "solid", ""],
-        [2, 3, "SELECT * FROM `order` WHERE status_pesanan = 'selesai'", "solid", "ambil data pesanan selesai"],
-        [3, 2, "data pesanan selesai", "dashed", ""],
-        [2, 2, "generate format PDF laporan", "solid", "menggunakan library PDF server"],
-        [2, 1, "kirim file PDF hasil ekspor", "dashed", "unduh otomatis"],
-        [1, 0, "tampilkan file PDF terunduh", "dashed", ""],
-      ];
+      [0, 1, "klik menu Kelola Pesanan", "solid", ""],
+      [1, 2, "GET /admin/kelola_pesanan.php", "solid", ""],
+      [2, 3, "SELECT * FROM `order` ORDER BY tanggal_pesanan DESC", "solid", "ambil daftar pesanan"],
+      [3, 2, "daftar pesanan masuk", "dashed", ""],
+      [2, 1, "render tabel pesanan", "dashed", ""],
+      [0, 1, "klik Detail Pesanan #PLG-X", "solid", ""],
+      [1, 2, "GET /admin/detail_pesanan.php?id=X", "solid", ""],
+      [2, 3, "SELECT * FROM order_detail WHERE id_order = X", "solid", "ambil item rincian pesanan"],
+      [3, 2, "data detail item pesanan", "dashed", ""],
+      [2, 1, "tampilkan detail lengkap pesanan", "dashed", ""],
+      [0, 1, "ubah status pesanan (misal: dikirim) + klik Update", "solid", ""],
+      [1, 2, "POST /admin/update_status.php?id=X", "solid", ""],
+      [2, 3, "UPDATE `order` SET status_pesanan = 'dikirim' WHERE id_order = X", "solid", ""],
+      [2, 3, "UPDATE payment SET status_pembayaran = 'dikirim', waktu_bayar = NOW() WHERE id_order = X", "solid", "update status pembayaran sinkron"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "redirect ke kelola_pesanan.php + alert sukses", "dashed", ""],
+      [0, 1, "klik Cetak Invoice", "solid", ""],
+      [1, 2, "GET /admin/cetak_invoice.php?id=X", "solid", ""],
+      [2, 3, "SELECT o.*, od.*, a.* FROM `order` o JOIN order_detail od ...", "solid", "ambil data invoice lengkap"],
+      [3, 2, "data lengkap invoice", "dashed", ""],
+      [2, 1, "generate format cetak (HTML/PDF print view)", "dashed", ""],
 
-      // ── RENDER ───────────────────────────────────────────────────────
-      function buildMessages(containerId, actors, sections, msgs) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = "";
-        const n = actors.length;
-        const pct = actors.map((_, i) => (i / (n - 1)) * 100);
+      [0, 1, "klik menu Kelola Pembayaran", "solid", ""],
+      [1, 2, "GET /admin/kelola_pembayaran.php", "solid", ""],
+      [2, 3, "SELECT p.*, o.total_tagihan, o.nama_pembeli FROM payment p JOIN `order` o ...", "solid", "ambil data pembayaran"],
+      [3, 2, "daftar pembayaran pembeli", "dashed", ""],
+      [2, 1, "render tabel pembayaran", "dashed", ""],
+      [0, 1, "verifikasi bukti & klik Konfirmasi Lunas", "solid", "jika transfer manual valid"],
+      [1, 2, "GET /admin/kelola_pembayaran.php?action=confirm&id=X", "solid", ""],
+      [2, 3, "UPDATE `order` SET status_pesanan = 'dibayar' WHERE id_order = X", "solid", "set status order lunas"],
+      [2, 3, "UPDATE payment SET status_pembayaran = 'dibayar', waktu_bayar = NOW() WHERE id_order = X", "solid", "set status payment lunas"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "reload halaman + alert konfirmasi lunas", "dashed", ""],
+      [0, 1, "klik Reset ke Pending", "solid", "jika ingin membatalkan/mengulang status"],
+      [1, 2, "GET /admin/kelola_pembayaran.php?action=reset&id=X", "solid", ""],
+      [2, 3, "UPDATE `order` SET status_pesanan = 'pending' WHERE id_order = X", "solid", ""],
+      [2, 3, "UPDATE payment SET status_pembayaran = 'pending', waktu_bayar = NULL WHERE id_order = X", "solid", ""],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "reload halaman + alert reset pending", "dashed", ""],
 
-        const secMap = {};
-        sections.forEach((s) => {
-          secMap[s.start] = s;
+      [0, 1, "klik menu Kelola Chat", "solid", ""],
+      [1, 2, "GET /admin/kelola_chat.php", "solid", ""],
+      [2, 3, "SELECT u.id_user, u.nama_lengkap FROM user u WHERE EXISTS (SELECT 1 FROM pesan_chat WHERE id_user = u.id_user) ORDER BY ...", "solid", "ambil daftar customer yang chat"],
+      [3, 2, "daftar customer", "dashed", ""],
+      [2, 1, "tampilkan list percakapan di sidebar", "dashed", ""],
+      [0, 1, "pilih salah satu customer untuk dibaca", "solid", ""],
+      [1, 2, "fetch('ajax_admin_chat.php?action=get_chat&id_user=Y') [Polling]", "solid", "setiap 2 detik berkala"],
+      [2, 3, "SELECT * FROM pesan_chat WHERE id_user = Y", "solid", ""],
+      [3, 2, "riwayat pesan chat", "dashed", ""],
+      [2, 1, "kembalikan JSON data chat customer Y", "dashed", ""],
+      [1, 0, "render chat history di panel utama", "dashed", ""],
+      [0, 1, "ketik pesan balasan + klik Balas", "solid", ""],
+      [1, 2, "POST /admin/ajax_admin_chat.php?action=send_reply", "solid", "id_user=Y, message"],
+      [2, 3, "INSERT INTO pesan_chat (id_user, id_admin, isi_chat) VALUES (Y, id_admin, ?)", "solid", "simpan balasan admin"],
+      [3, 2, "sukses", "dashed", ""],
+
+      [0, 1, "klik menu Kelola Ulasan", "solid", ""],
+      [1, 2, "GET /admin/kelola_ulasan.php", "solid", ""],
+      [2, 3, "SELECT r.*, u.nama_lengkap, p.nama_produk FROM review_produk r ...", "solid", "ambil ulasan & rating"],
+      [3, 2, "data ulasan produk", "dashed", ""],
+      [2, 1, "render list ulasan & rating bintang", "dashed", ""],
+      [0, 1, "ketik balasan admin + klik Simpan Balasan", "solid", ""],
+      [1, 2, "POST /admin/kelola_ulasan.php", "solid", "action=reply, id_review, balasan_admin"],
+      [2, 3, "UPDATE review_produk SET balasan_admin = ? WHERE id_review = ?", "solid", "simpan balasan di database"],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "reload + tampilkan balasan admin", "dashed", ""],
+      [0, 1, "klik Hapus Ulasan", "solid", "jika ulasan melanggar aturan"],
+      [1, 2, "GET /admin/kelola_ulasan.php?action=delete&id=X", "solid", ""],
+      [2, 3, "DELETE FROM review_produk WHERE id_review = X", "solid", ""],
+      [3, 2, "sukses", "dashed", ""],
+      [2, 1, "reload halaman + alert ulasan terhapus", "dashed", ""],
+
+      [0, 1, "klik menu Dashboard", "solid", ""],
+      [1, 2, "GET /admin/admin_dashboard.php", "solid", ""],
+      [2, 3, "SELECT SUM(total_tagihan) FROM `order` WHERE ...", "solid", "hitung total omset/revenue"],
+      [2, 3, "SELECT COUNT(*) FROM `order` / `user` / `produk` / `review_produk`", "solid", "hitung ringkasan statistik"],
+      [3, 2, "data ringkasan omset & statistik", "dashed", ""],
+      [2, 1, "render dashboard + grafik visual", "dashed", ""],
+    ];
+
+    // ── RENDER ───────────────────────────────────────────────────────
+    function buildMessages(containerId, actors, sections, msgs) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const n = actors.length;
+      const pct = actors.map((_, i) => (i / (n - 1)) * 100);
+
+      const secMap = {};
+      sections.forEach((s) => {
+        secMap[s.start] = s;
+      });
+
+      msgs.forEach((m, idx) => {
+        const [from, to, label, style, note] = m;
+
+        if (secMap[idx]) {
+          const s = secMap[idx];
+          const div = document.createElement("div");
+          div.className = "section-header";
+          div.innerHTML = `<span class="sec-num">${s.label.split(".")[0].trim()}</span><span class="sec-title">${s.label.replace(/^\d+\.\s*/, "")}</span>`;
+          container.appendChild(div);
+        }
+
+        const row = document.createElement("div");
+        row.className = "msg-row";
+
+        // Lifelines
+        actors.forEach((_, i) => {
+          const ll = document.createElement("div");
+          ll.className = "lifeline-bg";
+          ll.style.left = pct[i] + "%";
+          row.appendChild(ll);
         });
 
-        msgs.forEach((m, idx) => {
-          const [from, to, label, style, note] = m;
+        // Arrow
+        const aa = document.createElement("div");
+        aa.className = "arrow-area";
 
-          if (secMap[idx]) {
-            const s = secMap[idx];
-            const div = document.createElement("div");
-            div.className = "section-header";
-            div.innerHTML = `<span class="sec-num">${s.label.split(".")[0].trim()}</span><span class="sec-title">${s.label.replace(/^\d+\.\s*/, "")}</span>`;
-            container.appendChild(div);
-          }
+        const svg = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg",
+        );
+        svg.setAttribute("viewBox", "0 0 1000 42");
+        svg.setAttribute("preserveAspectRatio", "none");
+        svg.style.cssText =
+          "position:absolute;inset:0;width:100%;height:100%;overflow:visible";
 
-          const row = document.createElement("div");
-          row.className = "msg-row";
-
-          // Lifelines
-          actors.forEach((_, i) => {
-            const ll = document.createElement("div");
-            ll.className = "lifeline-bg";
-            ll.style.left = pct[i] + "%";
-            row.appendChild(ll);
-          });
-
-          // Arrow
-          const aa = document.createElement("div");
-          aa.className = "arrow-area";
-
-          const svg = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "svg",
-          );
-          svg.setAttribute("viewBox", "0 0 1000 42");
-          svg.setAttribute("preserveAspectRatio", "none");
-          svg.style.cssText =
-            "position:absolute;inset:0;width:100%;height:100%;overflow:visible";
-
-          const markId = `m${idx}`;
-          const defs = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "defs",
-          );
-          defs.innerHTML = `<marker id="${markId}" viewBox="0 0 10 10" refX="8" refY="5"
+        const markId = `m${idx}`;
+        const defs = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "defs",
+        );
+        defs.innerHTML = `<marker id="${markId}" viewBox="0 0 10 10" refX="8" refY="5"
             markerWidth="5" markerHeight="5" orient="auto-start-reverse">
             <path d="M2 1L8 5L2 9" fill="none" stroke="#000" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round"/>
           </marker>`;
-          svg.appendChild(defs);
+        svg.appendChild(defs);
 
-          const fromX = pct[from] * 10;
-          const toX = pct[to] * 10;
-          const cy = 21;
-          const dashed = style === "dashed";
-          const isSelf = from === to;
+        const fromX = pct[from] * 10;
+        const toX = pct[to] * 10;
+        const cy = 21;
+        const dashed = style === "dashed";
+        const isSelf = from === to;
 
-          if (isSelf) {
-            const path = document.createElementNS(
-              "http://www.w3.org/2000/svg",
-              "path",
-            );
-            path.setAttribute(
-              "d",
-              `M${fromX} ${cy - 7} Q${fromX + 70} ${cy - 7} ${fromX + 70} ${cy} Q${fromX + 70} ${cy + 7} ${fromX} ${cy + 7}`,
-            );
-            path.setAttribute("fill", "none");
-            path.setAttribute("stroke", "#000");
-            path.setAttribute("stroke-width", dashed ? "1.2" : "1.8");
-            path.setAttribute("marker-end", `url(#${markId})`);
-            if (dashed) path.setAttribute("stroke-dasharray", "8 5");
-            svg.appendChild(path);
-          } else {
-            const dir = toX > fromX ? 1 : -1;
-            const line = document.createElementNS(
-              "http://www.w3.org/2000/svg",
-              "line",
-            );
-            line.setAttribute("x1", fromX);
-            line.setAttribute("y1", cy);
-            line.setAttribute("x2", toX - dir * 4);
-            line.setAttribute("y2", cy);
-            line.setAttribute("stroke", "#000");
-            line.setAttribute("stroke-width", dashed ? "1.2" : "1.8");
-            line.setAttribute("marker-end", `url(#${markId})`);
-            if (dashed) line.setAttribute("stroke-dasharray", "8 5");
-            svg.appendChild(line);
-          }
-
-          // Activation box
-          const ab = document.createElementNS(
+        if (isSelf) {
+          const path = document.createElementNS(
             "http://www.w3.org/2000/svg",
-            "rect",
+            "path",
           );
-          ab.setAttribute("x", pct[to] * 10 - 4);
-          ab.setAttribute("y", cy - 6);
-          ab.setAttribute("width", "8");
-          ab.setAttribute("height", "12");
-          ab.setAttribute("rx", "1");
-          ab.setAttribute(
-            "fill",
-            dashed ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.15)",
+          path.setAttribute(
+            "d",
+            `M${fromX} ${cy - 7} Q${fromX + 70} ${cy - 7} ${fromX + 70} ${cy} Q${fromX + 70} ${cy + 7} ${fromX} ${cy + 7}`,
           );
-          ab.setAttribute("stroke", "#000");
-          ab.setAttribute("stroke-width", "0.5");
-          svg.appendChild(ab);
+          path.setAttribute("fill", "none");
+          path.setAttribute("stroke", "#000");
+          path.setAttribute("stroke-width", dashed ? "1.2" : "1.8");
+          path.setAttribute("marker-end", `url(#${markId})`);
+          if (dashed) path.setAttribute("stroke-dasharray", "8 5");
+          svg.appendChild(path);
+        } else {
+          const dir = toX > fromX ? 1 : -1;
+          const line = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line",
+          );
+          line.setAttribute("x1", fromX);
+          line.setAttribute("y1", cy);
+          line.setAttribute("x2", toX - dir * 4);
+          line.setAttribute("y2", cy);
+          line.setAttribute("stroke", "#000");
+          line.setAttribute("stroke-width", dashed ? "1.2" : "1.8");
+          line.setAttribute("marker-end", `url(#${markId})`);
+          if (dashed) line.setAttribute("stroke-dasharray", "8 5");
+          svg.appendChild(line);
+        }
 
-          aa.appendChild(svg);
+        // Activation box
+        const ab = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "rect",
+        );
+        ab.setAttribute("x", pct[to] * 10 - 4);
+        ab.setAttribute("y", cy - 6);
+        ab.setAttribute("width", "8");
+        ab.setAttribute("height", "12");
+        ab.setAttribute("rx", "1");
+        ab.setAttribute(
+          "fill",
+          dashed ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.15)",
+        );
+        ab.setAttribute("stroke", "#000");
+        ab.setAttribute("stroke-width", "0.5");
+        svg.appendChild(ab);
 
-          // Label
-          const lblDiv = document.createElement("div");
-          lblDiv.className = "msg-label";
-          const mx = isSelf ? pct[from] + 8 : (pct[from] + pct[to]) / 2;
-          lblDiv.style.left = Math.max(2, Math.min(85, mx - 14)) + "%";
-          lblDiv.style.right = "auto";
-          lblDiv.style.width = "28%";
-          lblDiv.innerHTML =
-            `<span class="lbl">${label}</span>` +
-            (note ? `<span class="note">${note}</span>` : "");
-          aa.appendChild(lblDiv);
+        aa.appendChild(svg);
 
-          row.appendChild(aa);
-          container.appendChild(row);
-        });
-      }
+        // Label
+        const lblDiv = document.createElement("div");
+        lblDiv.className = "msg-label";
+        const mx = isSelf ? pct[from] + 8 : (pct[from] + pct[to]) / 2;
+        lblDiv.style.left = Math.max(2, Math.min(85, mx - 14)) + "%";
+        lblDiv.style.right = "auto";
+        lblDiv.style.width = "28%";
+        lblDiv.innerHTML =
+          `<span class="lbl">${label}</span>` +
+          (note ? `<span class="note">${note}</span>` : "");
+        aa.appendChild(lblDiv);
 
-      // ── TABS ─────────────────────────────────────────────────────────
-      function switchTab(tab, btn) {
-        document
-          .querySelectorAll(".diagram-panel")
-          .forEach((p) => p.classList.remove("active"));
-        document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("active"));
-        document.getElementById("panel-" + tab).classList.add("active");
-        btn.classList.add("active");
-      }
+        row.appendChild(aa);
+        container.appendChild(row);
+      });
+    }
 
-      // ── INIT ─────────────────────────────────────────────────────────
-      buildMessages("msgs-buyer", BUYER_ACTORS, BUYER_SECTIONS, BUYER_MSGS);
-      buildMessages("msgs-seller", SELLER_ACTORS, SELLER_SECTIONS, SELLER_MSGS);
-    </script>
-  </body>
+    // ── TABS ─────────────────────────────────────────────────────────
+    function switchTab(tab, btn) {
+      document
+        .querySelectorAll(".diagram-panel")
+        .forEach((p) => p.classList.remove("active"));
+      document
+        .querySelectorAll(".tab-btn")
+        .forEach((b) => b.classList.remove("active"));
+      document.getElementById("panel-" + tab).classList.add("active");
+      btn.classList.add("active");
+    }
+
+    // ── INIT ─────────────────────────────────────────────────────────
+    buildMessages("msgs-buyer", BUYER_ACTORS, BUYER_SECTIONS, BUYER_MSGS);
+    buildMessages("msgs-seller", SELLER_ACTORS, SELLER_SECTIONS, SELLER_MSGS);
+  </script>
+</body>
+
 </html>

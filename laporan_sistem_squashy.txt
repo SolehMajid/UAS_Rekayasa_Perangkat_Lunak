@@ -1,0 +1,581 @@
+================================================================================
+                    LAPORAN ANALISIS SISTEM E-COMMERCE SQUASHY
+================================================================================
+
+Laporan ini disusun berdasarkan analisis menyeluruh terhadap seluruh berkas kode 
+sumber yang terintegrasi pada sistem E-Commerce Squashy (toko online produk anak 
+seperti mainan, pakaian, dan perlengkapan bayi). Laporan mencakup karakteristik 
+pengguna, kebutuhan fungsional (FR) disertai skenario stimulus-response, serta 
+analisis desain visual antarmuka halaman secara lengkap untuk sisi customer dan admin.
+
+--------------------------------------------------------------------------------
+1. KARAKTERISTIK PENGGUNA DAN HAK AKSES SISTEM
+--------------------------------------------------------------------------------
+
+Sistem E-Commerce Squashy dirancang khusus untuk memfasilitasi interaksi antara 
+dua kelompok pengguna utama, yaitu Pembeli (Customer) dan Pemilik (Admin). Berikut 
+adalah rincian profil, peran, serta hak akses mereka:
+
+A. PEMBELI (CUSTOMER)
+   - Deskripsi Pengguna: 
+     Merupakan pelanggan retail atau orang tua (Ayah/Bunda) yang ingin mencari 
+     dan membeli berbagai kebutuhan anak (pakaian, mainan, perlengkapan bayi) 
+     secara mudah, interaktif, dan aman melalui web Squashy.
+   - Hak Akses Aplikasi:
+     - Tanpa Login (Guest Mode): 
+       Hanya diperbolehkan untuk melihat halaman katalog beranda, mencari produk, 
+       menyaring produk berdasarkan kategori, membuka modal detail informasi produk 
+       beserta ulasan publik, serta membaca parenting tips dari maskot Squashy.
+     - Setelah Login (Authenticated Customer):
+       Mendapatkan akses penuh untuk mengelola keranjang belanja, memproses 
+       checkout belanja, melihat halaman profil pribadi, mengelola alamat, 
+       melacak riwayat pemesanan, membatalkan pesanan pending, menulis ulasan 
+       produk berserta foto, serta bertukar pesan secara langsung dengan admin 
+       atau berinteraksi dengan bot bantuan melalui halaman Live Chat.
+
+B. PEMILIK (ADMIN)
+   - Deskripsi Pengguna:
+     Merupakan pemilik toko Squashy atau pengelola operasional yang bertanggung 
+     jawab penuh atas manajemen produk, kontrol transaksi pemesanan, verifikasi 
+     pembayaran transfer bank, dan layanan komunikasi pelanggan (CS).
+   - Hak Akses Aplikasi:
+     - Memerlukan login khusus sebagai admin melalui halaman autentikasi.
+     - Memiliki hak akses penuh ke seluruh direktori dashboard panel admin (`/admin`).
+     - Mengakses dan mengedit database secara dinamis melalui antarmuka modul produk, 
+       transaksi, ulasan, pembayaran, dan chat admin.
+
+--------------------------------------------------------------------------------
+2. KEBUTUHAN FUNGSIONAL SISTEM (FUNCTIONAL REQUIREMENTS)
+--------------------------------------------------------------------------------
+
+Pada bagian ini, seluruh kebutuhan fungsional sistem Squashy dipisahkan secara 
+jelas antara fitur Pembeli (Customer) dan Pemilik (Admin). Setiap bagian modul 
+dijelaskan kegunaannya secara detail, diikuti dengan langkah operasional (Stimulus 
+dan Response), serta ditutup dengan daftar kode Kebutuhan Fungsional (FR-01 s/d FR-49):
+
+================================================================================
+A. KEBUTUHAN FUNGSIONAL PEMBELI (CUSTOMER)
+================================================================================
+
+1. Melihat Produk Tanpa Login
+   Setiap pengunjung website Squashy dapat melihat seluruh katalog produk yang tersedia 
+   tanpa harus memiliki akun atau melakukan login. Saat pengunjung berpindah kategori, 
+   tampilan website berubah otomatis mengikuti konsep dynamic theme yang telah dirancang.
+   Langkah:
+   Stimulus   : Pengguna membuka website Squashy.
+   Response   : Sistem menampilkan halaman utama dengan tema ceria dan colorful beserta daftar produk terbaru.
+   Stimulus   : Pengguna memilih salah satu kategori produk (Pakaian, Mainan, atau Perlengkapan Bayi).
+   Response   : Sistem menampilkan daftar produk sesuai kategori yang dipilih dan mengubah tampilan mengikuti dynamic theme kategori tersebut (baju: kuning pastel; mainan: playful/hijau; perlengkapan bayi: soft/lembut/merah muda).
+   Stimulus   : Pengguna memilih sub-kategori Baju Laki-laki atau Baju Perempuan.
+   Response   : Sistem menampilkan produk sesuai sub-kategori dan mengubah warna tema (biru muda untuk laki-laki, pink untuk perempuan).
+   Stimulus   : Pengguna mengklik salah satu produk dari daftar.
+   Response   : Sistem menampilkan halaman detail produk (berupa modal dialog) berisi foto, nama produk, harga, deskripsi, stok, ulasan pelanggan lain, dan balasan ulasan dari admin.
+
+   Kebutuhan fungsional:
+   FR-01 : Sistem menampilkan halaman katalog produk utama yang dapat diakses tanpa login.
+   FR-02 : Sistem menerapkan dynamic theme secara otomatis sesuai kategori aktif (homepage: colorful; baju: kuning pastel; baju laki-laki: biru muda; baju perempuan: pink; mainan: playful/hijau; perlengkapan bayi: soft/lembut/merah muda).
+   FR-03 : Sistem menyediakan navigasi filter kategori dan sub-kategori produk secara responsif.
+   FR-04 : Sistem menampilkan modal detail informasi produk secara interaktif beserta daftar ulasannya.
+
+2. Pencarian Produk Berdasarkan Kata Kunci
+   Memudahkan pembeli mencari mainan, pakaian, atau perlengkapan anak yang spesifik 
+   secara cepat dengan memasukkan kata kunci pada bar pencarian di halaman kategori.
+   Langkah:
+   Stimulus   : Pengguna mengetikkan kata kunci nama produk "jaket" pada kolom pencarian navigasi kategori.
+   Response   : Sistem menampilkan isian teks kata kunci pencarian secara real-time di kolom input.
+   Stimulus   : Pengguna menekan ikon pencarian (kaca pembesar) atau menekan tombol Enter.
+   Response   : Sistem mencocokkan kata kunci masukan dengan nama atau deskripsi produk di database, menyaring datanya, lalu memunculkan daftar produk jaket anak yang relevan dengan latar belakang ceria.
+
+   Kebutuhan fungsional:
+   FR-05 : Sistem menyediakan kolom pencarian produk yang terintegrasi pada bilah navigasi kategori.
+   FR-06 : Sistem mencari kecocokan kata kunci masukan dengan kolom nama produk atau deskripsi di tabel database.
+   FR-07 : Sistem memuat ulang data etalase dan menampilkan hasil pencarian produk yang relevan pada tata letak grid.
+
+3. Registrasi Akun Pembeli Baru
+   Calon pembeli mendaftarkan akun baru secara mandiri melalui form registrasi agar dapat 
+   menyimpan datanya ke dalam database sistem Squashy dan membuka hak akses fitur-fitur belanja.
+   Langkah:
+   Stimulus   : Pengguna mengklik menu "🔐 Login" di header navigasi, lalu menekan tautan "Daftar Akun Baru".
+   Response   : Sistem memuat halaman form registrasi yang memuat form input nama lengkap, email, password, dan konfirmasi password.
+   Stimulus   : Pengguna melengkapi form input registrasi secara detail dan mengklik tombol "Daftar Sekarang 💖".
+   Response   : Sistem memvalidasi data form, mengenkripsi sandi kata kunci, merekam akun baru ke database, menampilkan notifikasi registrasi sukses, lalu mengarahkan pembeli ke halaman login.
+
+   Kebutuhan fungsional:
+   FR-08 : Sistem menampilkan antarmuka halaman registrasi akun pembeli baru.
+   FR-09 : Sistem memvalidasi kesesuaian input form (nama terisi, email unik belum terdaftar, password terkonfirmasi).
+   FR-10 : Sistem mengenkripsi kata sandi menggunakan hash pengaman dan menyimpannya ke tabel user.
+
+4. Login Autentikasi Pembeli
+   Memvalidasi email dan password pembeli terdaftar agar status akses mereka berubah dari 
+   guest menjadi pembeli terautentikasi dan mengaktifkan sesi belanja pribadi.
+   Langkah:
+   Stimulus   : Pengguna mengisi alamat email terdaftar dan sandi pada form login Squashy.
+   Response   : Sistem menyembunyikan karakter sandi (masked text) demi kenyamanan dan keamanan pengguna.
+   Stimulus   : Pengguna mengklik tombol "Masuk Belanja".
+   Response   : Sistem mencocokkan email dan password dengan data database. Jika valid, sesi login dibuat, menu navigasi kanan diubah menjadi "👤 Profil", dan sistem mengarahkan pembeli ke beranda utama.
+
+   Kebutuhan fungsional:
+   FR-11 : Sistem menyediakan halaman form login pembeli untuk menginput email dan sandi.
+   FR-12 : Sistem memverifikasi kecocokan kredensial email dan password pembeli di tabel user.
+   FR-13 : Sistem mengelola sesi login pembeli aktif dan merubah visual tombol navigasi profil secara dinamis.
+
+5. Manajemen Keranjang Belanja
+   Pembeli terautentikasi dapat menyimpan produk pilihan, memperbarui jumlah kuantitas barang 
+   yang akan dibeli, dan menghapus barang dari keranjang sebelum memproses checkout.
+   Langkah:
+   Stimulus   : Pembeli mengklik tombol "Beli 🛒" pada halaman detail produk di katalog.
+   Response   : Sistem menyimpan produk tersebut ke database keranjang user, memuat halaman keranjang belanja, dan menampilkan item belanjaan tersebut.
+   Stimulus   : Pembeli mengubah kuantitas angka jumlah barang pada form keranjang belanja dan menekan tombol refresh.
+   Response   : Sistem memperbarui jumlah item dan menghitung ulang subtotal harga belanjaan secara otomatis di baris produk terkait.
+   Stimulus   : Pembeli menekan tombol ikon tempat sampah merah di samping item belanja.
+   Response   : Sistem menghapus produk tersebut dari keranjang belanja user di database dan memperbarui akumulasi total tagihan belanja.
+
+   Kebutuhan fungsional:
+   FR-14 : Sistem mencatat penambahan produk belanja ke dalam tabel keranjang belanja user.
+   FR-15 : Sistem menyediakan form kuantitas jumlah barang belanjaan di keranjang.
+   FR-16 : Sistem melakukan perhitungan otomatis subtotal dan total harga belanja secara langsung di halaman keranjang.
+   FR-17 : Sistem menyediakan tombol hapus produk belanja untuk mengeliminasi item dari keranjang.
+
+6. Checkout Pesanan dan Pengisian Detail Pengiriman
+   Menyediakan formulir penyelesaian transaksi bagi pembeli untuk mengisi nama pembeli, 
+   nomor HP penerima yang aktif, alamat lengkap pengiriman barang, dan memilih metode bayar.
+   Langkah:
+   Stimulus   : Pembeli menekan tombol "Checkout" pada halaman keranjang belanja pribadi.
+   Response   : Sistem menampilkan halaman checkout yang berisikan form detail alamat pengiriman penerima dan ringkasan daftar belanja.
+   Stimulus   : Pembeli mengisi nama penerima, nomor HP "08123456789", alamat pengiriman, memilih metode pembayaran "Transfer Bank", lalu menekan tombol "Proses Pembayaran".
+   Response   : Sistem melakukan transaksi basis data, mencatat order baru ke tabel order dan order_detail dengan status "pending", mengosongkan keranjang belanja pembeli, merekam entri pembayaran pending di tabel payment, dan menampilkan pesan sukses transaksi.
+
+   Kebutuhan fungsional:
+   FR-18 : Sistem memuat halaman form checkout untuk melengkapi data pengiriman barang.
+   FR-19 : Sistem memvalidasi keharusan pengisian form (nama penerima, nomor HP berkarakter angka, alamat, metode pembayaran).
+   FR-20 : Sistem mencatat data transaksi pesanan ke tabel order dan order_detail dengan status awal "pending".
+   FR-21 : Sistem mengosongkan data keranjang belanja pembeli secara otomatis setelah pesanan berhasil terbuat.
+
+7. Membatalkan Pesanan Pending Mandiri
+   Fitur pembatalan transaksi secara mandiri oleh pembeli di halaman profil pribadi apabila 
+   pesanan masih dalam status pending (belum dibayar/dikonfirmasi lunas) untuk mengembalikan stok barang.
+   Langkah:
+   Stimulus   : Pembeli membuka halaman profil pribadi dan mengklik tab filter pesanan "Pending".
+   Response   : Sistem memuat daftar transaksi pending yang memuat tombol merah bertuliskan "Batal Pesanan ❌".
+   Stimulus   : Pembeli mengklik tombol merah "Batal Pesanan ❌" pada kartu pesanan yang ingin dibatalkan.
+   Response   : Sistem memeriksa kelayakan status transaksi. Jika order dan payment berstatus pending, status keduanya diubah menjadi "dibatalkan" di database, stok produk dikembalikan ke semula, notifikasi sukses ditampilkan, dan sistem menyegarkan tampilan riwayat pesanan.
+
+   Kebutuhan fungsional:
+   FR-22 : Sistem menampilkan tombol pembatalan pesanan khusus pada pesanan yang masih berstatus pending di profil.
+   FR-23 : Sistem memvalidasi kepemilikan pesanan dan status kelayakan pembatalan (hanya jika order & payment berstatus pending).
+   FR-24 : Sistem memperbarui status pesanan menjadi dibatalkan dan mengembalikan stok produk yang sebelumnya dipesan.
+
+8. Memberikan Ulasan dan Rating Produk
+   Memberikan wadah bagi pembeli untuk menuliskan tingkat kepuasan ulasan (rating bintang 1-5), 
+   komentar tertulis, dan mengunggah foto review untuk pesanan yang telah sukses diselesaikan.
+   Langkah:
+   Stimulus   : Pembeli membuka riwayat pesanan selesai di profil dan mengklik tombol "Beri Ulasan 💖".
+   Response   : Sistem memuat halaman form ulasan khusus yang menampilkan info produk, pemilih rating bintang CSS, kolom komentar ulasan, dan form unggah foto.
+   Stimulus   : Pembeli mengklik ikon rating bintang 5, mengetik komentar ulasan, memilih file foto produk anak dari perangkat, dan mengklik "Kirim Ulasan 💖".
+   Response   : Sistem memvalidasi ulasan, mengunggah foto ulasan ke direktori server, merekam data di database review produk, dan memicu ulasan tersebut tampil pada halaman ulasan produk Squashy.
+
+   Kebutuhan fungsional:
+   FR-25 : Sistem menyediakan form penulisan ulasan dan rating produk untuk transaksi selesai.
+   FR-26 : Sistem menyimpan input rating bintang, teks komentar ulasan, serta mengunggah berkas gambar ulasan ke server.
+   FR-27 : Sistem memicu ulasan terbaru agar tampil pada detail produk utama Squashy.
+
+9. Layanan Live Chat dengan Customer Service & Bot
+   Menyediakan media interaksi chat real-time untuk bertanya seputar produk, metode retur, 
+   biaya pengiriman, ataupun promo dengan respons otomatis bot atau admin.
+   Langkah:
+   Stimulus   : Pembeli mengklik menu navigasi "Chat" di header utama.
+   Response   : Sistem menampilkan halaman live chat Squashy berlatar hijau mint hangat lengkap dengan sapaan pembuka dari Bot Squashy.
+   Stimulus   : Pembeli mengklik tombol opsi cepat "Cek Stok".
+   Response   : Sistem secara instan menayangkan respons bot otomatis mengenai informasi ketersediaan barang di jendela obrolan.
+   Stimulus   : Pembeli mengetikkan pesan manual "Apakah baju ukuran XL ready?" di input chat lalu menekan tombol kirim.
+   Response   : Sistem menyimpan pesan chat manual tersebut ke basis data, menampilkannya sebagai balon pesan keluar, dan meneruskannya ke panel admin chat.
+
+   Kebutuhan fungsional:
+   FR-28 : Sistem memuat antarmuka live chat interaktif untuk pembeli terverifikasi.
+   FR-29 : Sistem menyediakan tombol-tombol opsi cepat untuk mendapatkan balasan bot otomatis secara instan.
+   FR-30 : Sistem mengirimkan pesan obrolan manual ke panel admin menggunakan koneksi AJAX real-time.
+
+================================================================================
+B. KEBUTUHAN FUNGSIONAL PEMILIK (ADMIN)
+================================================================================
+
+10. Memantau Dashboard Analisis Statistik Penjualan
+    Menyajikan visualisasi ringkasan kinerja penjualan, tren mingguan, list produk 
+    terlaris, serta grafik progress bar persentase penjualan per kategori produk.
+    Langkah:
+    Stimulus   : Admin login ke sistem operasional Squashy dan masuk ke beranda dashboard admin.
+    Response   : Sistem menampilkan dashboard penjualan lengkap dengan data total pendapatan, unit produk terjual, diagram batang tren mingguan, serta grafik horizontal progress bar kategori produk terpopuler.
+    Stimulus   : Admin merubah opsi pilihan rentang waktu pada dropdown di sudut kanan atas menjadi "Minggu Ini".
+    Response   : Sistem memfilter data database dan menyegarkan tampilan statistik grafik tren bulanan serta metrik omzet penjualan sesuai rentang waktu terpilih.
+
+    Kebutuhan fungsional:
+    FR-31 : Sistem menampilkan statistik kumulatif total pendapatan dan total terjual pada dashboard admin.
+    FR-32 : Sistem menampilkan diagram batang visual tren mingguan penjualan bulanan.
+    FR-33 : Sistem memvisualisasikan data penjualan produk terlaris dan progress bar persentase penjualan per kategori.
+    FR-34 : Sistem memfilter data statistik dashboard berdasarkan rentang waktu terpilih (minggu, bulan, tahun).
+
+11. Manajemen Data Katalog Produk
+    Kekuasaan penuh bagi admin toko Squashy untuk menginput produk anak baru, mengedit 
+    detail produk (stok, harga, nama), mengunggah gambar produk baru, dan menghapus produk.
+    Langkah:
+    Stimulus   : Admin mengklik tombol "Tambah Produk Baru" pada modul kelola produk admin.
+    Response   : Sistem menampilkan modal dialog form tambah produk dengan isian nama, harga, stok, deskripsi, kategori, dan form foto.
+    Stimulus   : Admin mengisi data produk lengkap, memilih file gambar produk, lalu menekan tombol "Simpan Produk".
+    Response   : Sistem mengunggah foto ke direktori server, menyimpan produk ke basis data, dan memicu data produk baru langsung muncul di tabel katalog admin.
+    Stimulus   : Admin mengklik tombol edit "📝 Edit" di salah satu produk, mengubah jumlah stok dari "0" menjadi "10", lalu mengklik "Simpan".
+    Response   : Sistem memperbarui stok barang di basis data dan merubah warna badge status dari merah "🔴 Habis" menjadi hijau "🟢 Tersedia".
+    Stimulus   : Admin mengklik tombol hapus "🗑️ Hapus" pada baris produk yang ingin dieliminasi.
+    Response   : Sistem menghapus baris produk dari database, menghapus berkas foto terkait di server, dan menyegarkan halaman katalog produk.
+
+    Kebutuhan fungsional:
+    FR-35 : Sistem menyediakan form tambah produk dan upload gambar produk baru.
+    FR-36 : Sistem menampilkan tabel kelola produk lengkap dengan ID, gambar, nama, kategori, harga, stok, badge status, dan aksi.
+    FR-37 : Sistem menyediakan form edit detail produk dan mengubah status badge ketersediaan secara otomatis.
+    FR-38 : Sistem menyediakan tombol hapus produk untuk mengeliminasi record secara permanen dari basis data dan server.
+
+12. Manajemen Transaksi Status Pemesanan Pelanggan
+    Memungkinkan admin untuk memantau detail pemesanan masuk dan meng-update status logistik 
+    pesanan (pending, dibayar, diproses, dikirim, selesai, dibatalkan).
+    Langkah:
+    Stimulus   : Admin membuka modul "Pesanan" pada sidebar menu navigasi admin.
+    Response   : Sistem menyajikan daftar lengkap pesanan masuk yang tersusun rapi beserta status logistik masing-masing.
+    Stimulus   : Admin mengklik baris pesanan pelanggan tertentu dan membuka halaman detail pesanan logistik.
+    Response   : Sistem memuat halaman detail pesanan logistik berisi nama pemesan, rincian barang, kurir, dan form dropdown pembaruan status.
+    Stimulus   : Admin merubah dropdown status pesanan menjadi "Dikirim" lalu menekan tombol "Update Status".
+    Response   : Sistem menyimpan perubahan status di database, memperbarui label status di tabel admin, dan meneruskan info status "dikirim" agar tampil di profil pelanggan.
+
+    Kebutuhan fungsional:
+    FR-39 : Sistem menampilkan tabel daftar pesanan masuk pelanggan lengkap dengan status logistik.
+    FR-40 : Sistem memuat halaman detail rincian transaksi pembeli dan opsi kurir pengiriman.
+    FR-41 : Sistem menyediakan opsi dropdown untuk memperbarui status pesanan logistik pelanggan di database.
+
+13. Verifikasi dan Konfirmasi Pembayaran Transfer Bank
+    Admin memproses verifikasi dan konfirmasi atas pengajuan pembayaran transfer bank dari 
+    pembeli secara transparan dan mencatat status pembayaran lunas.
+    Langkah:
+    Stimulus   : Admin mengklik menu "Kelola Pembayaran" di sidebar menu utama admin.
+    Response   : Sistem menampilkan tabel pembayaran pending lengkap dengan total tagihan, bank tujuan, dan tombol aksi bayar.
+    Stimulus   : Admin memvalidasi rekening mutasi bank masuk dan mengklik tombol hijau "Konfirmasi Lunas".
+    Response   : Sistem mengubah status pembayaran di tabel payment menjadi "dibayar", mengganti status_pesanan menjadi "dibayar", meralat jumlah transaksi lunas di panel atas, dan merubah warna status chip transaksi menjadi hijau "Lunas".
+
+    Kebutuhan fungsional:
+    FR-42 : Sistem menampilkan daftar pembayaran pending pelanggan lengkap dengan total tagihan dan metode bayar.
+    FR-43 : Sistem menyediakan tombol aksi cepat untuk memverifikasi pembayaran menjadi lunas ("dibayar") atau mereset pembayaran menjadi "pending".
+    FR-44 : Sistem memperbarui status pembayaran dan status pemesanan di database secara bersamaan (atomic transaction).
+
+14. Membalas Live Chat Pelanggan secara Real-Time
+    Menyediakan sarana komunikasi real-time bagi admin untuk menjawab pertanyaan chat 
+    secara langsung dari panel chat operasional.
+    Langkah:
+    Stimulus   : Admin mengklik menu navigasi "Kelola Chat" di sidebar navigasi.
+    Response   : Sistem menampilkan bilah percakapan chat dengan daftar nama pelanggan di panel kiri dan jendela chat aktif di panel kanan.
+    Stimulus   : Admin memilih nama pengirim "Bunda Sarah", mengetikkan pesan balasan di kolom input, lalu mengklik tombol Kirim.
+    Response   : Sistem menyimpan pesan tersebut, menampilkan balon chat admin di layar, dan meneruskannya ke halaman pembeli Sarah melalui koneksi AJAX polling real-time.
+
+    Kebutuhan fungsional:
+    FR-45 : Sistem menyediakan panel kelola chat admin yang menyajikan daftar pengguna aktif dan ruang percakapan obrolan.
+    FR-46 : Sistem merekam pesan balasan admin ke database chat pelanggan dan mengirimkannya menggunakan sinkronisasi polling real-time.
+
+15. Moderasi Ulasan dan Mengirimkan Balasan Ulasan Resmi
+    Memungkinkan admin menyaring ulasan pembeli, memberikan tanggapan apresiatif resmi 
+    admin, atau mengeliminasi ulasan tidak pantas secara aman.
+    Langkah:
+    Stimulus   : Admin mengklik menu "Kelola Ulasan" pada navigasi sidebar admin.
+    Response   : Sistem menampilkan 4 kartu metrics ulasan dan tabel ulasan lengkap dengan visual bintang emas dan detail pengulas.
+    Stimulus   : Admin menekan tombol biru "Balas" pada ulasan pembeli, mengetik teks tanggapan admin, dan menekan tombol "Simpan Balasan".
+    Response   : Sistem memperbarui ulasan dengan teks balasan resmi di database, menampilkan notifikasi sukses, dan menampilkan balasan admin tersebut secara publik di bawah ulasan pembeli pada etalase toko Squashy.
+
+    Kebutuhan fungsional:
+    FR-47 : Sistem menampilkan tabel moderasi ulasan lengkap dengan data pengulas, rating bintang emas, teks ulasan, foto, dan balasan admin.
+    FR-48 : Sistem menyediakan form pop-up untuk menulis dan menyimpan tanggapan ulasan admin ke database.
+    FR-49 : Sistem menyediakan tombol hapus ulasan untuk mengeliminasi ulasan dari basis data.
+
+--------------------------------------------------------------------------------
+3. ANALISIS DESAIN VISUAL DAN LAYOUT HALAMAN (PAGE DESIGN)
+--------------------------------------------------------------------------------
+
+Sistem Squashy didesain menggunakan pendekatan UI premium yang menyenangkan, 
+ceria, lembut, dan penuh warna, sangat selaras dengan segmen produk anak-anak. 
+Tipografi premium menggunakan kombinasi Google Fonts "Quicksand" (untuk body/detail) 
+dan "Nunito" (untuk header/judul besar) untuk mempertegas kesan menyenangkan dan modern.
+
+Berdasarkan fungsi operasionalnya, analisis visual dan tata letak sistem Squashy 
+dibagi menjadi Desain Keluaran (Output Design) untuk menampilkan informasi/data, 
+serta Desain Masukan (Input Design) untuk menangkap masukan formulir dari pengguna:
+
+================================================================================
+A. SISI PEMBELI (CUSTOMER SIDE LAYOUTS)
+================================================================================
+
+I. DESAIN KELUARAN (OUTPUT DESIGN)
+
+1. Halaman Beranda Utama (`index.php`)
+   Halaman ini dirancang sebagai beranda eksplorasi produk terpopuler dengan layout 
+   ceria, lembut, dan penuh warna yang ramah anak.
+   - Komponen Desain Halaman:
+     1. Navigasi Sticky Header:
+        - Menampilkan logo Squashy di kiri, menu navigasi melingkar (Home, Kategori, 
+          Chat, Keranjang) di tengah, dan tombol login berbentuk kapsul di kanan.
+        - Tujuan: Memberikan navigasi yang responsif dengan efek blur background putih.
+     2. Spanduk Promosi Cloud Playground:
+        - Menampilkan spanduk melengkung (radius 50px) dengan hiasan gantung awan, 
+          bintang, balon udara, dan boneka yang melayang perlahan dengan animasi CSS.
+        - Tujuan: Menarik minat visual pengunjung anak dan orang tua secara instan.
+     3. Maskot Interaktif Squashy Bunny:
+        - Kelinci putih interaktif di sisi kanan spanduk yang melompat jika disorot.
+        - Tujuan: Memberikan aspek micro-animation interaktif yang menyenangkan.
+     4. Widget Tips Parenting:
+        - Kotak informasi kuning krem dengan border putus-putus oranye dan lencana tips.
+        - Tujuan: Menyajikan tips mendidik anak bagi para orang tua yang berbelanja.
+     5. Grid Produk Terpopuler:
+        - 4 kartu produk best-seller berbentuk awan dusty-pink dengan detail nama 
+          produk, harga, stok, dan tombol beli.
+        - Tujuan: Mempromosikan produk terbaik Squashy secara cepat.
+
+2. Halaman Kategori Produk (`customers/kategori.php`)
+   Etalase produk dinamis yang merubah tema warnanya sesuai kategori yang dipilih.
+   - Komponen Desain Halaman:
+     1. Navigasi Sticky Header:
+        - Header Squashy standard dengan status menu kategori aktif yang menyala.
+        - Tujuan: Membantu navigasi cepat pengguna di antara kategori.
+     2. Judul Etalase Nunito:
+        - Judul "KATEGORI SQUASHY" berukuran 60px putih dengan drop shadow tebal.
+        - Tujuan: Mempertegas jenis halaman dengan gaya huruf yang ramah anak.
+     3. Tombol Penyaring Kategori (Pill Tabs):
+        - Baris tombol tab berbentuk kapsul yang memancarkan efek timbul saat disorot.
+        - Tujuan: Memfilter produk secara instan berdasarkan Mainan, Pakaian, atau Perlengkapan.
+     4. Grid Produk Kategori:
+        - Kartu produk awan putih dengan animasi mengambang statis yang memuat info 
+          harga oranye, stok, foto, dan tombol detail.
+        - Tujuan: Menyajikan daftar produk yang memanjakan mata pembeli.
+
+3. Halaman Detail Produk (Modal Pop-up)
+   Halaman ini muncul sebagai jendela pop-up interaktif untuk menampilkan detail 
+   produk utuh tanpa berpindah halaman.
+   - Komponen Desain Halaman:
+     1. Jendela Detail (Overlay Blur):
+        - Bingkai modal putih berukuran besar dengan border tebal 6px dan latar blur 8px.
+        - Tujuan: Memfokuskan pembeli pada satu item produk tertentu.
+     2. Detail Item (Kolom Kiri - Visual Produk):
+        - Menampilkan foto berkualitas tinggi dari produk bersangkutan dengan sudut melengkung.
+        - Tujuan: Memberikan visualisasi produk yang jelas kepada pembeli.
+     3. Detail Item (Kolom Kanan - Informasi & Aksi):
+        - Nama Produk: Judul tebal berjenis huruf Nunito.
+        - Rating Bintang: Tampilan bintang kuning emas penilai ulasan.
+        - Harga Jual: Nominal harga berwarna oranye tebal berukuran besar.
+        - Status Stok: Indikator hijau "Tersedia" atau merah "Habis".
+        - Deskripsi Produk: Teks deskripsi spesifikasi dan kegunaan barang.
+        - Tombol Aksi Keranjang: Tombol oranye lebar untuk membeli produk.
+        - Tujuan: Memberikan informasi spesifikasi barang dan akses transaksi instan.
+     4. Bagian Ulasan Pelanggan (Bagian Bawah):
+        - Rincian komentar pembeli lain, rating bintang, foto review, serta kolom 
+          balasan resmi admin berlatar hijau mint.
+        - Tujuan: Membantu pembeli mengambil keputusan berdasarkan ulasan terpercaya.
+
+4. Halaman Profil & Riwayat Pesanan (`customers/profil.php`)
+   Menyajikan data profil, ringkasan jumlah transaksi belanja, dan riwayat pesanan.
+   - Komponen Desain Halaman:
+     1. Banner Sambutan Ceria:
+        - Spanduk gradasi warna pink-oranye melengkung dengan nama sapaan pembeli.
+        - Tujuan: Memberikan sambutan personal yang ramah bagi pengguna.
+     2. Kartu Profil Pembeli (Kolom Kiri):
+        - Avatar melingkar dengan border gradasi warna-warni yang berputar lambat, 
+          detail nama, email, dan kartu hitungan status transaksi belanja.
+        - Tujuan: Menyajikan data akun pembeli secara menarik dan mudah dipahami.
+     3. Bilah Filter Status Transaksi:
+        - Tautan filter berupa tab kapsul putih melayang (Semua, Pending, Dikirim, Selesai).
+        - Tujuan: Menyaring daftar pesanan pembeli berdasarkan status logistik.
+     4. Daftar Kartu Riwayat Pesanan (Kolom Kanan):
+        - Daftar transaksi belanja dengan penanda border samping yang bervariasi 
+          berdasarkan status (hijau selesai, oranye pending, dll.), rincian produk, 
+          foto produk, harga, metode bayar, dan tombol aksi (ulasan/batal).
+        - Tujuan: Membantu pembeli mengontrol dan melacak paket belanjaan mereka.
+
+5. Halaman Live Chat CS (`customers/chat.php` - Jendela Obrolan)
+   Menampilkan gelembung-gelembung pesan interaksi pembeli dengan robot/admin.
+   - Komponen Desain Halaman:
+     1. Profil Customer Service:
+        - Header kuning krem berhiaskan ikon robot dan lampu hijau indikator online.
+        - Tujuan: Memberikan rasa aman bahwa admin/bot aktif merespons obrolan.
+     2. Area Obrolan Chat:
+        - Gelembung pesan masuk (putih-abu) untuk respons bot/admin dan gelembung 
+          pesan keluar (pink) untuk pembeli lengkap dengan penanda waktu kirim.
+        - Tujuan: Menyajikan alur percakapan chat secara visual dan interaktif.
+     3. Tombol Pertanyaan Cepat (Quick Buttons):
+        - 4 tombol kapsul cepat (Cek Stok, Cara Retur, Info Ongkir, Info Promo).
+        - Tujuan: Memungkinkan pembeli mendapatkan jawaban bot secara instan.
+
+II. DESAIN MASUKAN (INPUT DESIGN)
+
+6. Halaman Registrasi Akun Pembeli (`customers/register.php`)
+   Formulir input data bagi pengguna baru untuk mendaftarkan akun Squashy.
+   - Komponen Desain Halaman:
+     1. Input Nama Lengkap: Text field untuk mengetik nama asli pembeli.
+     2. Input Alamat Email: Email input field untuk mendaftarkan alamat email unik.
+     3. Input Password & Konfirmasi: Password field bersimbol bintang/bulat tersembunyi.
+     4. Tombol Submit Daftar: Tombol pink lebar dengan efek 3D shadow saat ditekan.
+     - Tujuan: Menangkap data akun pembeli baru secara lengkap dan aman.
+
+7. Halaman Login Pembeli (`customers/login.php`)
+   Formulir autentikasi untuk memverifikasi identitas pengguna terdaftar.
+   - Komponen Desain Halaman:
+     1. Input Alamat Email: Kolom isian teks email pengguna.
+     2. Input Kata Sandi: Kolom isian sandi berkarakter tersembunyi.
+     3. Tombol Aksi Masuk: Tombol oranye melengkung untuk memproses autentikasi.
+     - Tujuan: Menangkap kredensial login pembeli untuk membuka sesi belanja.
+
+8. Halaman Lupa Password (`customers/forgot_password.php`)
+   Formulir pemulihan untuk mengirim tautan reset kata sandi pembeli yang hilang.
+   - Komponen Desain Halaman:
+     1. Input Alamat Email Terdaftar: Kolom teks untuk memasukkan email pemulihan.
+     2. Tombol Kirim Tautan: Tombol jingga lebar untuk memproses email reset.
+     - Tujuan: Menangkap email terdaftar pembeli guna pengiriman instruksi reset sandi.
+
+9. Halaman Keranjang Belanja (`customers/keranjang.php` - Form Kuantitas)
+   Formulir pengeditan jumlah pesanan produk di dalam tabel keranjang belanja.
+   - Komponen Desain Halaman:
+     1. Input Angka Kuantitas: Kotak teks input angka yang dibatasi nilai minimal 1.
+     2. Tombol Refresh Kuantitas: Tombol kecil bersimbol segarkan di sisi kolom input.
+     - Tujuan: Memungkinkan pembeli mengatur jumlah barang anak yang ingin dibeli.
+
+10. Halaman Checkout dan Pembayaran (`customers/checkout.php`)
+    Formulir pengisian informasi logistik pengiriman barang dan metode pembayaran.
+    - Komponen Desain Halaman:
+      1. Input Nama Pembeli: Kolom teks untuk nama penerima paket belanja.
+      2. Input Nomor HP Penerima: Kolom teks khusus angka dengan batas maksimal 20 digit.
+      3. Dropdown Opsi Pembayaran: Pilihan metode bayar (Transfer Bank, Debit, E-Wallet, COD).
+      4. Tombol Submit Checkout: Tombol lebar pink bertuliskan "Proses Pembayaran".
+      - Tujuan: Menangkap data pengiriman fisik paket belanjaan dan opsi bayar secara valid.
+
+11. Halaman Tulis Ulasan (`customers/tambah_ulasan.php`)
+    Formulir pengiriman feedback kepuasan pelanggan atas produk Squashy yang dibeli.
+    - Komponen Desain Halaman:
+      1. Pemilih Rating Bintang: 5 radio button berbentuk bintang emas interaktif.
+      2. Input Area Komentar: Area teks luas untuk menginput tulisan ulasan pembeli.
+      3. Unggah Berkas Foto: Input file gambar untuk menyertakan foto bukti produk.
+      4. Tombol Kirim Ulasan: Tombol submit pink bertuliskan "Kirim Ulasan 💖".
+      - Tujuan: Menangkap data ulasan fisik, rating, dan foto kepuasan belanja pelanggan.
+
+12. Halaman Live Chat CS (`customers/chat.php` - Form Input Chat)
+    Formulir input pesan manual untuk berkonsultasi langsung dengan admin.
+    - Komponen Desain Halaman:
+      1. Input Teks Pesan: Kolom isian teks obrolan manual di bagian bawah jendela chat.
+      2. Tombol Kirim Chat: Tombol bulat pink bersimbol panah kirim (➤).
+      - Tujuan: Menangkap pesan manual pembeli untuk dikirimkan secara langsung ke admin.
+
+================================================================================
+B. SISI PENJUAL / ADMIN (ADMIN SIDE LAYOUTS)
+================================================================================
+
+I. DESAIN KELUARAN (OUTPUT DESIGN)
+
+13. Halaman Dashboard Penjualan (`admin/admin_dashboard.php`)
+    Menampilkan data performa penjualan dan statistik keuangan toko Squashy secara dinamis.
+    - Komponen Desain Halaman:
+      1. Kartu Ringkasan Keuangan (Top Cards):
+         - Kartu total pendapatan (oranye) dan kartu total produk terjual (hijau mint).
+         - Tujuan: Memberikan info omzet dan penjualan terkini kepada pemilik toko.
+      2. Grafik Tren Batang Bulanan:
+         - Visual batang vertikal mingguan berwarna gradasi pink-oranye berlatar garis pembatas.
+         - Tujuan: Menganalisis grafik naik-turunnya performa toko per minggu.
+      3. Panel Kategori Progress Bar:
+         - Progress bar horizontal warna-warni yang menunjukkan kontribusi penjualan 
+           kategori mainan, pakaian, dan perlengkapan bayi.
+         - Tujuan: Mengidentifikasi kategori produk terlaris di pasar Squashy.
+      4. List Produk Terlaris (Top Products):
+         - Daftar strip abu-abu berisi nama produk terlaris beserta kuantitas terjual.
+         - Tujuan: Memantau item produk anak yang paling diminati pembeli.
+
+14. Halaman Kelola Katalog Produk (`admin/kelola_produk.php` - Tabel Produk)
+    Menampilkan daftar persediaan stok produk anak yang tercatat di toko Squashy.
+    - Komponen Desain Halaman:
+      1. Kartu Ringkasan Persediaan:
+         - 3 kartu di panel atas (Total Produk, Produk Ready, Produk Habis).
+         - Tujuan: Memberikan status pergudangan produk secara cepat kepada admin.
+      2. Tabel Persediaan Utama (Squashy Table):
+         - Tabel lebar berlatar header pink-salmon memuat kolom ID, gambar mini produk, 
+           nama produk, kategori, harga, kuantitas stok, dan status ketersediaan.
+         - Tujuan: Menampilkan data stok produk Squashy secara rapi dan terstruktur.
+
+15. Halaman Kelola & Detail Pesanan (`admin/kelola_pesanan.php` & `detail_pesanan.php`)
+    Menampilkan daftar transaksi order masuk dari pembeli beserta detail pesanannya.
+    - Komponen Desain Halaman:
+      1. Tabel Transaksi Masuk:
+         - Baris pesanan memuat ID order PLG-00000, tanggal, nama pemesan, total bayar, 
+           dan badge status pengiriman (pending, dibayar, diproses, dikirim, selesai, batal).
+         - Tujuan: Menampilkan antrean pesanan pelanggan yang harus diproses toko.
+      2. Panel Rincian Invoice detail_pesanan:
+         - Rincian alamat pembeli, kontak, detail item produk, harga saat beli, subtotal, 
+           dan akumulasi total belanjaan yang ditata dalam format invoice siap cetak.
+         - Tujuan: Memberikan panduan pengemasan barang bagi admin sebelum dikirim.
+
+16. Halaman Verifikasi Pembayaran (`admin/kelola_pembayaran.php` - Tabel Transaksi)
+    Menampilkan daftar verifikasi pembayaran transfer bank yang diklaim oleh pembeli.
+    - Komponen Desain Halaman:
+      1. Tabel Validasi Keuangan:
+         - Tabel memuat kolom ID pesanan, tanggal bayar, nama pemesan, metode bayar tebal, 
+           total tagihan pembayaran, status chip (Lunas hijau, Pending pink), dan tombol aksi.
+         - Tujuan: Menampilkan data transfer masuk yang menunggu verifikasi admin.
+
+17. Halaman Kelola Chat Pelanggan (`admin/kelola_chat.php` - Panel Obrolan)
+    Menampilkan ruang komunikasi admin Squashy dengan pelanggan secara aktif.
+    - Komponen Desain Halaman:
+      1. Antrean Chat Pembeli (Panel Kiri):
+         - Daftar nama pembeli yang aktif mengirim chat dengan lencana notifikasi merah.
+         - Tujuan: Membantu admin merespons chat pelanggan berdasarkan urutan antrean.
+      2. Balon Obrolan Aktif (Panel Kanan):
+         - Gelembung pesan pelanggan (putih) dan gelembung admin (pink) berlatar putih tulang.
+         - Tujuan: Menyuguhkan riwayat obrolan pelanggan secara teratur.
+
+18. Halaman Kelola Ulasan Produk (`admin/kelola_ulasan.php` - Tabel Ulasan)
+    Menampilkan daftar ulasan ulasan pembeli beserta detail rating yang masuk.
+    - Komponen Desain Halaman:
+      1. Tabel Moderasi Ulasan:
+         - Tabel memuat identitas pengulas, nama produk beserta gambar, bintang rating emas, 
+           potongan ulasan, gambar ulasan zoomable, dan teks balasan admin berlatar hijau mint.
+         - Tujuan: Memfasilitasi moderasi ulasan pelanggan Squashy.
+
+II. DESAIN MASUKAN (INPUT DESIGN)
+
+19. Modal Tambah & Edit Produk (`admin/kelola_produk.php`)
+    Formulir pop-up bagi admin untuk menginput data produk baru atau memperbaharuinya.
+    - Komponen Desain Halaman:
+      1. Input Nama Produk: Kolom teks untuk nama barang anak.
+      2. Input Harga & Stok: Kolom angka untuk nominal harga dan jumlah ketersediaan unit.
+      3. Dropdown Kategori: Pilihan kategori mainan, pakaian, atau perlengkapan.
+      4. Text Area Deskripsi: Kolom teks luas untuk mengetik deskripsi kegunaan produk.
+      5. Unggah Gambar Produk: Pilihan file gambar untuk foto katalog produk Squashy.
+      - Tujuan: Menangkap data entri produk baru atau rincian pembaruan produk admin.
+
+20. Halaman Detail Pesanan (`admin/detail_pesanan.php` - Form Update Status)
+    Formulir dropdown bagi admin untuk merubah status logistik pengiriman pesanan.
+    - Komponen Desain Halaman:
+      1. Dropdown Status Pesanan: Dropdown pilihan status (pending, dibayar, diproses, dll.).
+      2. Input Dropdown Opsi Kurir: Pilihan jenis logistik/kurir pengantar barang.
+      3. Tombol Submit Update: Tombol klik untuk menyimpan perubahan status pengiriman.
+      - Tujuan: Menangkap keputusan admin untuk merubah tahapan status pengiriman pesanan.
+
+21. Halaman Verifikasi Pembayaran (`admin/kelola_pembayaran.php` - Tombol Aksi)
+    Formulir aksi cepat untuk menyetujui pelunasan pembayaran pelanggan.
+    - Komponen Desain Halaman:
+      1. Tombol Hijau "Konfirmasi Lunas": Tombol untuk menyetujui transaksi transfer masuk.
+      2. Tombol Oranye "Batal Konfirmasi": Tombol reset status lunas kembali menjadi pending.
+      - Tujuan: Menangkap keputusan validasi admin atas dana transfer masuk dari pelanggan.
+
+22. Halaman Kelola Chat Pelanggan (`admin/kelola_chat.php` - Form Balasan Chat)
+    Formulir input bagi admin untuk menulis pesan tanggapan chat pembeli.
+    - Komponen Desain Halaman:
+      1. Input Teks Balasan Chat: Kolom isian teks di bagian bawah panel obrolan kanan.
+      2. Tombol Kirim Chat: Tombol bulat pink bersimbol panah kirim (➤).
+      - Tujuan: Menangkap tulisan pesan balasan dari admin untuk dikirim ke layar pembeli.
+
+23. Halaman Kelola Ulasan (`admin/kelola_ulasan.php` - Form Balasan Ulasan)
+    Formulir pop-up tanggapan resmi admin atas komentar penilaian yang ditulis pembeli.
+    - Komponen Desain Halaman:
+      1. Text Area Balasan Ulasan: Kolom tulisan tanggapan resmi pengelola Squashy.
+      2. Tombol Kirim Balasan: Tombol simpan balasan berwarna pink.
+      - Tujuan: Menangkap teks tanggapan admin atas ulasan pembeli untuk ditampilkan ke publik.
+
+================================================================================
+                                 AKHIR LAPORAN
+================================================================================
