@@ -369,10 +369,12 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
             </thead>
             <tbody>
                 <?php
+                $total_produk = 0;
                 if (mysqli_num_rows($result_detail) > 0) {
                     mysqli_data_seek($result_detail, 0); // reset pointer ke awal
                     while ($item = mysqli_fetch_assoc($result_detail)) {
                         $subtotal = $item['harga_saat_order'] * $item['kuantitas'];
+                        $total_produk += $subtotal;
                 ?>
                         <tr>
                             <td><?= htmlspecialchars(strtoupper($item['nama_produk'])) ?></td>
@@ -399,14 +401,15 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
             </div>
 
             <div class="total-box">
+                <?php $ongkir = intval($order['total_tagihan']) - $total_produk; ?>
                 <table class="total-table">
                     <tr>
                         <td class="label-td">Total Barang</td>
-                        <td class="val-td">Rp. <?= number_format($order['total_tagihan'], 0, ',', '.') ?></td>
+                        <td class="val-td">Rp. <?= number_format($total_produk, 0, ',', '.') ?></td>
                     </tr>
                     <tr>
                         <td class="label-td">Biaya Pengiriman</td>
-                        <td class="val-td">Rp. 0</td>
+                        <td class="val-td">Rp. <?= number_format(max(0, $ongkir), 0, ',', '.') ?></td>
                     </tr>
                     <tr class="grand-total">
                         <td class="label-td">Total Tagihan</td>

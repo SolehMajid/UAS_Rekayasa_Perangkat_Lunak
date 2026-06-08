@@ -43,13 +43,18 @@ $success_msg = "";
 // Proses update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_status = mysqli_real_escape_string($conn, $_POST['status_pesanan']);
+    $nomor_resi = isset($_POST['nomor_resi']) ? mysqli_real_escape_string($conn, trim($_POST['nomor_resi'])) : '';
     
     // Mulai transaksi database agar konsisten
     mysqli_begin_transaction($conn);
 
     try {
         // Update tabel order
-        $update_order = "UPDATE `order` SET status_pesanan = '$new_status' WHERE id_order = $id_order";
+        $resi_clause = "";
+        if ($new_status === 'dikirim' && isset($_POST['nomor_resi'])) {
+            $resi_clause = ", nomor_resi = '$nomor_resi'";
+        }
+        $update_order = "UPDATE `order` SET status_pesanan = '$new_status' $resi_clause WHERE id_order = $id_order";
         mysqli_query($conn, $update_order);
 
         // Update tabel payment
@@ -419,11 +424,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
 
+                <div class="form-group" id="resi-group" style="<?= strtolower($order['status_pesanan'] ?? '') === 'dikirim' ? '' : 'display: none;' ?>">
+                    <label for="nomor_resi">Nomor Resi Pengiriman</label>
+                    <input type="text" name="nomor_resi" id="nomor_resi" class="select-status" style="width: 100%; border: 2px solid var(--soft-green);" placeholder="Contoh: JNE123456789" value="<?= htmlspecialchars($order['nomor_resi'] ?? '') ?>" <?= strtolower($order['status_pesanan'] ?? '') === 'dikirim' ? 'required' : '' ?>>
+                </div>
+
                 <div class="btn-group">
                     <a href="kelola_pesanan.php" class="btn-cancel">Batal</a>
                     <button type="submit" class="btn-submit">Simpan Status</button>
                 </div>
             </form>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const statusSelect = document.getElementById('status_pesanan');
+                    const resiGroup = document.getElementById('resi-group');
+                    const resiInput = document.getElementById('nomor_resi');
+ 
+                    statusSelect.addEventListener('change', function() {
+                        if (this.value === 'dikirim') {
+                            resiGroup.style.display = 'block';
+                            resiInput.setAttribute('required', 'required');
+                        } else {
+                            resiGroup.style.display = 'none';
+                            resiInput.removeAttribute('required');
+                        }
+                    });
+                });
+            </script>
         </div>
 
     </div>

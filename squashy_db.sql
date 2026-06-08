@@ -138,7 +138,7 @@ INSERT INTO `kategori` (`id_kategori`, `nama_kategori`) VALUES
 CREATE TABLE `order` (
   `id_order` int NOT NULL,
   `id_user` int NOT NULL,
-  `nomer_hp` varchar(20) DEFAULT NULL,
+  `nomer_hp` varchar(100) DEFAULT NULL,
   `nama_pembeli` varchar(255) NOT NULL,
   `tanggal_pesanan` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `total_tagihan` int NOT NULL,

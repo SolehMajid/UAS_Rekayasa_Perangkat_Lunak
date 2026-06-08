@@ -507,9 +507,11 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
                         </thead>
                         <tbody>
                             <?php
+                            $total_produk = 0;
                             if (mysqli_num_rows($result_detail) > 0) {
                                 while ($item = mysqli_fetch_assoc($result_detail)) {
                                     $subtotal = $item['harga_saat_order'] * $item['kuantitas'];
+                                    $total_produk += $subtotal;
                             ?>
                                     <tr>
                                         <td>
@@ -538,6 +540,24 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
                             <?php } ?>
                         </tbody>
                     </table>
+
+                    <div style="margin-top: 20px; border-top: 2px dashed #EEEEEE; padding-top: 15px;">
+                        <table style="width: 100%; font-size: 14px; font-weight: 700; border-collapse: collapse;">
+                            <tr>
+                                <td style="padding: 6px 0; color: #888;">Total Harga Produk</td>
+                                <td style="text-align: right; padding: 6px 0;">Rp. <?= number_format($total_produk, 0, ',', '.') ?></td>
+                            </tr>
+                            <?php 
+                            $ongkir = intval($order['total_tagihan']) - $total_produk;
+                            if ($ongkir > 0) : 
+                            ?>
+                                <tr>
+                                    <td style="padding: 6px 0; color: #888;">Ongkos Kirim</td>
+                                    <td style="text-align: right; padding: 6px 0;">Rp. <?= number_format($ongkir, 0, ',', '.') ?></td>
+                                </tr>
+                            <?php endif; ?>
+                        </table>
+                    </div>
 
                     <div class="total-row">
                         <span>TOTAL HAK PEMBAYARAN:</span>
@@ -569,6 +589,12 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
                                 </span>
                             </td>
                         </tr>
+                        <?php if (!empty($order['nomor_resi'])): ?>
+                        <tr>
+                            <td class="label-td">Nomor Resi</td>
+                            <td style="font-weight: 800; color: var(--pink-accent);"><?= htmlspecialchars($order['nomor_resi']) ?></td>
+                        </tr>
+                        <?php endif; ?>
                     </table>
                 </div>
 

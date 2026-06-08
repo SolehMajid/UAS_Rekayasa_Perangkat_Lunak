@@ -4,6 +4,7 @@ require_once '../config/app.php';
 require_once '../config/database.php';
 require_once '../config/midtrans.php';
 require_once '../includes/auth.php';
+require_once '../includes/rajaongkir_helper.php';
 
 checkLogin();
 
@@ -34,6 +35,7 @@ if ($cartQuery) {
         $totalPrice += intval($row['jumlah']) * intval($row['harga']);
     }
 }
+$totalWeight = $totalItems * 500;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $namaPembeli = trim($_POST['nama_pembeli'] ?? $_SESSION['nama'] ?? '');
@@ -41,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $metodePembayaran = 'Midtrans';
     $maxPhoneLength = 20;
 
-    if (empty($namaPembeli) || empty($metodePembayaran)) {
-        $message = 'Nama pembeli dan metode pembayaran wajib diisi.';
+    if (empty($namaPembeli)) {
+        $message = 'Nama pembeli wajib diisi.';
     } elseif (empty($nomerHp)) {
         $message = 'Nomor HP wajib diisi.';
     } elseif (!preg_match('/^[0-9]+$/', $nomerHp)) {
@@ -54,13 +56,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         mysqli_begin_transaction($conn);
 
+        $ongkir = intval($_POST['ongkir_value'] ?? 0);
+        $kurirName = trim($_POST['kurir_name'] ?? '');
+        $grandTotal = $totalPrice + $ongkir;
+
         $safeName = mysqli_real_escape_string($conn, $namaPembeli);
-        $safePhone = mysqli_real_escape_string($conn, $nomerHp);
+        $phoneWithCourier = $nomerHp . (!empty($kurirName) ? " ($kurirName)" : "");
+        $safePhone = mysqli_real_escape_string($conn, $phoneWithCourier);
         $safeMethod = mysqli_real_escape_string($conn, $metodePembayaran);
         $userIdEscaped = mysqli_real_escape_string($conn, $userId);
 
-        $insertOrderSql = "INSERT INTO `order` (id_user, nomer_hp, nama_pembeli, total_tagihan, status_pesanan)
-            VALUES ($userIdEscaped, '$safePhone', '$safeName', $totalPrice, 'pending')";
+        $insertOrderSql = "INSERT INTO `order` (id_user, nomer_hp, nama_pembeli, total_tagihan, status_pesanan, no_resi)
+            VALUES ($userIdEscaped, '$safePhone', '$safeName', $grandTotal, 'pending', '')";
 
         if (mysqli_query($conn, $insertOrderSql)) {
             $orderId = mysqli_insert_id($conn);
@@ -72,6 +79,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($orderId > 0) {
+                // Update/Insert shipping address
+                $safeJalan = mysqli_real_escape_string($conn, $_POST['alamat_lengkap'] ?? '');
+                $safeKabupaten = mysqli_real_escape_string($conn, $_POST['city_name'] ?? '');
+                $safeKodePos = intval($_POST['postal_code'] ?? 0);
+                
+                $checkAddress = mysqli_query($conn, "SELECT id_alamat FROM alamat_pengiriman WHERE id_user = $userId LIMIT 1");
+                if (mysqli_num_rows($checkAddress) > 0) {
+                    mysqli_query($conn, "UPDATE alamat_pengiriman SET jalan = '$safeJalan', kabupaten = '$safeKabupaten', kodepos = $safeKodePos WHERE id_user = $userId");
+                } else {
+                    mysqli_query($conn, "INSERT INTO alamat_pengiriman (id_user, label_alamat, jalan, kecamatan, kabupaten, kodepos) VALUES ($userId, 'Alamat Utama', '$safeJalan', '-', '$safeKabupaten', $safeKodePos)");
+                }
+
                 $paymentSql = "INSERT INTO payment (id_order, metode_pembayaran, status_pembayaran) VALUES ($orderId, '$safeMethod', 'pending')";
                 $paymentOk = mysqli_query($conn, $paymentSql);
 
@@ -113,13 +132,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ];
                     }
 
+                    if ($ongkir > 0) {
+                        $itemsForMidtrans[] = [
+                            'id' => 'ongkir',
+                            'price' => (int)$ongkir,
+                            'quantity' => 1,
+                            'name' => 'Ongkos Kirim (' . (!empty($kurirName) ? $kurirName : 'Expedition') . ')'
+                        ];
+                    }
+
                     // Meminta Token ke Midtrans
                     $customerDetails = [
                         'nama' => $namaPembeli,
                         'email' => $userEmail,
                         'phone' => $nomerHp
                     ];
-                    $snapToken = getMidtransSnapToken($orderId, $totalPrice, $customerDetails, $itemsForMidtrans);
+                    $snapToken = getMidtransSnapToken($orderId, $grandTotal, $customerDetails, $itemsForMidtrans);
 
                     if ($snapToken) {
                         // Simpan token ke database order
@@ -386,6 +414,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="text" id="nomer_hp" name="nomer_hp" value="<?= htmlspecialchars($_POST['nomer_hp'] ?? ''); ?>" placeholder="08xxxxxxxxxx" maxlength="20" inputmode="numeric" pattern="[0-9]*" required>
                         </div>
 
+                        <div class="field-group">
+                            <label for="province">Provinsi Tujuan</label>
+                            <select id="province" name="province" required>
+                                <option value="">Pilih Provinsi</option>
+                                <?php 
+                                $provinces = rajaongkir_get_provinces();
+                                foreach ($provinces as $p) : 
+                                ?>
+                                    <option value="<?= $p['province_id'] ?>"><?= htmlspecialchars($p['province']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="city">Kota / Kabupaten Tujuan</label>
+                            <select id="city" name="city" required disabled>
+                                <option value="">Pilih Kota / Kabupaten</option>
+                            </select>
+                            <input type="hidden" id="city_name" name="city_name">
+                            <input type="hidden" id="postal_code" name="postal_code">
+                        </div>
+
+                        <div class="field-group">
+                            <label for="alamat_lengkap">Alamat Lengkap (Jalan, RT/RW, No. Rumah)</label>
+                            <textarea id="alamat_lengkap" name="alamat_lengkap" rows="3" style="width:100%; padding:14px 16px; border:1px solid #ddd; border-radius:16px; font-size:15px; font-family:inherit; outline:none;" placeholder="Masukkan alamat lengkap pengiriman" required></textarea>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="courier">Pilih Kurir Ekspedisi</label>
+                            <select id="courier" name="courier" required disabled>
+                                <option value="">Pilih Kurir</option>
+                                <option value="jne">JNE (Jalur Nugraha Ekakurir)</option>
+                                <option value="tiki">TIKI (Titipan Kilat)</option>
+                                <option value="pos">POS Indonesia</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group" id="layanan-group" style="display:none;">
+                            <label for="layanan">Pilih Layanan Pengiriman</label>
+                            <select id="layanan" name="layanan" required>
+                                <option value="">Pilih Layanan</option>
+                            </select>
+                        </div>
+
+                        <!-- Hidden fields to hold selected shipping details -->
+                        <input type="hidden" id="ongkir_value" name="ongkir_value" value="0">
+                        <input type="hidden" id="kurir_name" name="kurir_name" value="">
+                        <input type="hidden" id="total_weight" value="<?= $totalWeight ?>">
+
                         <button type="submit">Proses Pembayaran</button>
                     </form>
                 </div>
@@ -407,8 +484,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
                     <?php endforeach; ?>
-                    <div class="summary-row"><span>Total Item</span><span><?= $totalItems; ?></span></div>
-                    <div class="summary-row total"><span>Total Bayar</span><span>Rp <?= number_format($totalPrice, 0, ',', '.'); ?></span></div>
+                     <div class="summary-row"><span>Total Item</span><span><?= $totalItems; ?></span></div>
+                     <div class="summary-row" id="ongkir-row" style="display:none;"><span>Ongkos Kirim</span><span id="ongkir-text">Rp 0</span></div>
+                     <div class="summary-row total"><span>Total Bayar</span><span id="total-bayar-text">Rp <?= number_format($totalPrice, 0, ',', '.'); ?></span></div>
                 </div>
             </div>
         <?php else : ?>
@@ -419,6 +497,123 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
     </main>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const provinceSelect = document.getElementById('province');
+            const citySelect = document.getElementById('city');
+            const cityNameInput = document.getElementById('city_name');
+            const postalCodeInput = document.getElementById('postal_code');
+            const courierSelect = document.getElementById('courier');
+            const layananSelect = document.getElementById('layanan');
+            const layananGroup = document.getElementById('layanan-group');
+            const ongkirValueInput = document.getElementById('ongkir_value');
+            const kurirNameInput = document.getElementById('kurir_name');
+            const totalWeight = parseInt(document.getElementById('total_weight').value);
+            
+            const ongkirRow = document.getElementById('ongkir-row');
+            const ongkirText = document.getElementById('ongkir-text');
+            const totalBayarText = document.getElementById('total-bayar-text');
+            const basePrice = <?= $totalPrice ?>;
+
+            // 1. Ketika Provinsi berubah
+            provinceSelect.addEventListener('change', function() {
+                const provinceId = this.value;
+                citySelect.innerHTML = '<option value="">Pilih Kota / Kabupaten</option>';
+                citySelect.disabled = true;
+                courierSelect.value = '';
+                courierSelect.disabled = true;
+                layananSelect.innerHTML = '<option value="">Pilih Layanan</option>';
+                layananGroup.style.display = 'none';
+                resetOngkir();
+
+                if (!provinceId) return;
+
+                fetch(`ajax_ongkir.php?action=get_cities&province_id=${provinceId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            data.cities.forEach(city => {
+                                const option = document.createElement('option');
+                                option.value = city.city_id;
+                                option.setAttribute('data-name', `${city.type} ${city.city_name}`);
+                                option.setAttribute('data-postal', city.postal_code);
+                                option.textContent = `${city.type} ${city.city_name}`;
+                                citySelect.appendChild(option);
+                            });
+                            citySelect.disabled = false;
+                        }
+                    });
+            });
+
+            // 2. Ketika Kota berubah
+            citySelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                cityNameInput.value = selectedOption.getAttribute('data-name') || '';
+                postalCodeInput.value = selectedOption.getAttribute('data-postal') || '';
+                
+                courierSelect.value = '';
+                courierSelect.disabled = !this.value;
+                layananSelect.innerHTML = '<option value="">Pilih Layanan</option>';
+                layananGroup.style.display = 'none';
+                resetOngkir();
+            });
+
+            // 3. Ketika Kurir berubah
+            courierSelect.addEventListener('change', function() {
+                const cityId = citySelect.value;
+                const courier = this.value;
+                
+                layananSelect.innerHTML = '<option value="">Pilih Layanan</option>';
+                layananGroup.style.display = 'none';
+                resetOngkir();
+
+                if (!cityId || !courier) return;
+
+                fetch(`ajax_ongkir.php?action=get_ongkir&city_id=${cityId}&weight=${totalWeight}&courier=${courier}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.rates.length > 0) {
+                            data.rates.forEach(rate => {
+                                const option = document.createElement('option');
+                                option.value = rate.cost;
+                                option.setAttribute('data-service', rate.service);
+                                option.textContent = `${rate.service} - Rp ${rate.cost.toLocaleString('id-ID')} (${rate.etd})`;
+                                layananSelect.appendChild(option);
+                            });
+                            layananGroup.style.display = 'block';
+                        } else {
+                            alert('Gagal mengambil tarif pengiriman atau kurir tidak didukung.');
+                        }
+                    });
+            });
+
+            // 4. Ketika Layanan berubah
+            layananSelect.addEventListener('change', function() {
+                const cost = parseInt(this.value) || 0;
+                const selectedOption = this.options[this.selectedIndex];
+                const service = selectedOption.getAttribute('data-service') || '';
+                const courier = courierSelect.value.toUpperCase();
+
+                if (cost > 0 && service) {
+                    ongkirValueInput.value = cost;
+                    kurirNameInput.value = `${courier} ${service}`;
+                    
+                    ongkirRow.style.display = 'flex';
+                    ongkirText.textContent = `Rp ${cost.toLocaleString('id-ID')}`;
+                    totalBayarText.textContent = `Rp ${(basePrice + cost).toLocaleString('id-ID')}`;
+                } else {
+                    resetOngkir();
+                }
+            });
+
+            function resetOngkir() {
+                ongkirValueInput.value = '0';
+                kurirNameInput.value = '';
+                ongkirRow.style.display = 'none';
+                totalBayarText.textContent = `Rp ${basePrice.toLocaleString('id-ID')}`;
+            }
+        });
+    </script>
 </body>
 
 </html>

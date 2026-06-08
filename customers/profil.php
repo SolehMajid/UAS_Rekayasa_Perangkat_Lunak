@@ -50,6 +50,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order']) && $u
     header("Location: profil.php");
     exit;
 }
+
+// Handle konfirmasi pesanan selesai oleh user
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delivered']) && $userId > 0) {
+    $orderIdToConfirm = intval($_POST['id_order'] ?? 0);
+    if ($orderIdToConfirm > 0) {
+        // Validasi kepemilikan dan status (harus dikirim)
+        $checkQuery = mysqli_query($conn, "
+            SELECT status_pesanan 
+            FROM `order` 
+            WHERE id_order = $orderIdToConfirm AND id_user = $userId LIMIT 1
+        ");
+        
+        if ($checkQuery && mysqli_num_rows($checkQuery) === 1) {
+            $checkRow = mysqli_fetch_assoc($checkQuery);
+            $statusPesanan = strtolower($checkRow['status_pesanan'] ?? 'pending');
+            
+            if ($statusPesanan === 'dikirim') {
+                mysqli_begin_transaction($conn);
+                try {
+                    // Update order status
+                    mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'selesai' WHERE id_order = $orderIdToConfirm");
+                    // Update payment status
+                    mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'selesai' WHERE id_order = $orderIdToConfirm");
+                    
+                    mysqli_commit($conn);
+                    $_SESSION['confirm_success'] = "Pesanan #" . str_pad($orderIdToConfirm, 5, '0', STR_PAD_LEFT) . " berhasil dikonfirmasi selesai.";
+                } catch (Exception $e) {
+                    mysqli_rollback($conn);
+                    $_SESSION['confirm_error'] = "Gagal mengonfirmasi pesanan: " . $e->getMessage();
+                }
+            } else {
+                $_SESSION['confirm_error'] = "Pesanan tidak dapat dikonfirmasi karena belum dikirim.";
+            }
+        } else {
+            $_SESSION['confirm_error'] = "Pesanan tidak ditemukan.";
+        }
+    }
+    header("Location: profil.php");
+    exit;
+}
+
 $user = [
     'nama_lengkap' => $_SESSION['nama'] ?? 'Bunda',
     'email' => '-',
@@ -75,7 +116,7 @@ if ($userId > 0) {
     }
 }
 
-$orderQuery = mysqli_query($conn, "SELECT o.id_order, o.tanggal_pesanan, o.total_tagihan, o.status_pesanan, COALESCE(p.metode_pembayaran, '-') AS metode_pembayaran, COALESCE(p.status_pembayaran, 'pending') AS status_pembayaran
+$orderQuery = mysqli_query($conn, "SELECT o.id_order, o.tanggal_pesanan, o.total_tagihan, o.status_pesanan, o.nomor_resi, COALESCE(p.metode_pembayaran, '-') AS metode_pembayaran, COALESCE(p.status_pembayaran, 'pending') AS status_pembayaran
     FROM `order` o
     LEFT JOIN payment p ON o.id_order = p.id_order
     WHERE o.id_user = $userId
@@ -904,6 +945,118 @@ function orderStatusLabel($status)
                 width: 100%;
             }
         }
+        
+        /* ── Modal Lacak Paket ── */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.3s ease;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content-box {
+            background: white;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(58, 48, 99, 0.15);
+            border: 3px solid #FFF1E5;
+            animation: scaleUpModal 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleUpModal {
+            from { transform: scale(0.85); }
+            to { transform: scale(1); }
+        }
+
+        .modal-header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed rgba(58,48,99,0.1);
+            padding-bottom: 12px;
+        }
+
+        .modal-header-box h3 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.35rem;
+            color: var(--dark, #3A3063);
+        }
+
+        .close-modal {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: var(--pink, #FF6FB7);
+        }
+
+        /* ── Timeline ── */
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            padding-left: 24px;
+            border-left: 3px dashed rgba(255, 111, 183, 0.3);
+            margin-left: 10px;
+        }
+
+        .timeline-item {
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -33px;
+            top: 2px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--pink, #FF6FB7);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px rgba(255, 111, 183, 0.2);
+        }
+
+        .timeline-item:first-child .timeline-dot {
+            background: #6EDB8F;
+            box-shadow: 0 0 0 3px rgba(110, 219, 143, 0.3);
+        }
+
+        .timeline-date {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #7A5C7F;
+            margin-bottom: 4px;
+        }
+
+        .timeline-desc {
+            font-size: 0.92rem;
+            color: var(--dark, #3A3063);
+            font-weight: 600;
+            line-height: 1.4;
+        }
     </style>
 </head>
 
@@ -941,6 +1094,21 @@ function orderStatusLabel($status)
                 ⚠️ <?= htmlspecialchars($_SESSION['cancel_error']); ?>
             </div>
             <?php unset($_SESSION['cancel_error']); ?>
+        <?php endif; ?>
+
+        <!-- Pesan Konfirmasi Selesai Pesanan -->
+        <?php if (isset($_SESSION['confirm_success'])) : ?>
+            <div style="background-color: rgba(110, 219, 143, 0.15); border: 2px solid rgba(110, 219, 143, 0.3); color: #276d37; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease;">
+                🎉 <?= htmlspecialchars($_SESSION['confirm_success']); ?>
+            </div>
+            <?php unset($_SESSION['confirm_success']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['confirm_error'])) : ?>
+            <div style="background-color: rgba(255, 92, 92, 0.15); border: 2px solid rgba(255, 92, 92, 0.3); color: #C62828; padding: 15px 22px; border-radius: 22px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease;">
+                ⚠️ <?= htmlspecialchars($_SESSION['confirm_error']); ?>
+            </div>
+            <?php unset($_SESSION['confirm_error']); ?>
         <?php endif; ?>
 
         <div class="profile-grid">
@@ -1092,25 +1260,35 @@ function orderStatusLabel($status)
                                 <?php endif; ?>
 
                                 <div class="order-card-footer">
-                                    <div class="order-payment-meta">
-                                        <span>💳 Metode: <strong><?= htmlspecialchars($order['metode_pembayaran']); ?></strong></span>
-                                        <span>🪙 Status Bayar: <strong><?= htmlspecialchars(ucfirst($order['status_pembayaran'])); ?></strong></span>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                                        <div class="order-total-info">
-                                            <span class="order-total-label">Total Tagihan</span>
-                                            <span class="order-total-amount"><?= formatRupiah($order['total_tagihan']); ?></span>
-                                        </div>
-                                        <?php if (strtolower($order['status_pesanan']) === 'pending' && strtolower($order['status_pembayaran']) === 'pending') : ?>
-                                            <a href="bayar.php?id=<?= $orderIdValue; ?>" class="btn-pill btn-pink" style="padding: 8px 16px; font-size: 0.85rem; margin-right: 5px;">💳 Bayar Sekarang</a>
-                                            <form method="POST" action="" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');" style="display: inline-block;">
-                                                <input type="hidden" name="id_order" value="<?= $orderIdValue; ?>">
-                                                <button type="submit" name="cancel_order" class="btn-pill btn-red" style="padding: 8px 16px; font-size: 0.85rem;">❌ Batalkan Pesanan</button>
-                                            </form>
-                                        <?php endif; ?>
-                                        <a href="<?= $base_url ?>customers/checkout.php" class="btn-pill btn-outline-pink" style="padding: 8px 16px; font-size: 0.85rem;">Beli Lagi</a>
-                                    </div>
-                                </div>
+                                     <div class="order-payment-meta">
+                                         <span>💳 Metode: <strong><?= htmlspecialchars($order['metode_pembayaran']); ?></strong></span>
+                                         <span>🪙 Status Bayar: <strong><?= htmlspecialchars(ucfirst($order['status_pembayaran'])); ?></strong></span>
+                                         <?php if (!empty($order['nomor_resi'])) : ?>
+                                             <span>📦 Resi: <strong style="color: var(--pink, #FF6FB7);"><?= htmlspecialchars($order['nomor_resi']); ?></strong></span>
+                                         <?php endif; ?>
+                                     </div>
+                                     <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                         <div class="order-total-info">
+                                             <span class="order-total-label">Total Tagihan</span>
+                                             <span class="order-total-amount"><?= formatRupiah($order['total_tagihan']); ?></span>
+                                         </div>
+                                         <?php if (strtolower($order['status_pesanan']) === 'pending' && strtolower($order['status_pembayaran']) === 'pending') : ?>
+                                             <a href="bayar.php?id=<?= $orderIdValue; ?>" class="btn-pill btn-pink" style="padding: 8px 16px; font-size: 0.85rem; margin-right: 5px;">💳 Bayar Sekarang</a>
+                                             <form method="POST" action="" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');" style="display: inline-block;">
+                                                 <input type="hidden" name="id_order" value="<?= $orderIdValue; ?>">
+                                                 <button type="submit" name="cancel_order" class="btn-pill btn-red" style="padding: 8px 16px; font-size: 0.85rem;">❌ Batalkan Pesanan</button>
+                                             </form>
+                                         <?php endif; ?>
+                                         <?php if (!empty($order['nomor_resi']) && strtolower($order['status_pesanan']) === 'dikirim') : ?>
+                                              <button class="btn-pill btn-pink btn-lacak" data-resi="<?= htmlspecialchars($order['nomor_resi']); ?>" style="padding: 8px 16px; font-size: 0.85rem; background-color: #6C63FF; box-shadow: none; border: none; cursor: pointer; margin-right: 5px;">🚚 Lacak Paket</button>
+                                              <form method="POST" action="" onsubmit="return confirm('Apakah Anda yakin barang sudah diterima dengan baik?');" style="display: inline-block; margin-right: 5px;">
+                                                  <input type="hidden" name="id_order" value="<?= $orderIdValue; ?>">
+                                                  <button type="submit" name="confirm_delivered" class="btn-pill" style="padding: 8px 16px; font-size: 0.85rem; background-color: #2e7d32; color: white; border: none; cursor: pointer;">✓ Konfirmasi Selesai</button>
+                                              </form>
+                                          <?php endif; ?>
+                                         <a href="<?= $base_url ?>customers/checkout.php" class="btn-pill btn-outline-pink" style="padding: 8px 16px; font-size: 0.85rem;">Beli Lagi</a>
+                                     </div>
+                                 </div>
                             </article>
                         <?php endforeach; ?>
                     </div>
@@ -1176,6 +1354,110 @@ function orderStatusLabel($status)
                     });
                 });
             }
+        });
+    </script>
+    
+    <!-- Modal Lacak Paket -->
+    <div id="lacakModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content-box">
+            <div class="modal-header-box">
+                <h3>🚚 Riwayat Pelacakan Paket</h3>
+                <span class="close-modal" id="closeLacakModal">&times;</span>
+            </div>
+            <div class="modal-body-box">
+                <div id="lacakSummary" style="margin-bottom: 20px; font-size: 0.95rem; border-bottom: 2px dashed rgba(58,48,99,0.1); padding-bottom: 15px;">
+                    <!-- Rangkuman resi -->
+                </div>
+                <div id="lacakTimeline" class="timeline-container">
+                    <!-- Timeline riwayat -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const lacakModal = document.getElementById('lacakModal');
+            const closeLacakModal = document.getElementById('closeLacakModal');
+            const lacakSummary = document.getElementById('lacakSummary');
+            const lacakTimeline = document.getElementById('lacakTimeline');
+
+            // Handle klik tombol lacak
+            const lacakBtns = document.querySelectorAll('.btn-lacak');
+            lacakBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const resi = this.getAttribute('data-resi');
+                    
+                    // Set loading state
+                    lacakSummary.innerHTML = `<div style="text-align:center; padding: 10px;"><strong style="color: #6C63FF;">Menghubungi API RajaOngkir...</strong></div>`;
+                    lacakTimeline.innerHTML = '';
+                    lacakModal.style.display = 'flex';
+
+                    // Fetch ke proxy backend kita
+                    fetch(`ajax_lacak.php?resi=${encodeURIComponent(resi)}&courier=jne`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let badgeColor = data.summary.status === 'DELIVERED' ? '#276d37' : '#d66400';
+                                let badgeBg = data.summary.status === 'DELIVERED' ? 'rgba(110, 219, 143, 0.15)' : 'rgba(255, 133, 45, 0.1)';
+                                let mockNote = '';
+
+                                lacakSummary.innerHTML = `
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                        <div><strong>Nomor Resi:</strong> ${data.summary.waybill_number}</div>
+                                        <div><strong>Kurir:</strong> ${data.summary.courier_name}</div>
+                                        <div><strong>Pengirim:</strong> ${data.summary.shipper}</div>
+                                        <div><strong>Penerima:</strong> ${data.summary.receiver}</div>
+                                    </div>
+                                    <div style="margin-top:10px;">
+                                        <strong>Status Paket:</strong> 
+                                        <span style="background:${badgeBg}; color:${badgeColor}; padding:3px 10px; border-radius:15px; font-weight:800; font-size:0.8rem;">
+                                            ${data.summary.status}
+                                        </span>
+                                    </div>
+                                    ${mockNote}
+                                `;
+
+                                if (data.history && data.history.length > 0) {
+                                    let timelineHtml = '';
+                                    data.history.forEach(item => {
+                                        timelineHtml += `
+                                            <div class="timeline-item">
+                                                <div class="timeline-dot"></div>
+                                                <div class="timeline-date">${item.date}</div>
+                                                <div class="timeline-desc">${item.description}</div>
+                                            </div>
+                                        `;
+                                    });
+                                    lacakTimeline.innerHTML = timelineHtml;
+                                } else {
+                                    lacakTimeline.innerHTML = `<div style="color:#888; text-align:center;">Belum ada riwayat pergerakan paket.</div>`;
+                                }
+                            } else {
+                                lacakSummary.innerHTML = `<div style="color:#C62828; font-weight:700;">Gagal melacak: ${data.message}</div>`;
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            lacakSummary.innerHTML = `<div style="color:#C62828; font-weight:700;">Terjadi kesalahan koneksi saat melacak paket.</div>`;
+                        });
+                });
+            });
+
+            // Tutup modal
+            if (closeLacakModal) {
+                closeLacakModal.addEventListener('click', function() {
+                    lacakModal.style.display = 'none';
+                });
+            }
+
+            // Tutup modal jika klik luar
+            window.addEventListener('click', function(e) {
+                if (e.target === lacakModal) {
+                    lacakModal.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>

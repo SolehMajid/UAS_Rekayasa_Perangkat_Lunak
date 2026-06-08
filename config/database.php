@@ -46,3 +46,10 @@ if (mysqli_num_rows($check_table) == 0) {
     }
 }
 
+// Auto-migrate/setup nomor_resi in order table
+$check_resi_col = mysqli_query($conn, "SHOW COLUMNS FROM `order` LIKE 'nomor_resi'");
+if (mysqli_num_rows($check_resi_col) == 0) {
+    mysqli_query($conn, "ALTER TABLE `order` ADD COLUMN `nomor_resi` varchar(50) DEFAULT NULL");
+}
+
+
