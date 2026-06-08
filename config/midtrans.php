@@ -3,8 +3,8 @@
 
 // 1. Tentukan API Keys dari Dashboard Sandbox Midtrans Anda
 // Buka Dashboard Midtrans Sandbox > Settings > Access Keys
-define('MIDTRANS_SERVER_KEY', 'Mid-server-4Nhcw0ISEJkzpMAxUWi3fQFA'); // Masukkan Server Key Anda di sini
-define('MIDTRANS_CLIENT_KEY', 'Mid-client-rWQQ5feezij-GPyh'); // Masukkan Client Key Anda di sini
+define('MIDTRANS_SERVER_KEY', env('MIDTRANS_SERVER_KEY', 'Mid-server-4Nhcw0ISEJkzpMAxUWi3fQFA')); // Masukkan Server Key Anda di sini
+define('MIDTRANS_CLIENT_KEY', env('MIDTRANS_CLIENT_KEY', 'Mid-client-rWQQ5feezij-GPyh')); // Masukkan Client Key Anda di sini
 define('MIDTRANS_IS_PRODUCTION', false); // Set ke false untuk Sandbox (testing) dan true untuk Production (live)
 
 /**
