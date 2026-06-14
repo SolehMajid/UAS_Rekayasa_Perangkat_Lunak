@@ -1,0 +1,122 @@
+Menggambarkan struktur navigasi halaman dan struktur menu dari sistem E-Commerce Squashy.
+Sistem ini terbagi menjadi dua sisi utama: Sisi Pembeli (Web-Base/Responsive) untuk kemudahan akses pelanggan dan Sisi Penjual (Desktop-Base/Admin Panel) untuk operasional manajemen pemilik toko. Setiap elemen dalam sitemap mewakili bagian antarmuka pengguna yang dikembangkan dan diintegrasikan dalam sistem e-commerce Squashy.
+
+SISI PEMBELI (CUSTOMER SIDE - RESPONSIVE WEB)
+---------------------------------------------
+Halaman-halaman yang dirancang secara responsif agar dapat diakses oleh pelanggan retail (orang tua) untuk mencari, membeli produk anak, melacak pesanan, dan berkonsultasi secara online.
+
+1. Guest Mode (Tanpa Login)
+Akses awal halaman bagi seluruh pengunjung situs tanpa harus melakukan autentikasi akun.
+• Sticky Header
+  Bagian navigasi atas tetap yang mempermudah perpindahan antar-halaman utama:
+  - Logo Squashy: Berfungsi sebagai navigasi kembali ke Beranda utama.
+  - Menu Navigasi: Tautan cepat menuju Home, Kategori, Chat, Keranjang, dan Login.
+  - Tombol Login: Bentuk kapsul di kanan untuk masuk ke akun pembeli.
+• Beranda Utama (index.php)
+  Pusat eksplorasi produk terpopuler dengan layout yang colorful dan ramah anak.
+  - Spanduk Promosi Cloud Playground: Spanduk interaktif dengan hiasan gantung awan, balon udara, dan bintang.
+  - Maskot Squashy Bunny: Kelinci putih interaktif di sisi spanduk yang melompat jika disorot.
+  - Widget Tips Parenting: Informasi edukatif mendidik anak bagi orang tua dari maskot Squashy.
+  - Grid Produk Terpopuler: 4 kartu produk best-seller berbentuk awan dengan info detail dan tombol beli.
+• Etalase & Kategori (customers/kategori.php)
+  Etalase produk dinamis yang merubah tema warnanya secara otomatis sesuai kategori aktif:
+  - Kategori Mainan: Mengubah tema menjadi hijau ceria (playful).
+  - Kategori Pakaian: Mengubah tema menjadi kuning pastel.
+    * Sub-kategori Baju Laki-laki: Mengubah tema menjadi biru muda.
+    * Sub-kategori Baju Perempuan: Mengubah tema menjadi pink/merah muda.
+  - Kategori Perlengkapan Bayi: Mengubah tema menjadi merah muda lembut.
+  - Grid Produk Kategori: Daftar produk yang terdaftar dalam kategori tertentu.
+• Detail Produk (Modal Pop-up)
+  Dialog interaktif yang memuat informasi lengkap produk tanpa perlu berpindah halaman (get_product_detail.php):
+  - Foto & Nama Produk: Visualisasi produk dengan font Nunito yang ramah anak.
+  - Rating Bintang: Akumulasi kepuasan pembeli dalam bintang emas.
+  - Harga & Stok: Informasi harga (oranye) dan status ketersediaan (hijau/merah).
+  - Deskripsi & Ulasan: Deskripsi spesifikasi serta daftar komentar dari pembeli lain lengkap dengan balasan resmi admin.
+  - Tombol Beli: Tombol lebar untuk menambahkan produk ke keranjang.
+
+2. Autentikasi Pengguna
+Menu untuk mengelola identitas dan verifikasi keamanan akun pembeli:
+• Login Pelanggan (customers/login.php)
+  Formulir autentikasi untuk memverifikasi email dan kata sandi pelanggan terdaftar.
+• Registrasi Akun Baru (customers/register.php)
+  Formulir pendaftaran member baru (nama lengkap, email, password, konfirmasi password).
+• Lupa Password (customers/forgot_password.php)
+  Formulir pemulihan dengan menginput email untuk pengiriman instruksi reset sandi.
+
+3. Authenticated Customer Mode (Setelah Login)
+Halaman dan fitur belanja khusus bagi pembeli terdaftar yang telah melakukan login:
+• Keranjang Belanja (customers/keranjang.php)
+  Menyimpan daftar produk pilihan sementara sebelum checkout:
+  - Update Kuantitas: Pengaturan jumlah barang anak yang ingin dibeli.
+  - Perhitungan Otomatis: Subtotal dan total harga belanja dihitung ulang secara real-time.
+  - Hapus Item: Tombol sampah merah untuk menghapus produk dari keranjang.
+• Form Checkout & Alamat (customers/checkout.php)
+  Formulir penyelesaian pesanan:
+  - Data Pengiriman: Input nama penerima, nomor HP aktif, dan alamat lengkap fisik.
+  - Metode Pembayaran: Dropdown pilihan transfer bank atau e-wallet.
+  - Integrasi RajaOngkir (customers/ajax_ongkir.php): Perhitungan biaya pengiriman kurir logistik secara real-time.
+• Gerbang Pembayaran (customers/bayar.php)
+  Halaman ringkasan pembayaran dan instruksi transfer untuk memverifikasi pesanan.
+• Profil & Riwayat Pesanan (customers/profil.php)
+  Pusat manajemen akun pembeli dan pelacakan barang:
+  - Banner Sambutan: Banner personalisasi ramah anak menyambut pembeli.
+  - Tab Filter Pesanan: Menyaring riwayat pesanan berdasarkan status (Semua, Pending, Dikirim, Selesai).
+  - Lacak Status Logistik (customers/ajax_lacak.php): Sinkronisasi real-time status pengiriman paket kurir.
+  - Batal Pesanan Pending: Fitur pembatalan mandiri khusus untuk pesanan berstatus pending guna mengembalikan stok barang.
+  - Beri Ulasan & Rating (customers/tambah_ulasan.php): Form feedback berupa bintang 1-5, teks ulasan, dan unggah foto bukti produk.
+• Live Chat CS & Bot (customers/chat.php)
+  Antarmuka obrolan real-time interaktif berlatar hijau mint:
+  - Quick Buttons: Opsi pertanyaan cepat (Cek Stok, Cara Retur, Info Promo) untuk dijawab bot instan.
+  - AJAX Chat Sync (customers/ajax_chat.php): Mengirimkan pesan manual secara real-time ke panel admin.
+• Logout (customers/logout.php)
+  Mengakhiri sesi belanja aktif dan mengembalikan akses ke Guest Mode.
+
+
+SISI PENJUAL (ADMIN SIDE - DESKTOP BASE / ADMIN PANEL)
+------------------------------------------------------
+Menu manajemen operasional untuk pemilik atau pengelola toko Squashy yang diakses dari komputer/desktop.
+
+1. Login Portal Admin
+Formulir autentikasi keamanan khusus untuk menyaring akses masuk ke direktori dashboard admin (/admin).
+
+2. Dashboard Analisis & Statistik (admin/admin_dashboard.php)
+Pusat visualisasi performa toko untuk memantau aktivitas transaksi:
+• Ringkasan Keuangan (Top Cards)
+  Kotak metrik total pendapatan (omzet) dan total unit produk terjual.
+• Grafik Tren Penjualan
+  Visualisasi diagram batang tren mingguan/bulanan penjualan.
+• Progress Bar Kategori
+  Horizontal progress bar warna-warni penunjuk persentase performa per kategori (Pakaian, Mainan, Perlengkapan).
+• List Produk Terlaris
+  Daftar barang terpopuler yang paling banyak dibeli.
+• Filter Rentang Waktu
+  Dropdown penyaring data dashboard (minggu ini, bulan ini, tahun ini).
+
+3. Kelola Katalog Produk (admin/kelola_produk.php)
+Manajemen penuh persediaan inventori barang:
+• Kartu Ringkasan Stok: Info jumlah produk ready dan produk habis.
+• Tabel Persediaan: Kolom ID, gambar mini, nama, kategori, harga, kuantitas stok, dan badge ketersediaan (tersedia/habis).
+• Form Modal Tambah/Edit Produk: Form pengisian nama, harga, stok, deskripsi, kategori, dan upload foto produk.
+• Background Action (admin/produk_action.php & proses_tambah_produk.php): Proses mengunggah gambar baru ke server atau menghapus rekaman produk dari database secara permanen.
+
+4. Kelola Pesanan & Transaksi (admin/kelola_pesanan.php)
+Memantau dan memperbarui status pengiriman barang pelanggan:
+• Tabel Transaksi Masuk: Daftar antrean pesanan pelanggan lengkap dengan tanggal, total bayar, dan status logistik.
+• Detail & Status Pesanan (admin/detail_pesanan.php): Rincian alamat pengiriman fisik, pilihan kurir, rincian item, dan dropdown update status (pending, dibayar, diproses, dikirim, selesai, dibatalkan) yang terhubung ke (admin/update_status.php).
+• Cetak Invoice (admin/cetak_invoice.php): Format layout invoice siap cetak untuk lampiran pengemasan paket.
+
+5. Kelola Pembayaran (admin/kelola_pembayaran.php)
+Verifikasi bukti dana pembayaran:
+• Tabel Validasi Keuangan: Menampilkan data transfer yang diklaim pembeli.
+• Tombol Aksi Cepat: Tombol "Konfirmasi Lunas" (mengubah status menjadi lunas) dan "Batal Konfirmasi" (mengembalikan status ke pending).
+
+6. Kelola Chat CS Admin (admin/kelola_chat.php)
+Menghubungkan komunikasi langsung dengan pelanggan:
+• Antrean Chat Pembeli: Panel kiri berisi daftar nama pembeli aktif mengirim pesan lengkap dengan lencana unread.
+• Balon Obrolan Aktif: Panel kanan ruang percakapan real-time menggunakan AJAX polling (admin/ajax_admin_chat.php).
+
+7. Kelola Ulasan (admin/kelola_ulasan.php)
+Penyaringan ulasan produk:
+• Tabel Moderasi Ulasan: Memuat identitas pengulas, rating bintang emas, teks ulasan, foto bukti dari pembeli, dan balasan resmi admin.
+• Form Modal Balasan: Kolom untuk menginput respons/jawaban apresiatif admin yang akan ditampilkan ke publik.
+* Hapus Ulasan: Tombol eliminasi ulasan yang tidak pantas dari sistem dan database.

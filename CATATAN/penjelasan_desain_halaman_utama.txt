@@ -1,0 +1,57 @@
+Menggambarkan analisis desain visual dan tata letak Halaman Utama (Beranda) dari sistem E-Commerce Squashy. Desain antarmuka beranda Squashy mengusung konsep visual yang ceria, colorful, dan interaktif (playful) yang ramah anak sekaligus intuitif bagi orang tua (Bunda & Ayah) yang berbelanja.
+
+1. Header (Bagian Atas)
+berisi:
+○ Logo My Squashy di kiri atas (atau tengah atas) sebagai identitas utama brand toko mainan dan pakaian anak.
+○ Navigasi/Menu Utama, berupa menu yang mudah diakses dengan efek transisi:
+  ■ Home (menyala pink sebagai indikator halaman aktif)
+  ■ Kategori
+  ■ Chat
+  ■ Keranjang
+○ Fitur Tambahan:
+  ■ Tombol Login / Sign Up:
+    - Sebelum Login: Menampilkan tombol "🔐 Login" berbentuk kapsul berwarna oranye di kanan navigasi.
+    - Setelah Login: Berubah secara dinamis menjadi tombol "👤 Profil" berwarna pink untuk akses detail akun pelanggan.
+  ■ Sticky Header & Background Blur: Bilah navigasi tetap melayang di atas (sticky) saat di-scroll dengan latar belakang putih transparan (rgba 255, 255, 255, 0.95), efek blur (backdrop-filter: blur(10px)), border-top pink tebal 6px, dan bayangan lembut (box-shadow).
+
+2. Hero Section (Bagian Tampilan Utama di Tengah)
+Bagian ini sangat menonjol di atas halaman berupa spanduk melengkung besar ("Promo Banner Seru") berlatar belakang gradasi putih-biru lembut (linear-gradient 135deg, #FFFDFD 0%, #F5FBFD 100%) berbingkai putih tebal (border: 8px solid white) dengan hiasan ornamen gantung melayang yang ramah anak.
+Elemen-elemen yang ada:
+○ Gambar / Maskot Interaktif: Menampilkan maskot "Squashy Bunny" (kelinci putih 3D CSS) di sebelah kanan, lengkap dengan gelembung ucapan (speech bubble) bertuliskan: "Halo Bunda! Yuk, main bareng Squashy! Pencet aku dong! 🐰✨". Maskot ini dapat melompat jika diklik/hover disertai efek partikel bintang yang menyebar.
+○ Headline: "Dunia Ceria Si Kecil! 🧸 🍭" dengan penekanan kata "Si Kecil!" menggunakan font Nunito tebal berwarna pink cerah dengan efek drop shadow 3D kuning.
+○ Deskripsi singkat: "Tempat keajaiban tumbuh! Temukan mainan edukatif yang menyenangkan & pakaian gemas berkualitas premium untuk buah hati tercinta."
+○ Widget Tips Parenting: Kotak berbingkai garis putus-putus oranye ("Tips Ceria Bunda Hari Ini") yang menyajikan informasi edukatif harian secara acak dan tombol "Tips Lain ✨" untuk mengganti tips.
+○ Tombol CTA (Call to Action): Tombol berbentuk jelly bouncy berwarna pink cerah bertuliskan "Main & Belanja Sekarang ➔" yang mengarahkan pembeli langsung ke area katalog produk terfavorit.
+○ Ornamen Gantung: Hiasan awan (🌤️, ☁️), balon udara merah (🎈), beruang kecil (🧸), dan bintang berkilau (⭐, ✨) yang bergerak melayang lambat menggunakan animasi CSS.
+
+3. Deskripsi Singkat / Fitur Utama Website
+Website Squashy memiliki fitur-fitur utama sebagai berikut:
+○ Parenting Tips Widget: Menampilkan tips parenting harian interaktif bagi para orang tua untuk mendukung pertumbuhan buah hati mereka.
+○ Maskot Interaktif (Squashy Bunny): Karakter kelinci interaktif dengan animasi gerak melompat (bunny jump) dan dialog dinamis (speech bubble) untuk meningkatkan visual engagement.
+○ Dynamic Kategori Theme: Skema warna latar belakang website yang berubah secara otomatis ketika beralih di antara kategori produk (hijau playful untuk mainan, kuning pastel untuk pakaian, merah muda lembut untuk perlengkapan).
+○ Live Chat & Bot Bantuan: Layanan konsultasi chat real-time interaktif langsung di website dengan fitur quick buttons (cek stok, info ongkir, promo) yang direspons otomatis oleh bot bantuan maupun admin.
+○ Modal Detail Produk & Ulasan: Dialog pop-up interaktif yang memuat informasi lengkap produk, rating bintang, dan feedback ulasan lengkap dengan foto serta tanggapan resmi dari admin secara real-time tanpa perlu memuat ulang halaman.
+
+4. Bagian Produk / Layanan (Opsional)
+Website menampilkan 2 bagian yang fokus pada produk dan pencarian:
+○ Balon Kategori Cepat: Menampilkan 4 opsi kategori utama berbentuk kartu balon pastel lembut (Pakaian Anak 👕, Mainan Seru 🚂, Perlengkapan 🍼, Promo Spesial 🎁) yang memicu efek animasi putar (rotation animation) saat disentuh kursor.
+○ Bar Pencarian Terintegrasi: Kolom pencarian dinamis berbentuk kapsul dengan placeholder "Cari mainan atau baju anak lucu..." lengkap dengan tombol cari berwarna pink untuk menyaring produk secara cepat.
+○ Produk Terfavorit (Best Seller Grid): Menampilkan 4 produk terpopuler pilihan pelanggan. Setiap kartu produk berbentuk awan dusty-pink dengan detail gambar produk, nama produk, harga (pink), statistik jumlah penjualan (contoh: "🔥 Terjual 19 pcs"), dan tombol "BELI SEKARANG" berwarna oranye.
+
+5. Footer (Bagian Bawah)
+○ Navigasi Penting:
+  ■ Home
+  ■ Kategori
+  ■ Chat
+  ■ Keranjang
+  ■ FAQ (Tanya Jawab)
+  ■ Syarat & Ketentuan
+  ■ Informasi Pengiriman
+  ■ Metode Pembayaran
+○ Kontak (email, no HP, alamat):
+  ■ Telepon & WhatsApp: 0812-3456-7890 (Layanan Konsumen & Pengaduan)
+  ■ Email: hello@squashy.com / support@squashy.com
+  ■ Instagram: @my.squashy
+  ■ Alamat Toko: Ruko Squashy Ceria, Jl. Kidz Avenue No. 12, Jakarta
+○ Media Sosial:
+  ■ Ikon Instagram, Facebook, YouTube, dan TikTok ditampilkan di bagian bawah footer untuk memudahkan pelanggan terhubung dengan komunitas orang tua Squashy.

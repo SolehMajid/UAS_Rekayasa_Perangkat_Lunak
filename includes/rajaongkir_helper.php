@@ -10,7 +10,7 @@ function rajaongkir_request($endpoint, $params = [], $method = 'GET') {
     $accountType = RAJAONGKIR_ACCOUNT_TYPE;
     
     // Jika masih placeholder, return null agar memicu fallback mock data
-    if ($apiKey === env('jhPJLRMBdef3560b186ff285dvt6bhEH')) {
+    if ($apiKey === 'jhPJLRMBdef3560b186ff285dvt6bhEH') {
         $GLOBALS['rajaongkir_last_error'] = 'API Key masih menggunakan placeholder/belum diisi.';
         return null;
     }

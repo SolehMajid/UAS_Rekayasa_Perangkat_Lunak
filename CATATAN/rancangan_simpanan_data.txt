@@ -1,0 +1,131 @@
+3.3.2	Rancangan Simpanan Data
+Sistem yang dibuat menggunakan 11 buah tabel yang saling berelasi. Tabel berelasi tersebut adalah user, admin, kategori, produk, order, order_detail, cart, pesan_chat, alamat_pengiriman, payment, dan review_produk. Seluruh tabel ini dirancang untuk saling terintegrasi guna mendukung fungsionalitas utama sistem e-commerce Squashy, mulai dari manajemen data pengguna, katalog produk, hingga proses transaksi, ulasan, dan komunikasi. Struktur untuk masing-masing tabel tersebut adalah sebagai berikut:
+
+1.	Nama Tabel  : user
+	Fungsi      : Menyimpan data identitas pengguna (pembeli/customer).
+	Kunci Utama : id_user
+	No	Field          	Type        	Keterangan
+	1	id_user        	INT         	Primary key, AUTO_INCREMENT, identitas unik setiap pengguna
+	2	nama_lengkap   	VARCHAR(100)	Nama lengkap pengguna
+	3	email          	VARCHAR(100)	Alamat email pengguna, digunakan untuk login (Unique)
+	4	password_hash  	VARCHAR(255)	Password pengguna yang telah dienkripsi (hashed menggunakan SHA-256 sesuai register/login)
+	5	created_at     	TIMESTAMP   	Waktu dan tanggal akun pengguna dibuat (default CURRENT_TIMESTAMP)
+
+2.	Nama Tabel  : admin
+	Fungsi      : Menyimpan data identitas pengelola atau pemilik toko (admin).
+	Kunci Utama : id_admin
+	No	Field              	Type        	Keterangan
+	1	id_admin           	INT         	Primary key, AUTO_INCREMENT, identitas unik setiap admin
+	2	password_hash_admin	VARCHAR(255)	Password admin yang telah dienkripsi (hashed menggunakan SHA-256 sesuai register/login)
+	3	nama_admin         	VARCHAR(100)	Nama lengkap admin
+
+3.	Nama Tabel  : kategori
+	Fungsi      : Menyimpan data kategori produk (seperti pakaian, mainan, perlengkapan bayi).
+	Kunci Utama : id_kategori
+	No	Field        	Type        	Keterangan
+	1	id_kategori  	INT         	Primary key, AUTO_INCREMENT, identitas unik kategori produk
+	2	nama_kategori	VARCHAR(255)	Nama kategori produk
+
+4.	Nama Tabel  : produk
+	Fungsi      : Menyimpan data detail produk yang dipajang dan dijual.
+	Kunci Utama : id_produk
+	Kunci Tamu  : id_kategori
+	No	Field      	Type        	Keterangan
+	1	id_produk  	INT         	Primary key, AUTO_INCREMENT, identitas unik setiap produk
+	2	id_kategori	INT         	Foreign key, merujuk ke id_kategori pada tabel kategori
+	3	nama_produk	VARCHAR(255)	Nama produk anak
+	4	harga      	INT         	Harga produk per unit
+	5	stok       	INT         	Jumlah stok produk yang tersedia (default 0)
+	6	deskripsi  	VARCHAR(255)	Deskripsi produk/spesifikasi detail
+	7	foto       	VARCHAR(255)	Nama file foto/gambar produk
+
+5.	Nama Tabel  : order
+	Fungsi      : Menyimpan data pesanan/transaksi belanja yang dilakukan pembeli.
+	Kunci Utama : id_order
+	Kunci Tamu  : id_user
+	No	Field          	Type        	Keterangan
+	1	id_order       	INT         	Primary key, AUTO_INCREMENT, identitas unik setiap pesanan
+	2	id_user        	INT         	Foreign key, merujuk ke id_user pada tabel user
+	3	nomer_hp       	VARCHAR(100)	Nomor HP penerima pesanan
+	4	nama_pembeli   	VARCHAR(255)	Nama penerima pesanan
+	5	tanggal_pesanan	TIMESTAMP   	Tanggal dan waktu pemesanan dibuat
+	6	total_tagihan  	INT         	Total tagihan belanja pesanan
+	7	status_pesanan 	ENUM        	Status pesanan ('pending', 'dibayar', 'diproses', 'dikirim', 'selesai', 'dibatalkan')
+	8	snap_token     	VARCHAR(255)	Token pembayaran Midtrans Snap
+	9	no_resi        	VARCHAR(50) 	Nomor resi pengiriman kurir (default '')
+	10	nomor_resi     	VARCHAR(50) 	Nomor resi pengiriman kurir (alternatif)
+
+6.	Nama Tabel  : order_detail
+	Fungsi      : Menyimpan rincian produk yang dibeli pada setiap transaksi pesanan.
+	Kunci Utama : id_detail
+	Kunci Tamu  : id_order, id_produk
+	No	Field           	Type        	Keterangan
+	1	id_detail       	INT         	Primary key, AUTO_INCREMENT, identitas unik detail pesanan
+	2	id_order        	INT         	Foreign key, merujuk ke id_order pada tabel order
+	3	id_produk       	INT         	Foreign key, merujuk ke id_produk pada tabel produk
+	4	nama_produk     	VARCHAR(255)	Nama produk saat dipesan
+	5	harga_saat_order	INT         	Harga satuan produk saat dipesan
+	6	foto_produk     	VARCHAR(255)	Nama file foto produk saat dipesan
+	7	kuantitas       	INT         	Jumlah barang yang dibeli
+	8	subtotal        	INT         	Total harga per item produk (harga_saat_order * kuantitas)
+
+7.	Nama Tabel  : cart
+	Fungsi      : Menyimpan data produk belanjaan sementara di keranjang belanja pengguna.
+	Kunci Utama : id_cart
+	Kunci Tamu  : id_user, id_produk
+	No	Field    	Type        	Keterangan
+	1	id_cart  	INT         	Primary key, AUTO_INCREMENT, identitas unik item keranjang
+	2	id_user  	INT         	Foreign key, merujuk ke id_user pada tabel user
+	3	id_produk	INT         	Foreign key, merujuk ke id_produk pada tabel produk
+	4	jumlah   	INT         	Jumlah barang belanjaan di keranjang (default 1)
+
+8.	Nama Tabel  : pesan_chat
+	Fungsi      : Menyimpan riwayat pesan live chat antara pembeli, admin, dan bot.
+	Kunci Utama : id_chat
+	Kunci Tamu  : id_user, id_admin
+	No	Field      	Type        	Keterangan
+	1	id_chat    	INT         	Primary key, AUTO_INCREMENT, identitas unik pesan chat
+	2	id_user    	INT         	Foreign key, merujuk ke id_user pada tabel user (ON DELETE CASCADE)
+	3	id_admin   	INT         	Foreign key, merujuk ke id_admin pada tabel admin (ON DELETE SET NULL)
+	4	isi_chat   	TEXT        	Konten isi pesan chat
+	5	pengirim   	ENUM        	Kategori pengirim pesan ('customer', 'admin', 'bot')
+	6	waktu_kirim	TIMESTAMP   	Waktu pesan chat terkirim (default CURRENT_TIMESTAMP)
+
+9.	Nama Tabel  : alamat_pengiriman
+	Fungsi      : Menyimpan data alamat pengiriman lengkap milik pembeli.
+	Kunci Utama : id_alamat
+	Kunci Tamu  : id_user
+	No	Field       	Type        	Keterangan
+	1	id_alamat   	INT         	Primary key, AUTO_INCREMENT, identitas unik alamat
+	2	id_user     	INT         	Foreign key, merujuk ke id_user pada tabel user
+	3	label_alamat	VARCHAR(255)	Label penanda alamat (seperti Rumah, Kantor, Kos)
+	4	jalan       	VARCHAR(255)	Detail nama jalan dan nomor rumah
+	5	kecamatan   	VARCHAR(255)	Nama kecamatan pengiriman
+	6	kabupaten   	VARCHAR(255)	Nama kabupaten/kota pengiriman
+	7	kodepos     	INT         	Kode pos area alamat
+
+10.	Nama Tabel  : payment
+	Fungsi      : Menyimpan data transaksi pembayaran pesanan.
+	Kunci Utama : id_payment
+	Kunci Tamu  : id_order
+	No	Field            	Type        	Keterangan
+	1	id_payment       	INT         	Primary key, AUTO_INCREMENT, identitas unik pembayaran
+	2	id_order         	INT         	Foreign key, merujuk ke id_order pada tabel order
+	3	metode_pembayaran	VARCHAR(255)	Metode pembayaran yang dipilih (misal: Transfer Bank)
+	4	status_pembayaran	VARCHAR(100)	Status pembayaran ('pending', 'dibayar', dll.)
+	5	waktu_bayar      	TIMESTAMP   	Waktu pembayaran diselesaikan (default CURRENT_TIMESTAMP)
+
+11.	Nama Tabel  : review_produk
+	Fungsi      : Menyimpan ulasan, penilaian bintang, dan foto ulasan pembeli terhadap produk.
+	Kunci Utama : id_review
+	Kunci Tamu  : id_user, id_produk, id_order
+	No	Field        	Type        	Keterangan
+	1	id_review    	INT         	Primary key, AUTO_INCREMENT, identitas unik review
+	2	id_user      	INT         	Foreign key, merujuk ke id_user pada tabel user
+	3	id_produk    	INT         	Foreign key, merujuk ke id_produk pada tabel produk
+	4	id_order     	INT         	Foreign key, merujuk ke id_order pada tabel order
+	5	rating       	INT         	Skala penilaian kepuasan (1-5)
+	6	komentar     	TEXT        	Isi komentar ulasan pembeli
+	7	foto_review  	VARCHAR(255)	Nama file foto ulasan produk (nullable)
+	8	balasan_admin	TEXT        	Tanggapan atau jawaban balasan dari admin
+	9	created_at   	TIMESTAMP   	Tanggal ulasan dibuat (default CURRENT_TIMESTAMP)

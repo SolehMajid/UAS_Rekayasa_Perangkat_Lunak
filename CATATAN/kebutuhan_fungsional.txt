@@ -1,0 +1,270 @@
+================================================================================
+                    KEBUTUHAN FUNGSIONAL SISTEM SQUASHY
+================================================================================
+
+A. KEBUTUHAN FUNGSIONAL PEMBELI
+
+1. Melihat Produk Tanpa Login
+Setiap pengunjung website Squashy dapat melihat seluruh katalog produk yang tersedia tanpa harus memiliki akun atau melakukan login. Saat pengunjung berpindah kategori, tampilan website berubah otomatis mengikuti konsep dynamic theme yang telah dirancang.
+Langkah:
+Stimulus   : Pengguna membuka website Squashy.
+Response   : Sistem menampilkan halaman utama dengan tema ceria dan colorful beserta daftar produk terbaru.
+Stimulus   : Pengguna memilih salah satu kategori produk (Pakaian, Mainan, atau Perlengkapan Bayi).
+Response   : Sistem menampilkan daftar produk sesuai kategori yang dipilih dan mengubah tampilan mengikuti dynamic theme kategori tersebut (baju: ungu; mainan: playful; perlengkapan bayi: soft/lembut).
+Stimulus   : Pengguna memilih sub-kategori Baju Laki-laki atau Baju Perempuan.
+Response   : Sistem menampilkan produk sesuai sub-kategori dan mengubah warna tema (biru muda untuk laki-laki, pink untuk perempuan).
+Stimulus   : Pengguna mengklik salah satu produk dari daftar.
+Response   : Sistem menampilkan halaman detail produk berisi foto, nama produk, harga, deskripsi, dan stok.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menampilkan halaman katalog produk yang dapat diakses tanpa login.
+FR-02 : Sistem menerapkan dynamic theme secara otomatis sesuai kategori aktif (homepage: colorful; baju: ungu; baju laki-laki: biru muda; baju perempuan: pink; mainan: playful; perlengkapan bayi: soft/lembut).
+FR-03 : Sistem menyediakan navigasi filter kategori dan sub-kategori produk.
+FR-04 : Sistem menampilkan halaman detail produk beserta informasi lengkap produk.
+
+2. Registrasi Akun
+Setiap pengguna yang ingin melakukan pembelian diharuskan mendaftar terlebih dahulu sebagai member dengan mengisikan data identitas diri termasuk alamat email ke dalam sistem.
+Langkah:
+Stimulus   : Pengguna memilih menu "Daftar" di halaman utama.
+Response   : Sistem menampilkan form registrasi berisi isian: nama lengkap, email, password, konfirmasi password, dan pilihan peran (Pembeli / Penjual).
+Stimulus   : Pengguna mengisi data identitas di form isian, kemudian klik "Daftar".
+Response   : Sistem memvalidasi data yang diinput. Jika valid, sistem menyimpan data akun baru dan menampilkan pesan sukses.
+Stimulus   : Pengguna mengisi data yang tidak valid (misal: email sudah terdaftar atau password tidak cocok).
+Response   : Sistem menampilkan pesan kesalahan yang sesuai pada field yang bermasalah tanpa menghapus data yang sudah diisi.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menampilkan form registrasi member baru berisi isian data diri termasuk nama, email, password, dan pilihan peran.
+FR-02 : Sistem memvalidasi keunikan email (tidak boleh duplikat), kesesuaian password, dan kelengkapan field.
+FR-03 : Sistem membuat akun baru dan menyimpan data pengguna ke database setelah validasi berhasil.
+FR-04 : Sistem menampilkan pesan error pada field yang tidak valid tanpa menghapus data yang sudah diisi.
+
+3. Login Akun
+Setiap pengguna terdaftar dapat melakukan login ke dalam sistem menggunakan email dan password untuk mengakses fitur belanja.
+Langkah:
+Stimulus   : Pengguna mengisi alamat email terdaftar dan sandi pada form login Squashy.
+Response   : Sistem menyembunyikan karakter sandi (masked text) demi kenyamanan dan keamanan pengguna.
+Stimulus   : Pengguna mengklik tombol "Masuk Belanja".
+Response   : Sistem memverifikasi kredensial di database. Jika cocok, sistem mengaktifkan sesi login, mengubah tombol navigasi menjadi profil pengguna, dan mengarahkan ke halaman beranda.
+Stimulus   : Pengguna memasukkan kredensial yang salah.
+Response   : Sistem menampilkan pesan kesalahan login yang sesuai tanpa menghapus email yang sudah diisi.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menyediakan form login untuk memasukkan email dan sandi.
+FR-02 : Sistem memverifikasi kesesuaian email dan password pengguna di database.
+FR-03 : Sistem mengelola sesi login pengguna secara aman setelah otentikasi sukses.
+FR-04 : Sistem menampilkan pesan kesalahan jika login gagal.
+
+4. Pencarian Produk Berdasarkan Kata Kunci
+Memudahkan pembeli mencari produk yang spesifik secara cepat dengan memasukkan kata kunci pada kolom pencarian di halaman katalog.
+Langkah:
+Stimulus   : Pengguna mengetikkan kata kunci nama produk pada kolom pencarian.
+Response   : Sistem menampilkan teks kata kunci secara real-time di kolom input.
+Stimulus   : Pengguna menekan tombol pencarian atau menekan Enter.
+Response   : Sistem mencocokkan kata kunci dengan nama atau deskripsi produk di database dan menampilkan produk yang relevan di etalase.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menyediakan kolom input pencarian produk di bagian navigasi.
+FR-02 : Sistem mencari produk dengan mencocokkan kata kunci masukan pada database.
+FR-03 : Sistem menampilkan daftar produk yang sesuai dengan hasil pencarian.
+
+5. Manajemen Keranjang Belanja
+Pembeli terdaftar dapat menambahkan produk ke keranjang, memperbarui jumlah barang, dan menghapus barang dari keranjang sebelum melakukan checkout.
+Langkah:
+Stimulus   : Pengguna mengklik tombol "Beli" pada halaman detail produk.
+Response   : Sistem menyimpan produk tersebut ke keranjang belanja pengguna dan menampilkan halaman keranjang belanja beserta rinciannya.
+Stimulus   : Pengguna mengubah jumlah (kuantitas) barang di keranjang belanja.
+Response   : Sistem memperbarui jumlah barang dan menghitung ulang subtotal serta total harga secara otomatis.
+Stimulus   : Pengguna mengklik tombol hapus pada item di keranjang belanja.
+Response   : Sistem menghapus produk dari keranjang belanja pengguna di database dan memperbarui total tagihan.
+
+Kebutuhan fungsional:
+FR-01 : Sistem mencatat dan menyimpan produk yang ditambahkan pengguna ke database keranjang belanja.
+FR-02 : Sistem menampilkan rincian barang, harga, kuantitas, subtotal, dan total harga belanja di halaman keranjang.
+FR-03 : Sistem menyediakan fitur pembaruan jumlah (kuantitas) barang beserta perhitungan ulang otomatis.
+FR-04 : Sistem menyediakan fitur hapus barang dari keranjang belanja.
+
+6. Checkout Pesanan dan Pengisian Detail Pengiriman
+Menyediakan formulir penyelesaian transaksi bagi pembeli untuk melengkapi informasi pengiriman dan memilih metode pembayaran.
+Langkah:
+Stimulus   : Pengguna menekan tombol "Checkout" pada halaman keranjang belanja.
+Response   : Sistem menampilkan halaman checkout yang berisi form detail pengiriman dan ringkasan daftar belanja.
+Stimulus   : Pengguna mengisi detail pengiriman (nama penerima, nomor HP, alamat lengkap) dan memilih metode pembayaran, lalu menekan tombol "Proses Pembayaran".
+Response   : Sistem memvalidasi data input, menyimpan data pesanan (order & detail order) dengan status awal "pending", mengosongkan keranjang belanja, dan menampilkan halaman ringkasan pembayaran.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menampilkan halaman checkout dengan form alamat pengiriman dan ringkasan pesanan.
+FR-02 : Sistem memvalidasi kelengkapan form pengiriman (nama, nomor HP, alamat, metode pembayaran).
+FR-03 : Sistem menyimpan data transaksi pesanan ke database dengan status "pending".
+FR-04 : Sistem mengosongkan keranjang belanja pengguna setelah pesanan berhasil dibuat.
+
+7. Membatalkan Pesanan Pending
+Fitur pembatalan transaksi secara mandiri oleh pembeli apabila pesanan masih dalam status pending (belum dibayar/dikonfirmasi).
+Langkah:
+Stimulus   : Pengguna membuka riwayat pesanan dan mengklik tab "Pending".
+Response   : Sistem memuat daftar transaksi pending beserta opsi tombol "Batal Pesanan".
+Stimulus   : Pengguna mengklik tombol "Batal Pesanan" pada pesanan yang ingin dibatalkan.
+Response   : Sistem memverifikasi status pesanan, memperbarui status pesanan menjadi "dibatalkan" di database, mengembalikan stok produk, dan memperbarui riwayat pesanan.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menyediakan tombol pembatalan pesanan pada pesanan yang masih berstatus pending.
+FR-02 : Sistem memvalidasi status pesanan untuk memastikan hanya pesanan pending yang dapat dibatalkan.
+FR-03 : Sistem memperbarui status pesanan menjadi dibatalkan di database dan mengembalikan jumlah stok produk ke semula.
+
+8. Memberikan Ulasan dan Rating Produk
+Memberikan wadah bagi pembeli untuk menuliskan ulasan kepuasan, rating bintang 1-5, dan mengunggah foto produk setelah pesanan diselesaikan.
+Langkah:
+Stimulus   : Pengguna membuka riwayat pesanan selesai dan mengklik tombol "Beri Ulasan".
+Response   : Sistem menampilkan form ulasan berisi pilihan rating bintang, kolom komentar, dan form unggah foto.
+Stimulus   : Pengguna memilih rating bintang, menulis komentar ulasan, memilih foto ulasan dari perangkat, dan mengklik "Kirim Ulasan".
+Response   : Sistem memvalidasi input, mengunggah foto ke server, merekam data ulasan di database review produk, dan menampilkannya pada halaman detail produk.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menyediakan form ulasan (rating bintang, komentar, unggah foto) untuk pesanan yang telah selesai.
+FR-02 : Sistem mengunggah foto ulasan ke server dan menyimpan data ulasan ke database review produk.
+FR-03 : Sistem menampilkan ulasan terbaru pada halaman detail produk secara publik.
+
+9. Layanan Live Chat dengan Customer Service & Bot
+Menyediakan media interaksi chat real-time untuk bertanya seputar produk, metode retur, biaya pengiriman, ataupun promo dengan respons otomatis bot atau admin.
+Langkah:
+Stimulus   : Pengguna membuka halaman "Chat" di header utama.
+Response   : Sistem menampilkan antarmuka live chat Squashy lengkap dengan sapaan pembuka dari Bot Squashy.
+Stimulus   : Pengguna mengklik salah satu tombol opsi cepat (quick button) seperti "Cek Stok" atau "Cara Retur".
+Response   : Sistem menampilkan respons bot otomatis secara instan di jendela obrolan.
+Stimulus   : Pengguna mengetik pesan manual di input chat lalu mengklik tombol kirim.
+Response   : Sistem menyimpan pesan chat manual tersebut ke basis data, menampilkannya sebagai pesan keluar, dan meneruskannya ke panel admin chat.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menyediakan antarmuka live chat interaktif bagi pengguna.
+FR-02 : Sistem menyediakan tombol-tombol opsi cepat untuk mendapatkan balasan bot otomatis secara instan.
+FR-03 : Sistem merekam pesan obrolan manual pengguna ke database dan mengirimkannya ke panel admin secara real-time.
+
+
+B. KEBUTUHAN FUNGSIONAL PENJUAL (ADMIN)
+
+1. Memantau Dashboard Penjualan
+Penjual dapat melihat visualisasi statistik performa penjualan, ringkasan pendapatan, produk terlaris, dan progress bar penjualan per kategori produk.
+Langkah:
+Stimulus   : Penjual (Admin) membuka halaman dashboard admin.
+Response   : Sistem menampilkan metrik total pendapatan, total produk terjual, grafik tren penjualan bulanan/mingguan, dan daftar produk terlaris.
+Stimulus   : Penjual mengubah filter rentang waktu pada dropdown filter dashboard.
+Response   : Sistem memfilter data database dan memperbarui grafik serta metrik statistik sesuai waktu yang dipilih.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menampilkan ringkasan metrik total pendapatan dan total produk terjual pada dashboard.
+FR-02 : Sistem memvisualisasikan grafik tren penjualan secara berkala.
+FR-03 : Sistem menampilkan list produk terlaris dan progress bar persentase penjualan per kategori.
+FR-04 : Sistem menyediakan filter rentang waktu data pada dashboard.
+
+2. Manajemen Produk
+Penjual memiliki kontrol penuh untuk menambah produk baru, mengunggah foto produk, mengedit informasi produk (stok, harga, nama), dan menghapus produk.
+Langkah:
+Stimulus   : Penjual mengklik tombol "Tambah Produk Baru" pada halaman kelola produk.
+Response   : Sistem menampilkan form tambah produk dengan isian nama, harga, stok, deskripsi, kategori, dan form foto.
+Stimulus   : Penjual mengisi data produk, mengunggah foto, lalu menekan tombol "Simpan Produk".
+Response   : Sistem menyimpan data produk ke database, mengunggah foto ke direktori server, dan menampilkan produk baru di tabel produk.
+Stimulus   : Penjual mengedit informasi produk (misal: jumlah stok) dan menyimpan perubahan.
+Response   : Sistem memperbarui data produk di database dan mengubah label/status ketersediaan produk secara otomatis.
+Stimulus   : Penjual mengklik tombol "Hapus" pada baris produk yang ingin dieliminasi.
+Response   : Sistem menghapus produk dari database, menghapus file foto di server, dan menyegarkan tabel produk.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menyediakan form tambah produk dan unggah gambar produk baru.
+FR-02 : Sistem menampilkan daftar inventori produk lengkap dalam bentuk tabel.
+FR-03 : Sistem menyediakan fitur edit detail produk dan mengubah status badge ketersediaan secara otomatis.
+FR-04 : Sistem menyediakan fitur hapus produk secara permanen dari basis data dan menghapus file fotonya di server.
+
+3. Manajemen Pesanan
+Penjual dapat memantau detail pemesanan masuk dan memperbarui status pengiriman/logistik pesanan pelanggan.
+Langkah:
+Stimulus   : Penjual membuka halaman kelola pesanan.
+Response   : Sistem menyajikan daftar lengkap pesanan masuk beserta status logistiknya masing-masing.
+Stimulus   : Penjual memilih baris pesanan tertentu untuk melihat detail.
+Response   : Sistem menampilkan detail pesanan berisi rincian barang, alamat pengiriman, kurir, dan form dropdown pembaruan status.
+Stimulus   : Penjual mengubah status pesanan (misal: "Dikirim") dan mengklik "Update Status".
+Response   : Sistem menyimpan perubahan status di database, memperbarui status di tabel pesanan admin, dan menampilkan status terbaru pada halaman profil pembeli.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menampilkan daftar pesanan masuk pelanggan lengkap beserta statusnya.
+FR-02 : Sistem menampilkan halaman detail pesanan pembeli yang berisi rincian barang dan alamat pengiriman.
+FR-03 : Sistem menyediakan fitur untuk mengubah status pengiriman/logistik pesanan dan menyinkronkannya ke riwayat transaksi pembeli.
+
+4. Verifikasi Pembayaran
+Penjual memproses verifikasi dan konfirmasi atas pengajuan pembayaran transfer bank dari pembeli.
+Langkah:
+Stimulus   : Penjual membuka halaman kelola pembayaran.
+Response   : Sistem menampilkan daftar pembayaran pending beserta total tagihan dan metode bayar.
+Stimulus   : Penjual memvalidasi bukti pembayaran dan mengklik tombol "Konfirmasi Lunas".
+Response   : Sistem mengubah status pembayaran dan status pesanan menjadi "dibayar" (lunas) di database, serta menyegarkan data.
+Stimulus   : Penjual mengklik tombol "Reset ke Pending" untuk membatalkan konfirmasi.
+Response   : Sistem mengembalikan status pembayaran dan pesanan menjadi "pending" di database.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menampilkan daftar pembayaran pending pelanggan lengkap dengan detail tagihan.
+FR-02 : Sistem menyediakan fitur untuk mengonfirmasi pembayaran menjadi "dibayar" (lunas) atau mengembalikannya menjadi "pending".
+FR-03 : Sistem memperbarui status pembayaran dan status pesanan di database secara bersamaan (atomic transaction).
+
+5. Membalas Chat Pelanggan
+Penjual dapat berinteraksi dan membalas pesan obrolan pelanggan secara langsung dari panel admin chat.
+Langkah:
+Stimulus   : Penjual membuka menu kelola chat.
+Response   : Sistem menampilkan daftar pembeli yang aktif mengirim chat di panel kiri dan jendela chat aktif di panel kanan.
+Stimulus   : Penjual memilih salah satu pelanggan, mengetik pesan balasan, lalu menekan tombol "Kirim".
+Response   : Sistem menyimpan pesan tersebut ke database, menampilkan balon chat balasan admin, dan mengirimkannya ke layar pembeli secara real-time.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menyediakan panel kelola chat admin yang menyajikan daftar pengguna aktif dan ruang percakapan obrolan.
+FR-02 : Sistem merekam pesan balasan admin ke database chat pelanggan dan mengirimkannya menggunakan koneksi AJAX real-time.
+
+6. Moderasi dan Balas Ulasan
+Penjual dapat melihat ulasan pembeli, memberikan balasan resmi admin, atau menghapus ulasan yang tidak pantas.
+Langkah:
+Stimulus   : Penjual membuka halaman kelola ulasan.
+Response   : Sistem menampilkan daftar ulasan pembeli beserta metrik rating bintang dan komentar ulasan.
+Stimulus   : Penjual menulis balasan pada ulasan tertentu dan mengklik "Simpan Balasan".
+Response   : Sistem menyimpan balasan penjual ke database dan menampilkannya secara publik di bawah ulasan pembeli.
+Stimulus   : Penjual mengklik tombol "Hapus" pada ulasan yang melanggar ketentuan.
+Response   : Sistem menghapus ulasan tersebut dari database dan menyegarkan halaman kelola ulasan.
+
+Kebutuhan fungsional:
+FR-01 : Sistem menampilkan daftar ulasan produk lengkap dengan rating, komentar, foto, dan balasan admin.
+FR-02 : Sistem menyediakan form untuk menulis dan menyimpan tanggapan/balasan ulasan admin ke database.
+FR-03 : Sistem menyediakan fitur hapus ulasan untuk mengeliminasi ulasan dari basis data.
+
+================================================================================
+          LAMPIRAN: RINGKASAN KEBUTUHAN FUNGSIONAL DAN NON-FUNGSIONAL
+================================================================================
+
+1. TABEL RINGKASAN KEBUTUHAN FUNGSIONAL (FUNCTIONAL REQUIREMENTS)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Kode       Kebutuhan                                    Keterangan
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+FR-001     Melihat Katalog Produk Tanpa Login           Pengunjung dapat menjelajahi seluruh katalog produk, beralih kategori dengan dynamic theme, dan melihat detail produk.
+FR-002     Registrasi Akun Pembeli                      Pengguna dapat mendaftar akun baru dengan mengisi data diri lengkap dan memvalidasi keunikan email.
+FR-003     Login & Autentikasi Akun                     Pengguna terdaftar (pembeli & admin) dapat login menggunakan email/sandi dan sistem mengelola sesi aktif dengan aman.
+FR-004     Pencarian Produk                             Pembeli dapat mencari produk secara cepat berdasarkan kata kunci nama atau deskripsi produk di database.
+FR-005     Manajemen Keranjang Belanja                  Pembeli dapat menambah item ke keranjang, memperbarui kuantitas belanja, dan menghapus produk dengan kalkulasi harga otomatis.
+FR-006     Checkout & Detail Pengiriman                 Pembeli dapat mengisi alamat pengiriman lengkap, memilih ekspedisi/ongkir (RajaOngkir), dan memproses transaksi status pending.
+FR-007     Pembatalan Pesanan Pending                   Pembeli dapat membatalkan pesanan pending secara mandiri dari profil pribadi dan otomatis mengembalikan stok produk.
+FR-008     Ulasan & Rating Produk                       Pembeli dapat memberikan rating bintang (1-5), komentar ulasan, dan mengunggah foto bukti fisik produk setelah transaksi selesai.
+FR-009     Live Chat & Bot Bantuan                      Pembeli dapat berkonsultasi secara real-time dengan Customer Service (admin) atau bot otomatis menggunakan tombol opsi cepat.
+FR-010     Dashboard Analisis Penjualan                 Penjual (admin) dapat melihat statistik pendapatan, unit terjual, diagram batang tren mingguan, dan produk terlaris.
+FR-011     Manajemen Katalog Produk                     Penjual memiliki kontrol penuh untuk menambah, mengedit detail/stok, mengunggah foto, dan menghapus produk di database.
+FR-012     Manajemen Transaksi & Status                 Penjual dapat memantau daftar transaksi masuk, rincian barang, detail kurir, serta meng-update status logistik pesanan.
+FR-013     Verifikasi Pembayaran Transfer               Penjual dapat memproses verifikasi klaim transfer bank dari pembeli untuk mengubah status pesanan menjadi lunas (dibayar).
+FR-014     Panel Chat Admin                             Penjual dapat membalas chat/pertanyaan dari customer teraktif secara real-time menggunakan antarmuka panel chat khusus.
+FR-015     Moderasi & Balasan Ulasan                    Penjual dapat memoderasi ulasan masuk, memberikan tanggapan resmi yang tampil publik, serta menghapus ulasan melanggar.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2. TABEL RINGKASAN KEBUTUHAN NON-FUNGSIONAL (NON-FUNCTIONAL REQUIREMENTS)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Kode       Kebutuhan                                    Keterangan
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+NFR-001    Keamanan Transaksi & Autentikasi             Kata sandi (password) pengguna wajib dienkripsi dengan hash pengaman dan sesi login dilindungi untuk mencegah akses tidak sah.
+NFR-002    Desain Responsif & Estetika Premium          Antarmuka sistem harus ramah anak (menggunakan font Quicksand & Nunito, warna pastel) dan responsif di berbagai perangkat.
+NFR-003    Kecepatan Respon & Performa                  Halaman katalog, filter, pencarian, dan sistem live chat harus memuat data dengan cepat (responsif) menggunakan teknologi AJAX.
+NFR-004    Validasi & Integritas Data                   Sistem harus melakukan validasi keunikan email registrasi, tipe berkas unggahan, serta pembaruan status database secara atomic.
+NFR-005    Ketersediaan & Keandalan Stok                Sistem harus menjamin sinkronisasi stok produk secara real-time dan mengembalikan stok secara otomatis jika pesanan dibatalkan.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+

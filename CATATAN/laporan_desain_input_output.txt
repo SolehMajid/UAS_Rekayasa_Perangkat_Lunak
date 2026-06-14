@@ -1,0 +1,562 @@
+================================================================================
+          LAPORAN DESAIN ANTARMUKA SISTEM: MASUKAN DAN KELUARAN SQUASHY
+================================================================================
+
+Laporan ini menyajikan analisis desain antarmuka sistem E-Commerce Squashy 
+yang dibagi menjadi dua bagian utama: 4.3 Desain Masukan (Input Design) dan 
+4.4 Desain Keluaran (Output Design). Setiap bagian dikelompokkan berdasarkan 
+peran pengguna, yaitu sisi Pembeli (Customer) dan sisi Penjual (Admin/Owner). 
+Analisis ini disusun berdasarkan berkas kode sumber yang ada pada sistem Squashy 
+(dengan mengecualikan halaman utama/beranda sesuai ketentuan).
+
+Setiap penjelasan halaman diawali dengan keterangan penempatan gambar (placeholder 
+gambar) untuk kebutuhan dokumentasi visual sistem.
+
+================================================================================
+4.3 DESAIN MASUKAN (INPUT DESIGN)
+================================================================================
+
+Desain masukan dirancang untuk menangkap data, pilihan, dan instruksi dari 
+pengguna secara efektif, aman, dan interaktif menggunakan elemen formulir (form), 
+kolom input, dropdown, area teks, checkbox, dan pengunggah berkas.
+
+--------------------------------------------------------------------------------
+4.3.1 Sisi Pembeli (Customer Side)
+--------------------------------------------------------------------------------
+
+a. Registrasi Akun Pembeli Baru (customers/register.php)
+
+gambar 1 Form Registrasi Akun Pembeli Baru
+
+gambar 1 Form Registrasi Akun Pembeli Baru adalah formulir input bagi pengunjung 
+baru untuk mendaftarkan akun pembeli agar dapat mengakses fitur keranjang, 
+checkout, profil, ulasan, dan chat pada sistem Squashy.
+Konten Utama (Area Kerja) Area utama berpusat pada kartu registrasi putih 
+berbingkai hijau tebal dengan logo Squashy di atasnya.
+1. Formulir Registrasi (Input Field):
+   o Kolom Nama Lengkap: Text field bersimbol ikon 👤 untuk menginput nama lengkap asli pembeli.
+   o Kolom Alamat Email: Email input field bersimbol ikon ✉️ untuk mendaftarkan alamat email unik (contoh placeholder: Dummy123@gmail.com).
+   o Kolom Buat Kata Sandi: Password field bersimbol ikon 🔒 untuk memasukkan sandi rahasia yang karakternya akan disamarkan.
+   o Kolom Konfirmasi Kata Sandi: Password field bersimbol ikon 🔒 untuk memasukkan ulang sandi guna memastikan kecocokan sandi.
+   o Kolom Tanggal Lahir: Date field bersimbol ikon 📅 yang akan membuka kalender pop-up saat diklik untuk merekam tanggal lahir pengguna.
+   o Checkbox Syarat & Ketentuan: Checkbox interaktif di bagian bawah input yang wajib dicentang sebagai tanda persetujuan ketentuan layanan.
+   o Tujuan: Menangkap data identitas pembeli baru secara lengkap dan valid untuk disimpan dalam tabel user.
+
+2. Tombol Aksi Submit:
+   o Tombol "DAFTAR SEKARANG": Tombol pink lebar dengan efek timbul 3D shadow saat ditekan.
+   o Fungsi: Mengirimkan seluruh data masukan registrasi ke database, memicu enkripsi hash SHA-256 pada sandi, dan mengalihkan pembeli ke halaman login setelah registrasi berhasil.
+   o Tujuan: Mengeksekusi proses pembuatan akun baru pada database.
+
+
+b. Login Autentikasi Pengguna (customers/login.php)
+
+gambar 2 Form Login Pengguna
+
+gambar 2 Form Login Pengguna adalah formulir autentikasi masuk sistem yang digunakan 
+baik oleh pembeli terdaftar maupun admin Squashy untuk membuka sesi aktif masing-masing.
+Konten Utama (Area Kerja) Area utama berfokus pada kartu login putih berbingkai 
+kuning dengan maskot logo Squashy di atasnya.
+1. Formulir Login (Input Field):
+   o Kolom Username (Email/Nama Admin): Text field bersimbol ikon 👤 untuk menangkap alamat email pembeli atau username nama admin.
+   o Kolom Kata Sandi: Password field bersimbol ikon 🔒 untuk memasukkan kata sandi rahasia dengan karakter tersamarkan (masked text).
+   o Tujuan: Menangkap kredensial login pengguna secara aman.
+
+2. Tombol Aksi & Navigasi:
+   o Tombol "MASUK SEKARANG": Tombol oranye lebar melengkung dengan efek 3D shadow.
+   o Tautan "Lupa Kata Sandi?": Link teks abu-abu di bawah tombol masuk untuk mengalihkan pengguna ke halaman reset password.
+   o Tautan "Daftar di sini": Link teks biru muda untuk pengunjung yang belum memiliki akun agar beralih ke register.php.
+   o Fungsi: Mengirimkan kredensial masuk untuk diverifikasi kecocokannya dengan data terenkripsi di tabel user atau admin, kemudian mengaktifkan sesi login (session).
+   o Tujuan: Memverifikasi hak akses pengguna untuk membuka fitur-fitur belanja atau panel dashboard admin.
+
+
+c. Reset Password (customers/forgot_password.php)
+
+gambar 3 Form Reset Password
+
+gambar 3 Form Reset Password digunakan ketika pengguna lupa kata sandi akunnya 
+dan ingin memperbaruinya secara mandiri dengan memasukkan email terdaftar.
+Konten Utama (Area Kerja) Tampilan kartu form putih berbingkai kuning dengan border 
+melengkung 30px di tengah halaman berlatar belakang awan pastel.
+1. Formulir Reset (Input Field):
+   o Kolom Alamat Email: Email input field bersimbol ikon ✉️ tempat pengguna menginput email pemulihan terdaftar.
+   o Kolom Kata Sandi Baru: Password field bersimbol ikon 🔒 tempat pengguna menginput sandi pengganti yang baru.
+   o Tujuan: Mengidentifikasi email target dan menangkap nilai sandi baru yang akan disimpan.
+
+2. Tombol Aksi:
+   o Tombol "RESET PASSWORD": Tombol jingga lebar dengan efek bayangan penekanan.
+   o Fungsi: Mencari kecocokan email di database, mengubah kata sandi lama dengan password baru terenkripsi hash SHA-256, memunculkan notifikasi sukses, dan mengarahkan kembali ke halaman login.
+   o Tujuan: Memperbarui record kata sandi pengguna secara aman di tabel user.
+
+
+d. Pengaturan Kuantitas & Hapus Item Keranjang (customers/keranjang.php)
+
+gambar 4 Input Kuantitas dan Aksi Hapus Keranjang Belanja
+
+gambar 4 Input Kuantitas dan Aksi Hapus Keranjang Belanja adalah kontrol masukan 
+yang disematkan pada baris daftar produk belanja di halaman keranjang belanja 
+pembeli untuk memodifikasi daftar belanjaan sebelum melakukan checkout.
+Konten Utama (Area Kerja) Area baris produk di dalam kartu keranjang belanja putih.
+1. Kontrol Kuantitas Produk:
+   o Tombol Minus (-): Tombol bulat pink kecil berskala mikro untuk mengurangi kuantitas belanja produk.
+   o Tombol Plus (+): Tombol bulat pink kecil berskala mikro untuk menambah kuantitas belanja produk.
+   o Nilai Kuantitas: Teks nilai angka kuantitas yang diapit oleh tombol minus dan plus, dibatasi minimal 1 dan maksimal jumlah stok produk yang tersedia di gudang.
+   o Fungsi: Memicu update data kuantitas barang belanjaan secara langsung ke tabel keranjang (cart) di database.
+   o Tujuan: Memberikan kontrol dinamis bagi pembeli untuk menyesuaikan jumlah barang anak yang ingin dibeli.
+
+2. Aksi Penghapusan Item:
+   o Tombol "🗑️ Hapus": Tombol merah di sisi kanan baris produk.
+   o Fungsi: Mengaktifkan dialog konfirmasi bawaan browser untuk menghapus record item belanja tersebut dari database keranjang belanja user.
+   o Tujuan: Membuang item yang batal dibeli dari daftar belanjaan pembeli.
+
+
+e. Form Checkout & Detail Alamat Pengiriman (customers/checkout.php)
+
+gambar 5 Form Detail Pengiriman dan Opsi Pembayaran Checkout
+
+gambar 5 Form Detail Pengiriman dan Opsi Pembayaran Checkout adalah formulir masukan 
+bagi pembeli untuk melengkapi informasi pengiriman fisik barang serta memilih kurir ekspedisi.
+Konten Utama (Area Kerja) Kartu putih lebar berbayang di kolom kiri halaman checkout.
+1. Input Informasi Penerima:
+   o Kolom Nama Pembeli: Text field tempat menginput nama lengkap penerima paket belanjaan.
+   o Kolom Nomor HP: Text field berfitur inputmode="numeric" dan pembatasan pattern angka dengan panjang maksimal 20 digit, untuk menangkap nomor telepon aktif penerima.
+   o Tujuan: Menangkap data kontak penerima barang secara valid.
+
+2. Pilihan Dropdown Wilayah & Kurir (Integrasi RajaOngkir):
+   o Dropdown Provinsi Tujuan: Pilihan provinsi tujuan pengiriman yang datanya diambil dinamis dari API RajaOngkir.
+   o Dropdown Kota / Kabupaten Tujuan: Pilihan kota/kabupaten tujuan yang terhubung dinamis dan otomatis terbuka setelah provinsi dipilih.
+   o Dropdown Pilih Kurir Ekspedisi: Pilihan kurir yang tersedia (JNE, TIKI, POS Indonesia) yang otomatis aktif setelah kota tujuan dipilih.
+   o Dropdown Pilih Layanan Pengiriman: Pilihan paket ongkir beserta estimasi hari (contoh: JNE OKE, REG, YES) yang muncul setelah kurir dipilih.
+   o Tujuan: Menentukan destinasi pengiriman logistik secara akurat guna menghitung tarif ongkos kirim asli.
+
+3. Input Alamat Fisik Lengkap:
+   o Kolom Alamat Lengkap: Textarea luas untuk menuliskan detail jalan, RT/RW, nomor rumah, dan patokan pengiriman secara spesifik.
+   o Tujuan: Menangkap alamat detail tujuan pengantaran kurir fisik.
+
+4. Tombol Submit "Proses Pembayaran":
+   o Fungsi: Memvalidasi keharusan pengisian seluruh form, menyimpan data transaksi baru ke tabel order dengan status "pending", memicu pop-up pembayaran online Midtrans Snap, serta mengosongkan keranjang belanja pembeli.
+   o Tujuan: Menyelesaikan pengisian data transaksi dan memicu pelunasan pembayaran.
+
+
+f. Penulisan Ulasan & Rating Produk (customers/tambah_ulasan.php)
+
+gambar 6 Form Tulis Ulasan dan Rating Produk
+
+gambar 6 Form Tulis Ulasan dan Rating Produk adalah formulir feedback pembeli 
+untuk memberikan bintang kepuasan, komentar, dan bukti foto atas barang yang telah dibeli.
+Konten Utama (Area Kerja) Area kartu putih berbingkai pink-lembut di tengah halaman.
+1. Form Kepuasan Pelanggan:
+   o Pemilih Rating Bintang: 5 radio button berbentuk bintang emas CSS interaktif yang menyala saat disorot (hover) dari kanan ke kiri, mempresentasikan rating 1 hingga 5 bintang.
+   o Area Tulis Komentar: Textarea luas tempat mengetik komentar detail pengalaman pembeli menggunakan produk Squashy.
+   o Unggah Bukti Foto: Input file dengan pembatasan menerima berkas gambar (accept="image/*") untuk mengunggah foto bukti fisik produk asli.
+   o Tujuan: Menangkap ulasan tertulis, rating bintang, dan berkas foto ulasan dari pembeli.
+
+2. Tombol Kirim Ulasan:
+   o Tombol "Kirim Ulasan 💖": Tombol submit pink lebar di bagian bawah formulir.
+   o Fungsi: Mengunggah berkas foto ulasan ke server, merekam data ke tabel review_produk di database, memicu ulasan agar tampil publik di modal produk, dan mengarahkan kembali pembeli ke profilnya.
+   o Tujuan: Menyimpan ulasan ke database dan mempublikasikannya.
+
+
+g. Input live Chat CS Pembeli (customers/chat.php)
+
+gambar 7 Form Input live Chat CS Pembeli
+
+gambar 7 Form Input live Chat CS Pembeli adalah kolom input obrolan di jendela live chat 
+agar pembeli dapat mengirimkan pertanyaan manual atau mengklik opsi cepat kepada admin CS.
+Konten Utama (Area Kerja) Bagian bawah kartu chat room live chat.
+1. Kontrol Input Teks Manual:
+   o Kolom Input Chat: Text field horizontal tempat menuliskan pesan manual (contoh placeholder: "Ketik pesan Bunda...").
+   o Tombol Kirim: Tombol bulat pink kecil bersimbol panah kirim (➤).
+   o Fungsi: Merekam teks chat manual ke database obrolan dan menayangkannya langsung di jendela chat room menggunakan AJAX.
+   o Tujuan: Mengirimkan pesan chat tertulis dari pembeli ke sistem obrolan admin.
+
+2. Tombol Opsi Cepat (Quick Buttons):
+   o 4 Tombol Kapsul Cepat: Tombol instan dengan opsi teks "Cek Stok", "Cara Retur", "Info Ongkir", dan "Info Promo".
+   o Fungsi: Mengirimkan pesan template otomatis saat tombol diklik untuk dijawab seketika oleh Bot CS Squashy.
+   o Tujuan: Mempercepat pembeli mendapatkan respon bot tanpa perlu mengetik manual.
+
+--------------------------------------------------------------------------------
+4.3.2 Sisi Penjual / Admin (Admin Side)
+--------------------------------------------------------------------------------
+
+a. Modal Tambah & Edit Katalog Produk (admin/kelola_produk.php)
+
+gambar 8 Modal Input Tambah dan Edit Produk Admin
+
+gambar 8 Modal Input Tambah dan Edit Produk Admin adalah form pop-up modal 
+terintegrasi untuk memfasilitasi admin dalam memanipulasi persediaan barang di toko.
+Konten Utama (Area Kerja) Jendela pop-up berlatar belakang krem yang menutupi area 
+kerja tabel produk saat tombol "Tambah Produk Baru" atau tombol "Edit" diklik.
+1. Formulir Data Produk (Input Field):
+   o Kolom Nama Produk: Text field untuk menginput nama barang mainan, pakaian, atau perlengkapan anak.
+   o Kolom SKU/Kode: Text field untuk memasukkan kode stock keeping unit barang.
+   o Dropdown Kategori: Select option berisi daftar kategori yang ada (Mainan, Pakaian, Perlengkapan).
+   o Kolom Harga: Number field untuk menentukan nominal harga jual barang (minimal 0).
+   o Kolom Stok: Number field untuk menentukan kuantitas unit stok barang di gudang (minimal 0).
+   o Area Deskripsi Singkat: Textarea opsional untuk menuliskan spesifikasi detail barang.
+   o Tujuan: Menangkap data spesifikasi dan stok produk yang akan ditayangkan.
+
+2. Area Pengunggah Gambar:
+   o Tombol "Pilih Gambar" dan input file tersembunyi (images[]): Mengunggah berkas foto produk (mendukung multi-upload hingga 4 gambar) dengan box pratinjau (thumbnail preview) gambar instan di bawahnya.
+   o Tujuan: Mengunggah file visual produk ke server.
+
+3. Tombol Aksi Modal:
+   o Tombol "BATALKAN": Tombol abu-abu untuk menutup modal dan meriset seluruh isian form.
+   o Tombol "SIMPAN/UPDATE PRODUK": Tombol oranye untuk mengirim data form melalui AJAX ke script produk_action.php.
+   o Fungsi: Menyimpan produk baru atau memperbarui data produk lama di tabel produk dan memicu pembaruan badge status ketersediaan secara otomatis.
+   o Tujuan: Memproses manipulasi data produk di database.
+
+
+b. Perbarui Status Logistik Pesanan (admin/update_status.php)
+
+gambar 9 Form Perbarui Status Pesanan Admin
+
+gambar 9 Form Perbarui Status Pesanan Admin adalah formulir dropdown bagi admin 
+untuk mengubah status pengiriman pesanan dan menginput nomor resi pelacakan paket.
+Konten Utama (Area Kerja) Kartu form putih di tengah halaman berlatar belakang krem.
+1. Kontrol Update Status:
+   o Dropdown Pilih Status Baru: Select option berisi pilihan status (Pending, Dibayar, Diproses, Dikirim, Selesai, Dibatalkan).
+   o Kolom Nomor Resi Pengiriman: Text field yang secara dinamis muncul hanya saat opsi status "Dikirim" dipilih (dikontrol oleh script JS).
+   o Tujuan: Menangkap keputusan perubahan status pesanan logistik dan input nomor resi kurir pengiriman.
+
+2. Tombol Konfirmasi:
+   o Tombol "Batal": Tombol abu-abu untuk kembali ke kelola_pesanan.php tanpa menyimpan.
+   o Tombol "Simpan Status": Tombol submit pink lebar untuk memperbarui status pesanan.
+   o Fungsi: Mengubah status di tabel order & payment, menyimpan nomor resi, serta memperbarui waktu bayar secara otomatis apabila pesanan baru saja dibayar.
+   o Tujuan: Menyimpan perubahan status pengiriman barang di database.
+
+
+c. Aksi Konfirmasi & Validasi Pembayaran (admin/kelola_pembayaran.php)
+
+gambar 10 Aksi Kelola Validasi Pembayaran Admin
+
+gambar 10 Aksi Kelola Validasi Pembayaran Admin adalah tombol aksi cepat pada baris 
+tabel pembayaran untuk memverifikasi kesesuaian klaim transfer bank pelanggan.
+Konten Utama (Area Kerja) Kolom "Aksi" pada tabel daftar transaksi pembayaran.
+1. Tombol Aksi Cepat Validasi:
+   o Tombol "Konfirmasi Lunas": Tombol hijau yang tampil jika pembayaran masih berstatus "Pending".
+   o Tombol "Batal Konfirmasi": Tombol oranye yang tampil jika pembayaran sudah berstatus "Dibayar" / "Lunas".
+   o Fungsi: Mengubah status pembayaran di tabel payment menjadi "dibayar" (lunas) sekaligus mengubah status_pesanan di tabel order secara atomic (bersamaan), atau mengembalikannya menjadi "pending" kembali.
+   o Tujuan: Menangkap data persetujuan keabsahan dana transfer dari admin.
+
+
+d. Input Balasan Chat Admin (admin/kelola_chat.php)
+
+gambar 11 Form Input Balasan Chat Admin
+
+gambar 11 Form Input Balasan Chat Admin adalah area input teks obrolan di bagian 
+bawah panel percakapan aktif admin untuk membalas live chat dari pelanggan.
+Konten Utama (Area Kerja) Area footer panel obrolan kanan aktif.
+1. Kontrol Balasan Chat:
+   o Kolom Tulis Balasan Admin: Textarea setinggi 48px untuk mengetik pesan respons cs admin (dilengkapi event Enter key listener untuk mengirim pesan).
+   o Tombol Kirim (➤): Tombol bulat hijau mint untuk mengirimkan pesan balasan.
+   o Fungsi: Mengirimkan teks balasan obrolan admin ke database chat menggunakan AJAX real-time polling agar tampil di layar customer.
+   o Tujuan: Menangkap pesan interaktif respons cs admin.
+
+
+e. Modal Tanggapi Ulasan Pelanggan (admin/kelola_ulasan.php)
+
+gambar 12 Modal Input Tanggapan Ulasan Pelanggan Admin
+
+gambar 12 Modal Input Tanggapan Ulasan Pelanggan Admin adalah form pop-up modal 
+bagi admin untuk menuliskan tanggapan apresiasi resmi toko terhadap ulasan pelanggan.
+Konten Utama (Area Kerja) Jendela modal putih dengan latar belakang blur overlay.
+1. Formulir Tanggapan:
+   o Area Teks Ulasan Pembeli: Box kuning krem berborder oranye yang menampilkan cuplikan teks ulasan asli pembeli sebagai referensi admin dalam membalas.
+   o Kolom Balasan Admin: Textarea wajib (required) tempat menuliskan respon apresiasi resmi pengelola Squashy.
+   o Tujuan: Menangkap teks tanggapan resmi admin.
+
+2. Tombol Navigasi Modal:
+   o Tombol "Batal": Menutup modal.
+   o Tombol "Simpan Tanggapan": Tombol pink lebar untuk mengirimkan data ke database.
+   o Fungsi: Memperbarui record kolom balasan_admin di tabel review_produk agar tanggapan tampil publik di detail produk toko Squashy.
+   o Tujuan: Menyimpan balasan ulasan resmi admin ke database.
+
+================================================================================
+4.4 DESAIN KELUARAN (OUTPUT DESIGN)
+================================================================================
+
+Desain keluaran dirancang untuk memformat, menyusun, dan menampilkan informasi 
+sistem Squashy kepada pengguna secara estetik, responsif, dan mudah dibaca, 
+baik dalam bentuk katalog produk, jendela riwayat pesanan, invoice, visual 
+grafik pendapatan, maupun tabel database operasional admin.
+
+--------------------------------------------------------------------------------
+4.4.1 Sisi Pembeli (Customer Side)
+--------------------------------------------------------------------------------
+
+a. Katalog Etalase Kategori Produk (customers/kategori.php)
+
+gambar 13 Halaman Katalog Kategori Produk
+
+gambar 13 Halaman Katalog Kategori Produk adalah halaman output utama pembeli 
+untuk menelusuri katalog produk Squashy yang disaring berdasarkan kategori aktif.
+Konten Utama (Area Kerja) Area grid layout kartu produk dengan dynamic theme 
+warna latar belakang yang berubah selaras dengan kategori aktif (Mainan: hijau; 
+Pakaian: kuning; Perlengkapan: merah; Semua: biru).
+1. Spanduk Judul Nunito:
+   o Teks "KATEGORI SQUASHY": Judul halaman berukuran 60px putih dengan drop shadow tebal yang memberikan kesan ceria ramah anak.
+   o Tujuan: Menegaskan identitas halaman katalog.
+
+2. Filter Tab Kategori (Pill Tabs):
+   o Tombol tab berbentuk kapsul putih ber-border dengan status aktif memancarkan warna tema kategori (kuning, hijau, merah, pink) dan efek timbul saat disorot.
+   o Tujuan: Menyajikan tombol filter visual navigasi cepat pembeli.
+
+3. Grid Produk:
+   o Kartu Produk Awan: Kartu berlatar putih dengan animasi mengambang (float animation) berisi:
+     ▪ Badge Kategori: Lencana kecil penanda jenis barang.
+     ▪ Thumbnail Produk: Foto produk dalam kotak abu-abu ber-sudut bulat.
+     ▪ Judul Nama Produk: Teks tebal Nunito berukuran 24px berwarna ungu gelap.
+     ▪ Harga Produk: Teks nominal harga tebal berwarna oranye berukuran 22px.
+     ▪ Stok Produk: Keterangan jumlah stok tersisa.
+     ▪ Tombol Detail / Beli: Tombol pemantik detail produk.
+   o Tujuan: Menyajikan etalase informasi katalog produk Squashy secara menarik dan menggugah minat beli.
+
+
+b. Jendela Detail Produk & Ulasan (Kategori Modal Pop-up)
+
+gambar 14 Modal Detail Informasi Produk dan Ulasan
+
+gambar 14 Modal Detail Informasi Produk dan Ulasan adalah jendela detail 
+pop-up interaktif yang menampilkan spesifikasi lengkap produk beserta 
+ulasan kepuasan pelanggan lain tanpa memindahkan halaman aktif pembeli.
+Konten Utama (Area Kerja) Kotak modal putih besar dengan border tebal 6px 
+dan latar belakang overlay blur 8px.
+1. Informasi Rinci Produk (Baris Atas):
+   o Kolom Kiri (Visual): Menampilkan foto produk berkualitas tinggi bersudut melengkung (radius 25px).
+   o Kolom Kanan (Informasi & Transaksi):
+     ▪ Badge Kategori: Menunjukkan kategori barang.
+     ▪ Nama Produk: Judul tebal berjenis huruf Nunito (ukuran 32px).
+     ▪ Rating Bintang: Tampilan simbol bintang kuning emas beserta rerata nilai numerik.
+     ▪ Harga Jual: Nominal harga berwarna oranye tebal berukuran 30px.
+     ▪ Status Stok: Badge hijau tebal "Tersedia" atau badge merah "Habis".
+     ▪ Deskripsi Produk: Keterangan detail fungsi dan ukuran barang anak.
+     ▪ Tombol Aksi Beli: Tombol oranye lebar untuk menambahkan item ke keranjang.
+   o Tujuan: Menyajikan visualisasi dan spesifikasi lengkap produk untuk mempermudah keputusan pembelian.
+
+2. Bagian Ulasan Pelanggan (Baris Bawah):
+   o List Komentar: Daftar review dari pembeli lain yang memuat avatar pengulas, nama lengkap, rating bintang emas, tanggal review, teks ulasan, serta foto bukti fisik produk.
+   o Balasan Resmi Admin: Balon tanggapan cs admin berlatar belakang hijau mint di bawah ulasan pembeli terkait.
+   o Tujuan: Menyajikan jaminan sosial ulasan nyata pelanggan untuk membangun kepercayaan pembeli.
+
+
+c. Jendela Keranjang Belanja & Ringkasan Biaya (customers/keranjang.php)
+
+gambar 15 Halaman Keranjang Belanja dan Ringkasan Pesanan
+
+gambar 15 Halaman Keranjang Belanja dan Ringkasan Pesanan menyajikan daftar barang 
+belanjaan aktif pembeli beserta perhitungan ringkasan biaya sebelum melakukan checkout.
+Konten Utama (Area Kerja) Grid dua kolom (kolom kiri untuk daftar produk, kolom kanan 
+untuk ringkasan pesanan) berlatar belakang putih berbayang halus.
+1. Daftar Item Belanja (Kolom Kiri):
+   o Row Kartu Item: Setiap item memuat thumbnail foto produk, nama produk tebal, nominal harga satuan, kontrol kuantitas (+/-), teks subtotal harga per item (kuantitas dikali harga), keterangan jumlah stok, dan tombol hapus 🗑️.
+   o Tujuan: Menyajikan rincian produk yang telah dipilih pembeli agar mudah ditinjau ulang.
+
+2. Ringkasan Pesanan (Kolom Kanan):
+   o Judul Card: "Ringkasan Pesanan" dengan jenis huruf Nunito.
+   o Total Item: Menampilkan kuantitas seluruh barang di keranjang.
+   o Total Bayar: Menampilkan akumulasi total biaya belanjaan dengan nominal pink tebal berukuran besar (20px).
+   o Tombol Aksi:
+     ▪ Tombol "✨ Tambah Produk Lagi" (dashed border pink): Navigasi kembali ke kategori.
+     ▪ Tombol "🚀 Lanjut Pembayaran" (gradient pink-oranye): Mengalihkan pembeli ke halaman checkout.
+   o Tujuan: Menyajikan ringkasan akumulasi biaya yang harus dibayar pembeli.
+
+
+d. Ringkasan Tagihan & Ongkos Kirim Checkout (customers/checkout.php)
+
+gambar 16 Panel Ringkasan Checkout dan Ongkos Kirim
+
+gambar 16 Panel Ringkasan Checkout dan Ongkos Kirim menampilkan rincian barang 
+yang dibeli serta detail tarif ekspedisi pengiriman fisik barang di halaman checkout.
+Konten Utama (Area Kerja) Kartu putih vertikal di kolom kanan halaman checkout.
+1. Daftar Rincian Barang:
+   o Row Produk Ringkas: Menampilkan foto mini produk, judul nama produk, rincian kuantitas dikalikan harga, serta subtotal nominal.
+   o Tujuan: Menunjukkan kembali daftar barang yang akan diproses transaksinya.
+
+2. Akumulasi Biaya Akhir:
+   o Total Item: Jumlah unit barang yang dibeli.
+   o Ongkos Kirim: Menampilkan biaya pengantaran kurir berdasarkan integrasi RajaOngkir (muncul otomatis setelah layanan kurir dipilih).
+   o Total Bayar: Jumlah total harga produk ditambah tarif ongkos kirim.
+   o Tujuan: Menyajikan transparansi total biaya pengiriman logistik dan belanja kepada pembeli sebelum menekan tombol bayar.
+
+
+e. Halaman Profil Saya & Riwayat Pesanan (customers/profil.php)
+
+gambar 17 Halaman Profil Pembeli dan Riwayat Pesanan
+
+gambar 17 Halaman Profil Pembeli dan Riwayat Pesanan menyajikan rangkuman data akun, 
+ringkasan statistik transaksi belanja, serta pelacakan logistik pesanan pembeli.
+Konten Utama (Area Kerja) Layout grid dua kolom (kolom kiri profil & statistik, kolom 
+kanan bilah filter & kartu riwayat pesanan).
+1. Banner Sambutan Ceria (Top Banner):
+   o Spanduk melengkung gradasi pink-oranye berisi teks sapaan nama lengkap pembeli.
+   o Tujuan: Memberikan sambutan visual personal.
+
+2. Kartu Profil & Statistik (Kolom Kiri):
+   o Detail Akun: Avatar melingkar ber-border pelangi gradasi yang berputar lambat, nama pembeli, email, serta kartu metrik transaksi (Total Order, Pending, Selesai).
+   o Tujuan: Menyajikan profil akun dan status belanja pembeli secara informatif.
+
+3. Kartu Riwayat Pesanan & Pelacakan (Kolom Kanan):
+   o Bilah Filter Status: Tab kapsul filter (Semua, Pending, Dikirim, Selesai) untuk menyaring riwayat transaksi.
+   o Kartu Transaksi: Setiap kartu memiliki highlight border samping kiri yang bervariasi sesuai status (oranye pending, kuning dibayar, ungu dikirim, hijau selesai) berisi:
+     ▪ Header Kartu: ID Pesanan (PLG-XXXXX), Tanggal order, Badge status (Pending, Dibayar, Dikirim, Selesai, Dibatalkan).
+     ▪ Rincian Barang: List produk yang dipesan (foto produk, nama, harga, kuantitas, subtotal).
+     ▪ Info Pengiriman: Keterangan kurir ekspedisi, no resi pengiriman (jika status dikirim/selesai), metode bayar, dan total tagihan belanja.
+     ▪ Tombol Aksi Kontekstual: Tombol merah "Batal Pesanan" (tampil jika pending), tombol pink "Konfirmasi Selesai" (tampil jika dikirim), dan tombol pink "Beri Ulasan" (tampil jika selesai dan belum diulas).
+   o Tujuan: Memudahkan pembeli memantau, melacak, dan mengontrol status pengiriman barang mereka.
+
+
+f. Jendela Live Chat CS Pembeli (customers/chat.php)
+
+gambar 18 Jendela live Chat CS Pembeli
+
+gambar 18 Jendela live Chat CS Pembeli menampilkan visualisasi riwayat obrolan 
+dan percakapan aktif pembeli dengan admin CS Squashy atau Bot CS.
+Konten Utama (Area Kerja) Area ruang obrolan berlatar belakang krem di dalam kartu chat.
+1. Header Profil CS:
+   o Menampilkan avatar robot 🤖, judul "Customer Service Squashy", dan lampu hijau indikator status online aktif.
+   o Tujuan: Memberikan rasa aman bahwa CS Squashy aktif melayani.
+
+2. Area Riwayat Obrolan:
+   o Gelembung Pesan Masuk (Customer Service / Bot): Gelembung chat putih-abu-abu rata kiri berisi lencana identitas pengirim (🤖 Bot Squashy / 👩‍💼 Admin Squashy), teks isi chat, dan penanda waktu kirim.
+   o Gelembung Pesan Keluar (Pembeli): Gelembung chat pink tebal rata kanan berisi teks pesan dari pembeli dan penanda waktu kirim.
+   o Animasi Mengetik: Animasi tiga titik berkedip (typing indicator) saat bot memproses jawaban.
+   o Tujuan: Menyajikan alur komunikasi tanya-jawab pelanggan secara interaktif, mudah dibaca, dan real-time.
+
+--------------------------------------------------------------------------------
+4.4.2 Sisi Penjual / Admin (Admin Side)
+--------------------------------------------------------------------------------
+
+a. Dashboard Analisis Penjualan Admin (admin/admin_dashboard.php)
+
+gambar 19 Dashboard Analisis Penjualan Admin
+
+gambar 19 Dashboard Analisis Penjualan Admin menyajikan visualisasi ringkasan kinerja 
+keuangan, tren mingguan, persentase kategori terlaris, dan list produk terpopuler.
+Konten Utama (Area Kerja) Panel dashboard admin berlatar belakang kuning krem 
+dengan sidebar menu navigasi mint-hijau di sebelah kiri.
+1. Kartu Ringkasan Keuangan (Top Cards):
+   o Kartu Total Pendapatan (oranye): Menampilkan nominal total omzet penjualan sesuai rentang waktu filter aktif.
+   o Kartu Total Produk Terjual (hijau): Menampilkan jumlah fisik unit barang anak yang terjual.
+   o Tujuan: Memberikan info kinerja finansial toko secara cepat kepada pemilik.
+
+2. Grafik Tren Penjualan Mingguan:
+   o Visual Bar Chart: Diagram batang vertikal mingguan (Minggu 1-4) berwarna gradasi pink-oranye dengan tinggi batang dinamis sesuai nilai omzet mingguan.
+   o Tujuan: Menyajikan tren naik-turunnya performa pendapatan toko per minggu secara visual.
+
+3. Penjualan Per Kategori (Kolom Kanan):
+   o Progress Bar Persentase: Daftar horizontal progress bar warna-warni (Mainan: biru; Pakaian: pink; Perlengkapan: kuning) yang mengukur kontribusi penjualan tiap kategori produk.
+   o Tujuan: Mengidentifikasi kategori produk yang paling diminati pasar.
+
+4. List Produk Terlaris (Bawah):
+   o Daftar Strip: Baris list abu-abu yang menampilkan peringkat nama produk beserta angka total unit barang yang terjual.
+   o Tujuan: Memantau item produk spesifik yang paling laris.
+
+
+b. Tabel Manajemen Katalog Produk (admin/kelola_produk.php)
+
+gambar 20 Tabel Manajemen Katalog Produk Admin
+
+gambar 20 Tabel Manajemen Katalog Produk Admin menyajikan daftar lengkap persediaan 
+stok barang di gudang beserta status ketersediaannya.
+Konten Utama (Area Kerja) Area tabel data utama di dalam kartu putih lebar.
+1. Kartu Ringkasan Stok (Top Cards):
+   o 3 Kartu statistik atas: Total Produk (oranye), Produk Tersedia (hijau), Produk Habis (pink).
+   o Tujuan: Memberikan info cepat mengenai kondisi ketersediaan gudang.
+
+2. Tabel Persediaan Produk:
+   o Row Data Tabel: Kolom berisi ID produk (#ID), foto mini produk, nama produk, kategori barang, nominal harga, kuantitas stok gudang, status badge ketersediaan (tersedia: badge hijau "🟢 Tersedia"; habis: badge merah "🔴 Habis"), dan tombol aksi manipulasi data (Edit 📝, Hapus 🗑️).
+   o Tujuan: Menyajikan inventaris barang secara terstruktur, rapi, dan mudah dikontrol admin.
+
+
+c. Tabel Daftar Pesanan Pelanggan (admin/kelola_pesanan.php)
+
+gambar 21 Tabel Kelola Pesanan Pelanggan Admin
+
+gambar 21 Tabel Kelola Pesanan Pelanggan Admin menyajikan daftar seluruh transaksi 
+pembelian masuk dari pelanggan beserta filter pencariannya.
+Konten Utama (Area Kerja) Tabel transaksi di dalam card panel putih.
+1. Kartu Indikator Status (Top Cards):
+   o 7 Kartu metrik: Total Pesanan, Pending, Dibayar, Diproses, Dikirim, Selesai, Dibatalkan.
+   o Tujuan: Memantau jumlah antrean transaksi di setiap tahapan status logistik.
+
+2. Tabel Daftar Transaksi:
+   o Row Data Pesanan: Kolom memuat ID Pesanan (PLG-XXXXX), tanggal transaksi, nama pelanggan penerima paket, nominal total tagihan belanja, badge status pengiriman (pending: kuning; dibayar: hijau mint; diproses: oranye; dikirim: biru; selesai: hijau; dibatalkan: pink), dan tombol aksi (Detail 👁, Update status 🔄, Cetak Invoice 🖨).
+   o Tujuan: Menyajikan antrean pesanan pelanggan secara teratur untuk diproses logistiknya.
+
+
+d. Rincian Invoice & Detail Pesanan (admin/detail_pesanan.php)
+
+gambar 22 Panel Rincian Invoice Detail Pesanan Admin
+
+gambar 22 Panel Rincian Invoice Detail Pesanan Admin menyajikan detail invoice 
+pesanan, data pengiriman fisik pelanggan, serta status pembayarannya secara lengkap.
+Konten Utama (Area Kerja) Layout grid dua kolom (kolom kiri rincian barang, kolom kanan 
+rincian pelanggan & pembayaran).
+1. Rincian Item Belanja (Kolom Kiri):
+   o Tabel Item: Memuat foto produk, nama produk tebal, harga satuan, jumlah dibeli, subtotal, tarif ongkos kirim, dan total tagihan tebal.
+   o Tujuan: Memberikan panduan fisik barang yang harus dikemas (packing) oleh admin.
+
+2. Rincian Transaksi & Pelanggan (Kolom Kanan):
+   o Rincian Transaksi: ID Pesanan, Tanggal transaksi, Status Utama, Nomor Resi.
+   o Informasi Pelanggan: Nama penerima, Nomor HP, Email pembeli, dan Alamat lengkap pengantaran fisik (jalan, kecamatan, kabupaten, kodepos).
+   o Status & Metode Pembayaran: Metode bayar (contoh: MIDTRANS), status bayar (badge), dan waktu pelunasan bank.
+   o Tombol Aksi Invoice:
+     ▪ Tombol "Perbarui Status Pesanan" (pink): Mengarahkan ke halaman update_status.php.
+     ▪ Tombol "Batalkan Pesanan" (merah): Membatalkan pesanan.
+     ▪ Tombol "Cetak Struk / Invoice" (hijau): Membuka halaman struk siap cetak.
+   o Tujuan: Menyajikan data logistik pengantaran kurir dan status pembayaran secara akurat.
+
+
+e. Tabel Kelola Pembayaran Masuk (admin/kelola_pembayaran.php)
+
+gambar 23 Tabel Kelola Pembayaran Masuk Admin
+
+gambar 23 Tabel Kelola Pembayaran Masuk Admin menyajikan daftar verifikasi transfer 
+bank yang dideklarasikan oleh pembeli.
+Konten Utama (Area Kerja) Tabel pembayaran di dalam card panel putih.
+1. Kartu Metrik Keuangan:
+   o 3 Kartu indikator: Total Transaksi, Lunas/Dibayar (hijau), Pending/Menunggu (pink).
+   o Tujuan: Memantau status keabsahan transaksi transfer.
+
+2. Tabel Verifikasi:
+   o Row Data Pembayaran: Kolom memuat ID Pesanan (PLG-XXXXX), tanggal transaksi, nama pelanggan, metode bayar (MIDTRANS/Transfer Bank), total tagihan pembayaran, status chip (Lunas: badge hijau; Pending: badge pink), dan tombol aksi cepat (Konfirmasi Lunas / Batal Konfirmasi).
+   o Tujuan: Menyajikan data transfer masuk yang membutuhkan persetujuan keuangan admin.
+
+
+f. Panel Ruang Obrolan Kelola Chat Admin (admin/kelola_chat.php)
+
+gambar 24 Jendela Percakapan Kelola Chat Admin
+
+gambar 24 Jendela Percakapan Kelola Chat Admin menyajikan antarmuka terpusat live 
+chat admin untuk merespon pertanyaan dari berbagai customer aktif secara real-time.
+Konten Utama (Area Kerja) Grid dua panel (panel kiri daftar customer chat, panel kanan 
+ruang obrolan aktif).
+1. Antrean Chat Pembeli (Panel Kiri):
+   o Daftar Customer Strip: Baris customer aktif berisi avatar huruf (diwarnai acak otomatis), nama pembeli, waktu kirim, cuplikan pesan terakhir, dan badge notifikasi merah.
+   o Tujuan: Menyajikan antrean pesan masuk customer secara urut.
+
+2. Jendela Percakapan Aktif (Panel Kanan):
+   o Header Profil: Avatar customer, nama lengkap, dan email customer terpilih.
+   o Area Obrolan: Jendela percakapan berisi balon chat (customer: balon biru rata kiri; bot: balon kuning rata kiri; admin: balon hijau mint rata kanan) lengkap dengan nama pengirim dan waktu kirim.
+   o Tujuan: Menyajikan riwayat percakapan chat cs admin dengan customer terpilih secara visual.
+
+
+g. Tabel Moderasi Ulasan Pelanggan (admin/kelola_ulasan.php)
+
+gambar 25 Tabel Moderasi Ulasan Pelanggan Admin
+
+gambar 25 Tabel Moderasi Ulasan Pelanggan Admin menyajikan daftar penilaian rating 
+bintang dan komentar tertulis dari pembeli untuk dimoderasi dan dibalas oleh admin.
+Konten Utama (Area Kerja) Tabel moderasi ulasan di dalam card panel putih.
+1. Kartu Metrik Ulasan (Top Cards):
+   o 4 Kartu indikator: Total Ulasan (oranye), Rerata Rating (pink), Sudah Dibalas (hijau), Belum Dibalas (biru).
+   o Tujuan: Memantau kepuasan ulasan pelanggan secara agregat.
+
+2. Tabel Moderasi Ulasan:
+   o Row Data Ulasan: Kolom memuat ID review (REV-XXXXX) & tanggal, identitas pengulas, nama produk beserta foto mini produk, rating bintang emas (1-5 bintang), teks ulasan pembeli beserta foto bukti review (dapat diklik untuk memperbesar pratinjau foto), status (badge hijau Dibalas / badge merah Belum Dibalas), dan tombol aksi (Balas/Edit Balasan 💬, Hapus Ulasan 🗑️).
+   o Balasan Admin: Jika sudah ditanggapi, box balasan admin hijau mint ber-border hijau tebal akan tampil rapi di bawah ulasan pembeli terkait.
+   o Tujuan: Menyajikan daftar ulasan pelanggan untuk dimoderasi agar terhindar dari spam atau ulasan tidak pantas, serta memberikan tanggapan balik resmi.
+
+================================================================================
+                                 AKHIR LAPORAN
+================================================================================
