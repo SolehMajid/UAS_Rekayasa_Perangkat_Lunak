@@ -10,7 +10,7 @@ function rajaongkir_request($endpoint, $params = [], $method = 'GET') {
     $accountType = RAJAONGKIR_ACCOUNT_TYPE;
     
     // Jika masih placeholder, return null agar memicu fallback mock data
-    if ($apiKey === 'jhPJLRMBdef3560b186ff285dvt6bhEH') {
+    if ($apiKey === 'MASUKKAN_API_KEY_ANDA_DI_SINI') {
         $GLOBALS['rajaongkir_last_error'] = 'API Key masih menggunakan placeholder/belum diisi.';
         return null;
     }
@@ -32,6 +32,8 @@ function rajaongkir_request($endpoint, $params = [], $method = 'GET') {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_TIMEOUT => 5,
         CURLOPT_HTTPHEADER => [
             "key: " . $apiKey,
             "content-type: application/x-www-form-urlencoded"

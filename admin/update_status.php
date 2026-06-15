@@ -45,37 +45,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_status = mysqli_real_escape_string($conn, $_POST['status_pesanan']);
     $nomor_resi = isset($_POST['nomor_resi']) ? mysqli_real_escape_string($conn, trim($_POST['nomor_resi'])) : '';
     
-    // Mulai transaksi database agar konsisten
-    mysqli_begin_transaction($conn);
+    // Validasi: Status 'selesai' hanya dapat dikonfirmasi oleh Pelanggan secara langsung, bukan Admin
+    if ($new_status === 'selesai' && strtolower($order['status_pesanan']) !== 'selesai') {
+        $error_msg = "Status 'Selesai' hanya dapat dikonfirmasi oleh Pelanggan secara langsung.";
+    } else {
+        // Mulai transaksi database agar konsisten
+        mysqli_begin_transaction($conn);
 
-    try {
-        // Update tabel order
-        $resi_clause = "";
-        if ($new_status === 'dikirim' && isset($_POST['nomor_resi'])) {
-            $resi_clause = ", nomor_resi = '$nomor_resi'";
+        try {
+            // Update tabel order
+            $resi_clause = "";
+            if ($new_status === 'dikirim' && isset($_POST['nomor_resi'])) {
+                $resi_clause = ", nomor_resi = '$nomor_resi'";
+            }
+            $update_order = "UPDATE `order` SET status_pesanan = '$new_status' $resi_clause WHERE id_order = $id_order";
+            mysqli_query($conn, $update_order);
+
+            // Update tabel payment
+            // Jika status baru adalah selesai, kita juga set waktu_bayar jika kosong
+            $waktu_bayar_clause = "";
+            if ($new_status === 'dibayar' || $new_status === 'selesai' || $new_status === 'diproses' || $new_status === 'dikirim') {
+                // Set waktu bayar jika statusnya berlanjut dari pending
+                $waktu_bayar_clause = ", waktu_bayar = NOW()";
+            }
+            
+            $update_payment = "UPDATE payment SET status_pembayaran = '$new_status' $waktu_bayar_clause WHERE id_order = $id_order";
+            mysqli_query($conn, $update_payment);
+
+            mysqli_commit($conn);
+            
+            $_SESSION['success_msg'] = "Status pesanan <strong>$display_id</strong> berhasil diubah menjadi <strong>" . ucfirst($new_status) . "</strong>!";
+            header("Location: kelola_pesanan.php");
+            exit;
+        } catch (Exception $e) {
+            mysqli_rollback($conn);
+            $error_msg = "Gagal memperbarui status: " . $e->getMessage();
         }
-        $update_order = "UPDATE `order` SET status_pesanan = '$new_status' $resi_clause WHERE id_order = $id_order";
-        mysqli_query($conn, $update_order);
-
-        // Update tabel payment
-        // Jika status baru adalah selesai, kita juga set waktu_bayar jika kosong
-        $waktu_bayar_clause = "";
-        if ($new_status === 'dibayar' || $new_status === 'selesai' || $new_status === 'diproses' || $new_status === 'dikirim') {
-            // Set waktu bayar jika statusnya berlanjut dari pending
-            $waktu_bayar_clause = ", waktu_bayar = NOW()";
-        }
-        
-        $update_payment = "UPDATE payment SET status_pembayaran = '$new_status' $waktu_bayar_clause WHERE id_order = $id_order";
-        mysqli_query($conn, $update_payment);
-
-        mysqli_commit($conn);
-        
-        $_SESSION['success_msg'] = "Status pesanan <strong>$display_id</strong> berhasil diubah menjadi <strong>" . ucfirst($new_status) . "</strong>!";
-        header("Location: kelola_pesanan.php");
-        exit;
-    } catch (Exception $e) {
-        mysqli_rollback($conn);
-        $error_msg = "Gagal memperbarui status: " . $e->getMessage();
     }
 }
 ?>
@@ -419,7 +424,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <option value="dibayar" <?= strtolower($order['status_pesanan']) === 'dibayar' ? 'selected' : '' ?>>💳 Dibayar (Pembayaran Terkonfirmasi)</option>
                         <option value="diproses" <?= strtolower($order['status_pesanan']) === 'diproses' ? 'selected' : '' ?>>⚙️ Diproses (Sedang Dipersiapkan)</option>
                         <option value="dikirim" <?= strtolower($order['status_pesanan']) === 'dikirim' ? 'selected' : '' ?>>🚚 Dikirim (Dalam Perjalanan)</option>
-                        <option value="selesai" <?= strtolower($order['status_pesanan']) === 'selesai' ? 'selected' : '' ?>>🟢 Selesai (Sudah Diterima)</option>
+                        <?php if (strtolower($order['status_pesanan']) === 'selesai') : ?>
+                            <option value="selesai" selected>🟢 Selesai (Sudah Diterima)</option>
+                        <?php endif; ?>
                         <option value="dibatalkan" <?= strtolower($order['status_pesanan']) === 'dibatalkan' ? 'selected' : '' ?>>❌ Dibatalkan</option>
                     </select>
                 </div>

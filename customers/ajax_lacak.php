@@ -37,6 +37,8 @@ if (RAJAONGKIR_API_KEY === 'MASUKKAN_API_KEY_ANDA_DI_SINI') {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_TIMEOUT => 5,
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => $payload,
         CURLOPT_HTTPHEADER => [
