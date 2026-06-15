@@ -25,11 +25,29 @@ $error_msg = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_cancel_order'])) {
     mysqli_begin_transaction($conn);
     try {
+        // Dapatkan status lama untuk mencegah pengembalian stok berulang
+        $currentStatus = '';
+        $currentStatusQuery = mysqli_query($conn, "SELECT status_pesanan FROM `order` WHERE id_order = $id_order LIMIT 1");
+        if ($currentStatusQuery && mysqli_num_rows($currentStatusQuery) > 0) {
+            $currentStatusRow = mysqli_fetch_assoc($currentStatusQuery);
+            $currentStatus = strtolower($currentStatusRow['status_pesanan']);
+        }
+
         // Update status_pesanan in order table
         mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dibatalkan' WHERE id_order = $id_order");
         
         // Update status_pembayaran in payment table
         mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dibatalkan' WHERE id_order = $id_order");
+        
+        // Kembalikan stok jika status berubah ke dibatalkan dan status sebelumnya bukan dibatalkan
+        if ($currentStatus !== 'dibatalkan') {
+            $itemsQuery = mysqli_query($conn, "SELECT id_produk, kuantitas FROM order_detail WHERE id_order = $id_order");
+            while ($item = mysqli_fetch_assoc($itemsQuery)) {
+                $idProduk = intval($item['id_produk']);
+                $kuantitas = intval($item['kuantitas']);
+                mysqli_query($conn, "UPDATE produk SET stok = stok + $kuantitas WHERE id_produk = $idProduk");
+            }
+        }
         
         mysqli_commit($conn);
         $_SESSION['admin_cancel_success'] = "Pesanan #PLG-" . str_pad($id_order, 5, '0', STR_PAD_LEFT) . " berhasil dibatalkan oleh Admin.";

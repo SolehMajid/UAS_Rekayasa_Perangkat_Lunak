@@ -72,6 +72,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $update_payment = "UPDATE payment SET status_pembayaran = '$new_status' $waktu_bayar_clause WHERE id_order = $id_order";
             mysqli_query($conn, $update_payment);
 
+            // Kelola penyesuaian stok produk berdasarkan transisi status pesanan
+            $old_status = strtolower($order['status_pesanan'] ?? '');
+            if ($new_status === 'dibatalkan' && $old_status !== 'dibatalkan') {
+                // Kembalikan stok barang ke semula
+                $itemsQuery = mysqli_query($conn, "SELECT id_produk, kuantitas FROM order_detail WHERE id_order = $id_order");
+                while ($item = mysqli_fetch_assoc($itemsQuery)) {
+                    $idProduk = intval($item['id_produk']);
+                    $kuantitas = intval($item['kuantitas']);
+                    mysqli_query($conn, "UPDATE produk SET stok = stok + $kuantitas WHERE id_produk = $idProduk");
+                }
+            } elseif ($old_status === 'dibatalkan' && $new_status !== 'dibatalkan') {
+                // Kurangi stok kembali jika pesanan aktif lagi
+                $itemsQuery = mysqli_query($conn, "SELECT id_produk, kuantitas FROM order_detail WHERE id_order = $id_order");
+                while ($item = mysqli_fetch_assoc($itemsQuery)) {
+                    $idProduk = intval($item['id_produk']);
+                    $kuantitas = intval($item['kuantitas']);
+                    mysqli_query($conn, "UPDATE produk SET stok = stok - $kuantitas WHERE id_produk = $idProduk");
+                }
+            }
+
             mysqli_commit($conn);
             
             $_SESSION['success_msg'] = "Status pesanan <strong>$display_id</strong> berhasil diubah menjadi <strong>" . ucfirst($new_status) . "</strong>!";

@@ -110,6 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $detailsOk = false;
                         break;
                     }
+
+                    // Kurangi stok produk sesuai barang yang dicheckout
+                    $updateStockSql = "UPDATE produk SET stok = stok - $jumlah WHERE id_produk = $idProduk";
+                    mysqli_query($conn, $updateStockSql);
                 }
 
                 if ($paymentOk && $detailsOk) {

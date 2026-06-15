@@ -34,6 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order']) && $u
                     // Update payment
                     mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dibatalkan' WHERE id_order = $orderIdToCancel");
                     
+                    // Kembalikan stok barang ke semula
+                    $itemsQuery = mysqli_query($conn, "SELECT id_produk, kuantitas FROM order_detail WHERE id_order = $orderIdToCancel");
+                    while ($item = mysqli_fetch_assoc($itemsQuery)) {
+                        $idProduk = intval($item['id_produk']);
+                        $kuantitas = intval($item['kuantitas']);
+                        mysqli_query($conn, "UPDATE produk SET stok = stok + $kuantitas WHERE id_produk = $idProduk");
+                    }
+                    
                     mysqli_commit($conn);
                     $_SESSION['cancel_success'] = "Pesanan #" . str_pad($orderIdToCancel, 5, '0', STR_PAD_LEFT) . " berhasil dibatalkan.";
                 } catch (Exception $e) {
@@ -154,6 +162,15 @@ if ($orderQuery) {
                     $updatePayment = mysqli_query($conn, "UPDATE payment SET status_pembayaran = '$newStatusBayar', metode_pembayaran = '$safePaymentType', waktu_bayar = NOW() WHERE id_order = $orderIdToUpdate");
                     
                     if ($updateOrder && $updatePayment) {
+                        // Jika status baru dibatalkan, kembalikan stok barang
+                        if ($newStatusOrder === 'dibatalkan') {
+                            $itemsQuery = mysqli_query($conn, "SELECT id_produk, kuantitas FROM order_detail WHERE id_order = $orderIdToUpdate");
+                            while ($item = mysqli_fetch_assoc($itemsQuery)) {
+                                $idProduk = intval($item['id_produk']);
+                                $kuantitas = intval($item['kuantitas']);
+                                mysqli_query($conn, "UPDATE produk SET stok = stok + $kuantitas WHERE id_produk = $idProduk");
+                            }
+                        }
                         mysqli_commit($conn);
                         // Update variabel lokal agar langsung tampil perubahan di profil user
                         $row['status_pesanan'] = $newStatusOrder;

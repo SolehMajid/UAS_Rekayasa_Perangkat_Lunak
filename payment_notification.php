@@ -47,10 +47,27 @@ if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
 // 3. Update Database `order` dan `payment` secara Atomic
 mysqli_begin_transaction($conn);
 
+// Dapatkan status lama untuk mencegah pengembalian stok berulang
+$currentStatus = '';
+$currentStatusQuery = mysqli_query($conn, "SELECT status_pesanan FROM `order` WHERE id_order = $orderId LIMIT 1");
+if ($currentStatusQuery && mysqli_num_rows($currentStatusQuery) > 0) {
+    $currentStatusRow = mysqli_fetch_assoc($currentStatusQuery);
+    $currentStatus = strtolower($currentStatusRow['status_pesanan']);
+}
+
 $updateOrder = mysqli_query($conn, "UPDATE `order` SET status_pesanan = '$statusOrder' WHERE id_order = $orderId");
 $updatePayment = mysqli_query($conn, "UPDATE payment SET status_pembayaran = '$statusBayar', metode_pembayaran = '$paymentType', waktu_bayar = NOW() WHERE id_order = $orderId");
 
 if ($updateOrder && $updatePayment) {
+    // Kembalikan stok jika status berubah ke dibatalkan dan status sebelumnya bukan dibatalkan
+    if ($statusOrder === 'dibatalkan' && $currentStatus !== 'dibatalkan') {
+        $itemsQuery = mysqli_query($conn, "SELECT id_produk, kuantitas FROM order_detail WHERE id_order = $orderId");
+        while ($item = mysqli_fetch_assoc($itemsQuery)) {
+            $idProduk = intval($item['id_produk']);
+            $kuantitas = intval($item['kuantitas']);
+            mysqli_query($conn, "UPDATE produk SET stok = stok + $kuantitas WHERE id_produk = $idProduk");
+        }
+    }
     mysqli_commit($conn);
     header("HTTP/1.1 200 OK");
     echo "Status pembayaran order $orderId berhasil diupdate ke: $statusOrder";
