@@ -156,7 +156,7 @@ Konten Utama (Area Kerja) Area kartu putih berbingkai pink-lembut di tengah hala
    o Tujuan: Menyimpan ulasan ke database dan mempublikasikannya.
 
 
-g. Input live Chat CS Pembeli (customers/chat.php)
+g. Input live Chat CS Pembeli (customers/pesan.php)
 
 gambar 7 Form Input live Chat CS Pembeli
 
@@ -239,7 +239,7 @@ Konten Utama (Area Kerja) Kolom "Aksi" pada tabel daftar transaksi pembayaran.
    o Tujuan: Menangkap data persetujuan keabsahan dana transfer dari admin.
 
 
-d. Input Balasan Chat Admin (admin/kelola_chat.php)
+d. Input Balasan Chat Admin (admin/kelola_pesan.php)
 
 gambar 11 Form Input Balasan Chat Admin
 
@@ -405,7 +405,7 @@ kanan bilah filter & kartu riwayat pesanan).
    o Tujuan: Memudahkan pembeli memantau, melacak, dan mengontrol status pengiriman barang mereka.
 
 
-f. Jendela Live Chat CS Pembeli (customers/chat.php)
+f. Jendela Live Chat CS Pembeli (customers/pesan.php)
 
 gambar 18 Jendela live Chat CS Pembeli
 
@@ -523,7 +523,7 @@ Konten Utama (Area Kerja) Tabel pembayaran di dalam card panel putih.
    o Tujuan: Menyajikan data transfer masuk yang membutuhkan persetujuan keuangan admin.
 
 
-f. Panel Ruang Obrolan Kelola Chat Admin (admin/kelola_chat.php)
+f. Panel Ruang Obrolan Kelola Chat Admin (admin/kelola_pesan.php)
 
 gambar 24 Jendela Percakapan Kelola Chat Admin
 

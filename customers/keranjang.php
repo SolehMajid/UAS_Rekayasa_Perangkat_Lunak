@@ -6,7 +6,7 @@ require_once '../includes/auth.php';
 // If not logged in and user tries to add a product, remember the pending item first
 if (isset($_GET['action']) && $_GET['action'] === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_SESSION['login'])) {
     $_SESSION['pending_cart_add'] = isset($_POST['id_produk']) ? intval($_POST['id_produk']) : 0;
-    header('Location: /squashy/customers/login.php?redirect=' . urlencode('/squashy/customers/keranjang.php?pending_add=1'));
+    header('Location: ' . $base_url . 'customers/login.php?redirect=' . urlencode($base_url . 'customers/keranjang.php?pending_add=1'));
     exit;
 }
 

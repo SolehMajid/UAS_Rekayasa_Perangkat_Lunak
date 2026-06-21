@@ -391,7 +391,7 @@ I. DESAIN KELUARAN (OUTPUT DESIGN)
           foto produk, harga, metode bayar, dan tombol aksi (ulasan/batal).
         - Tujuan: Membantu pembeli mengontrol dan melacak paket belanjaan mereka.
 
-5. Halaman Live Chat CS (`customers/chat.php` - Jendela Obrolan)
+5. Halaman Live Chat CS (`customers/pesan.php` - Jendela Obrolan)
    Menampilkan gelembung-gelembung pesan interaksi pembeli dengan robot/admin.
    - Komponen Desain Halaman:
      1. Profil Customer Service:
@@ -456,7 +456,7 @@ II. DESAIN MASUKAN (INPUT DESIGN)
       4. Tombol Kirim Ulasan: Tombol submit pink bertuliskan "Kirim Ulasan 💖".
       - Tujuan: Menangkap data ulasan fisik, rating, dan foto kepuasan belanja pelanggan.
 
-12. Halaman Live Chat CS (`customers/chat.php` - Form Input Chat)
+12. Halaman Live Chat CS (`customers/pesan.php` - Form Input Chat)
     Formulir input pesan manual untuk berkonsultasi langsung dengan admin.
     - Komponen Desain Halaman:
       1. Input Teks Pesan: Kolom isian teks obrolan manual di bagian bawah jendela chat.
@@ -517,7 +517,7 @@ I. DESAIN KELUARAN (OUTPUT DESIGN)
            total tagihan pembayaran, status chip (Lunas hijau, Pending pink), dan tombol aksi.
          - Tujuan: Menampilkan data transfer masuk yang menunggu verifikasi admin.
 
-17. Halaman Kelola Chat Pelanggan (`admin/kelola_chat.php` - Panel Obrolan)
+17. Halaman Kelola Chat Pelanggan (`admin/kelola_pesan.php` - Panel Obrolan)
     Menampilkan ruang komunikasi admin Squashy dengan pelanggan secara aktif.
     - Komponen Desain Halaman:
       1. Antrean Chat Pembeli (Panel Kiri):
@@ -562,7 +562,7 @@ II. DESAIN MASUKAN (INPUT DESIGN)
       2. Tombol Oranye "Batal Konfirmasi": Tombol reset status lunas kembali menjadi pending.
       - Tujuan: Menangkap keputusan validasi admin atas dana transfer masuk dari pelanggan.
 
-22. Halaman Kelola Chat Pelanggan (`admin/kelola_chat.php` - Form Balasan Chat)
+22. Halaman Kelola Chat Pelanggan (`admin/kelola_pesan.php` - Form Balasan Chat)
     Formulir input bagi admin untuk menulis pesan tanggapan chat pembeli.
     - Komponen Desain Halaman:
       1. Input Teks Balasan Chat: Kolom isian teks di bagian bawah panel obrolan kanan.

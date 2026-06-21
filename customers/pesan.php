@@ -5,7 +5,7 @@ require_once __DIR__ . '/../config/database.php';
 
 // Pastikan user sudah login sebagai customer
 if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'customer' || !isset($_SESSION['id_user'])) {
-    header("Location: login.php?redirect=/squashy/customers/chat.php");
+    header("Location: login.php?redirect=" . urlencode($base_url . "customers/pesan.php"));
     exit;
 }
 
@@ -377,7 +377,7 @@ $theme = "mainan"; // Green theme for friendly CS chat
         async function fetchMessages() {
             if (!isPolling) return;
             try {
-                const response = await fetch('ajax_chat.php?action=get_messages');
+                const response = await fetch('ajax_pesan.php?action=get_messages');
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -464,7 +464,7 @@ $theme = "mainan"; // Green theme for friendly CS chat
                 formData.append('message', text);
                 formData.append('is_quick', isQuick ? '1' : '0');
 
-                const response = await fetch('ajax_chat.php?action=send_message', {
+                const response = await fetch('ajax_pesan.php?action=send_message', {
                     method: 'POST',
                     body: formData
                 });

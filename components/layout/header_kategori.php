@@ -170,7 +170,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
         <div class="nav-links">
             <a onclick="changeTheme('home', this)" class="<?= ($current_page == 'index.php') ? 'active' : '' ?>" href="<?= $base_url ?>index.php">Home</a>
             <a onclick="changeTheme('pakaian', this)" class="<?= ($current_page == 'kategori.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/kategori.php">Kategori</a>
-            <a onclick="changeTheme('mainan', this)" class="<?= ($current_page == 'chat.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/chat.php">Chat</a>
+            <a onclick="changeTheme('mainan', this)" class="<?= ($current_page == 'pesan.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/pesan.php">Chat</a>
             <a onclick="changeTheme('perlengkapan', this)" class="<?= ($current_page == 'keranjang.php') ? 'active' : '' ?>" href="<?= $base_url ?>customers/keranjang.php">Keranjang</a>
         </div>
 

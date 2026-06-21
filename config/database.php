@@ -1,8 +1,26 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "squashy_db";
+// Deteksi lingkungan server secara dinamis
+$is_localhost = false;
+if (isset($_SERVER['HTTP_HOST'])) {
+    $host_name = $_SERVER['HTTP_HOST'];
+    if (strpos($host_name, 'localhost') !== false || strpos($host_name, '127.0.0.1') !== false) {
+        $is_localhost = true;
+    }
+} else {
+    $is_localhost = true;
+}
+
+if ($is_localhost) {
+    $host = "localhost";
+    $user = "root";
+    $pass = "";
+    $db   = "squashy_db";
+} else {
+    $host = "sql104.infinityfree.com";
+    $user = "if0_42209691";
+    $pass = "J1NIGQMwZA";
+    $db   = "if0_42209691_squashy_db";
+}
 
 $conn = mysqli_connect($host, $user, $pass, $db);
 

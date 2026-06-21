@@ -543,7 +543,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin' || !isset($_SESS
         // Ambil list customer yang melakukan chat
         async function fetchCustomerList() {
             try {
-                const response = await fetch('ajax_admin_chat.php?action=get_customers');
+                const response = await fetch('ajax_pesan_admin.php?action=get_customers');
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -619,7 +619,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin' || !isset($_SESS
         async function fetchConversation() {
             if (!selectedUserId) return;
             try {
-                const response = await fetch(`ajax_admin_chat.php?action=get_chat&id_user=${selectedUserId}`);
+                const response = await fetch(`ajax_pesan_admin.php?action=get_chat&id_user=${selectedUserId}`);
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -684,7 +684,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin' || !isset($_SESS
                 formData.append('id_user', selectedUserId);
                 formData.append('message', message);
 
-                const response = await fetch('ajax_admin_chat.php?action=send_reply', {
+                const response = await fetch('ajax_pesan_admin.php?action=send_reply', {
                     method: 'POST',
                     body: formData
                 });

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../config/database.php';
+require_once '../config/app.php';
 
 $message = "";
 $redirect = '';
@@ -49,9 +50,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['id_user'] = $row['id_user'];
         $_SESSION['nama'] = $row['nama_lengkap'];
         $_SESSION['role'] = 'customer';
-        $target = '../index.php';
-        if (!empty($redirect) && strpos($redirect, '/squashy/') === 0) {
-            $target = $redirect;
+        $target = $base_url . 'index.php';
+        if (!empty($redirect)) {
+            if (strpos($redirect, '/') === 0 || strpos($redirect, $base_url) === 0) {
+                $target = $redirect;
+            }
         }
         echo "<script>alert('Login Berhasil! Selamat datang " . $row['nama_lengkap'] . "'); window.location='" . $target . "';</script>";
         exit;
@@ -84,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         body {
-            background-image: url('/squashy/assets/images/tbg.png');
+            background-image: url('<?= $base_url ?>assets/images/tbg.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;

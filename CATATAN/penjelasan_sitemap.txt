@@ -64,10 +64,10 @@ Halaman dan fitur belanja khusus bagi pembeli terdaftar yang telah melakukan log
   - Lacak Status Logistik (customers/ajax_lacak.php): Sinkronisasi real-time status pengiriman paket kurir.
   - Batal Pesanan Pending: Fitur pembatalan mandiri khusus untuk pesanan berstatus pending guna mengembalikan stok barang.
   - Beri Ulasan & Rating (customers/tambah_ulasan.php): Form feedback berupa bintang 1-5, teks ulasan, dan unggah foto bukti produk.
-• Live Chat CS & Bot (customers/chat.php)
+• Live Chat CS & Bot (customers/pesan.php)
   Antarmuka obrolan real-time interaktif berlatar hijau mint:
   - Quick Buttons: Opsi pertanyaan cepat (Cek Stok, Cara Retur, Info Promo) untuk dijawab bot instan.
-  - AJAX Chat Sync (customers/ajax_chat.php): Mengirimkan pesan manual secara real-time ke panel admin.
+  - AJAX Chat Sync (customers/ajax_pesan.php): Mengirimkan pesan manual secara real-time ke panel admin.
 • Logout (customers/logout.php)
   Mengakhiri sesi belanja aktif dan mengembalikan akses ke Guest Mode.
 
@@ -110,10 +110,10 @@ Verifikasi bukti dana pembayaran:
 • Tabel Validasi Keuangan: Menampilkan data transfer yang diklaim pembeli.
 • Tombol Aksi Cepat: Tombol "Konfirmasi Lunas" (mengubah status menjadi lunas) dan "Batal Konfirmasi" (mengembalikan status ke pending).
 
-6. Kelola Chat CS Admin (admin/kelola_chat.php)
+6. Kelola Chat CS Admin (admin/kelola_pesan.php)
 Menghubungkan komunikasi langsung dengan pelanggan:
 • Antrean Chat Pembeli: Panel kiri berisi daftar nama pembeli aktif mengirim pesan lengkap dengan lencana unread.
-• Balon Obrolan Aktif: Panel kanan ruang percakapan real-time menggunakan AJAX polling (admin/ajax_admin_chat.php).
+• Balon Obrolan Aktif: Panel kanan ruang percakapan real-time menggunakan AJAX polling (admin/ajax_pesan_admin.php).
 
 7. Kelola Ulasan (admin/kelola_ulasan.php)
 Penyaringan ulasan produk:

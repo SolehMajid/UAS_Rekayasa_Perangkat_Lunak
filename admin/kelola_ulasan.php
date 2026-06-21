@@ -6,7 +6,7 @@ require_once '../config/database.php';
 
 $active_page = 'ulasan';
 
-// Optional: check admin login to match kelola_chat.php
+// Optional: check admin login to match kelola_pesan.php
 if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin' || !isset($_SESSION['id_admin'])) {
     header("Location: ../index.php");
     exit;
