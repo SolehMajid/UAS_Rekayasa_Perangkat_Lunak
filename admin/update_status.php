@@ -45,8 +45,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_status = mysqli_real_escape_string($conn, $_POST['status_pesanan']);
     $nomor_resi = isset($_POST['nomor_resi']) ? mysqli_real_escape_string($conn, trim($_POST['nomor_resi'])) : '';
     
+    $current_status_lower = strtolower($order['status_pesanan']);
+    $is_currently_paid = !in_array($current_status_lower, ['pending', 'dibatalkan']);
+    
+    // Validasi: Pesanan yang telah dikonfirmasi selesai tidak dapat diubah lagi
+    if ($current_status_lower === 'selesai') {
+        $error_msg = "Pesanan yang telah dikonfirmasi selesai tidak dapat diubah lagi.";
+    }
+    // Validasi: Status lunas tidak boleh kembali ke pending
+    elseif ($is_currently_paid && $new_status === 'pending') {
+        $error_msg = "Pesanan yang telah lunas tidak dapat dikembalikan ke status Pending.";
+    }
     // Validasi: Status 'selesai' hanya dapat dikonfirmasi oleh Pelanggan secara langsung, bukan Admin
-    if ($new_status === 'selesai' && strtolower($order['status_pesanan']) !== 'selesai') {
+    elseif ($new_status === 'selesai' && $current_status_lower !== 'selesai') {
         $error_msg = "Status 'Selesai' hanya dapat dikonfirmasi oleh Pelanggan secara langsung.";
     } else {
         // Mulai transaksi database agar konsisten
@@ -436,29 +447,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
+            <?php if (strtolower($order['status_pesanan']) === 'selesai') : ?>
+                <div style="background-color: #E8F5E9; color: #2E7D32; padding: 15px 20px; border-radius: 18px; font-weight: 700; font-size: 14px; margin-bottom: 25px; border-left: 5px solid #2E7D32;">
+                    🟢 Pesanan ini telah dikonfirmasi selesai oleh pelanggan. Status transaksi terkunci dan tidak dapat diubah kembali.
+                </div>
+            <?php endif; ?>
+
+            <?php 
+            $current_status_lower = strtolower($order['status_pesanan']);
+            $is_currently_paid = !in_array($current_status_lower, ['pending', 'dibatalkan']);
+            ?>
+
             <form method="POST">
                 <div class="form-group">
                     <label for="status_pesanan">Pilih Status Baru</label>
-                    <select name="status_pesanan" id="status_pesanan" class="select-status" required>
-                        <option value="pending" <?= strtolower($order['status_pesanan']) === 'pending' ? 'selected' : '' ?>>⏳ Pending (Menunggu Pembayaran / Validasi)</option>
-                        <option value="dibayar" <?= strtolower($order['status_pesanan']) === 'dibayar' ? 'selected' : '' ?>>💳 Dibayar (Pembayaran Terkonfirmasi)</option>
-                        <option value="diproses" <?= strtolower($order['status_pesanan']) === 'diproses' ? 'selected' : '' ?>>⚙️ Diproses (Sedang Dipersiapkan)</option>
-                        <option value="dikirim" <?= strtolower($order['status_pesanan']) === 'dikirim' ? 'selected' : '' ?>>🚚 Dikirim (Dalam Perjalanan)</option>
-                        <?php if (strtolower($order['status_pesanan']) === 'selesai') : ?>
+                    <select name="status_pesanan" id="status_pesanan" class="select-status" required <?= $current_status_lower === 'selesai' ? 'disabled' : '' ?>>
+                        <option value="pending" <?= $current_status_lower === 'pending' ? 'selected' : '' ?> <?= $is_currently_paid ? 'disabled style="display: none;"' : '' ?>>⏳ Pending (Menunggu Pembayaran / Validasi)</option>
+                        <option value="dibayar" <?= $current_status_lower === 'dibayar' ? 'selected' : '' ?>>💳 Dibayar (Pembayaran Terkonfirmasi)</option>
+                        <option value="diproses" <?= $current_status_lower === 'diproses' ? 'selected' : '' ?>>⚙️ Diproses (Sedang Dipersiapkan)</option>
+                        <option value="dikirim" <?= $current_status_lower === 'dikirim' ? 'selected' : '' ?>>🚚 Dikirim (Dalam Perjalanan)</option>
+                        <?php if ($current_status_lower === 'selesai') : ?>
                             <option value="selesai" selected>🟢 Selesai (Sudah Diterima)</option>
                         <?php endif; ?>
-                        <option value="dibatalkan" <?= strtolower($order['status_pesanan']) === 'dibatalkan' ? 'selected' : '' ?>>❌ Dibatalkan</option>
+                        <option value="dibatalkan" <?= $current_status_lower === 'dibatalkan' ? 'selected' : '' ?>>❌ Dibatalkan</option>
                     </select>
                 </div>
 
                 <div class="form-group" id="resi-group" style="<?= strtolower($order['status_pesanan'] ?? '') === 'dikirim' ? '' : 'display: none;' ?>">
                     <label for="nomor_resi">Nomor Resi Pengiriman</label>
-                    <input type="text" name="nomor_resi" id="nomor_resi" class="select-status" style="width: 100%; border: 2px solid var(--soft-green);" placeholder="Contoh: JNE123456789" value="<?= htmlspecialchars($order['nomor_resi'] ?? '') ?>" <?= strtolower($order['status_pesanan'] ?? '') === 'dikirim' ? 'required' : '' ?>>
+                    <input type="text" name="nomor_resi" id="nomor_resi" class="select-status" style="width: 100%; border: 2px solid var(--soft-green);" placeholder="Contoh: JNE123456789" value="<?= htmlspecialchars($order['nomor_resi'] ?? '') ?>" <?= strtolower($order['status_pesanan'] ?? '') === 'dikirim' ? 'required' : '' ?> <?= strtolower($order['status_pesanan']) === 'selesai' ? 'disabled' : '' ?>>
                 </div>
 
                 <div class="btn-group">
                     <a href="kelola_pesanan.php" class="btn-cancel">Batal</a>
-                    <button type="submit" class="btn-submit">Simpan Status</button>
+                    <?php if (strtolower($order['status_pesanan']) !== 'selesai') : ?>
+                        <button type="submit" class="btn-submit">Simpan Status</button>
+                    <?php endif; ?>
                 </div>
             </form>
             

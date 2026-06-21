@@ -136,6 +136,7 @@ SELECT
     o.nama_pembeli,
     o.tanggal_pesanan,
     o.total_tagihan,
+    o.status_pesanan,
     p.status_pembayaran
 FROM `order` o
 LEFT JOIN payment p ON o.id_order = p.id_order
@@ -733,11 +734,17 @@ $result_orders = mysqli_query($conn, $query_orders);
                                             👁
                                         </a>
 
-                                        <a href="update_status.php?id=<?= $row['id_order'] ?>"
-                                            class="btn-action bg-update"
-                                            title="Update">
-                                            🔄
-                                        </a>
+                                        <?php if (strtolower($row['status_pesanan']) !== 'selesai') : ?>
+                                            <a href="update_status.php?id=<?= $row['id_order'] ?>"
+                                                class="btn-action bg-update"
+                                                title="Update">
+                                                🔄
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="btn-action" style="background-color: #e0e0e0; color: #999; cursor: not-allowed;" title="Pesanan Selesai (Terkunci)">
+                                                🔒
+                                            </span>
+                                        <?php endif; ?>
 
                                         <a href="cetak_invoice.php?id=<?= $row['id_order'] ?>"
                                             class="btn-action bg-print"

@@ -33,6 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_cancel_order'])
             $currentStatus = strtolower($currentStatusRow['status_pesanan']);
         }
 
+        if ($currentStatus === 'selesai') {
+            throw new Exception("Pesanan yang telah dikonfirmasi selesai tidak dapat dibatalkan.");
+        }
+
         // Update status_pesanan in order table
         mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dibatalkan' WHERE id_order = $id_order");
         
@@ -672,10 +676,17 @@ $display_id = "PLG-" . str_pad($order['id_order'], 5, "0", STR_PAD_LEFT);
                     </table>
 
                     <div class="action-container">
-                        <a href="update_status.php?id=<?= $order['id_order'] ?>" class="btn-action-button btn-update-status">
-                            🔄 Perbarui Status Pesanan
-                        </a>
-                        <?php if (strtolower($order['status_pesanan'] ?? 'pending') !== 'dibatalkan') : ?>
+                        <?php if (strtolower($order['status_pesanan'] ?? 'pending') !== 'selesai') : ?>
+                            <a href="update_status.php?id=<?= $order['id_order'] ?>" class="btn-action-button btn-update-status">
+                                🔄 Perbarui Status Pesanan
+                            </a>
+                        <?php else: ?>
+                            <div style="background-color: #E8F5E9; color: #2E7D32; padding: 14px 20px; border-radius: 15px; text-align: center; font-weight: 900; font-size: 14px; text-transform: uppercase;">
+                                🟢 Pesanan Telah Selesai
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (strtolower($order['status_pesanan'] ?? 'pending') !== 'dibatalkan' && strtolower($order['status_pesanan'] ?? 'pending') !== 'selesai') : ?>
                             <form method="POST" action="" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');" style="width: 100%; display: block;">
                                 <button type="submit" name="admin_cancel_order" class="btn-action-button" style="background-color: #EB5757; color: white; width: 100%; border: none; box-shadow: 0 6px 15px rgba(235, 87, 87, 0.3);">
                                     ❌ Batalkan Pesanan

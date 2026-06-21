@@ -18,16 +18,28 @@ if (isset($_GET['action'], $_GET['id'])) {
     $action = $_GET['action'];
 
     if ($order_id > 0) {
-        if ($action === 'confirm') {
-            // Update tabel order dan payment menjadi dibayar
-            mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dibayar' WHERE id_order = $order_id");
-            mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dibayar', waktu_bayar = NOW() WHERE id_order = $order_id");
-            $_SESSION['success_msg'] = "Pembayaran untuk pesanan #PLG-" . str_pad($order_id, 5, '0', STR_PAD_LEFT) . " berhasil dikonfirmasi!";
-        } elseif ($action === 'reset') {
-            // Reset tabel order dan payment menjadi pending
-            mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'pending' WHERE id_order = $order_id");
-            mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'pending', waktu_bayar = NULL WHERE id_order = $order_id");
-            $_SESSION['success_msg'] = "Status pembayaran untuk pesanan #PLG-" . str_pad($order_id, 5, '0', STR_PAD_LEFT) . " berhasil dikembalikan ke pending.";
+        // Cek status pesanan saat ini
+        $check_sql = "SELECT status_pesanan FROM `order` WHERE id_order = $order_id";
+        $check_res = mysqli_query($conn, $check_sql);
+        $check_row = mysqli_fetch_assoc($check_res);
+        $status_current = strtolower($check_row['status_pesanan'] ?? '');
+
+        if ($status_current === 'selesai') {
+            $_SESSION['error_msg'] = "Gagal: Pesanan yang telah dikonfirmasi selesai tidak dapat diubah status pembayarannya.";
+        } elseif ($action === 'reset' && !in_array($status_current, ['pending', 'dibatalkan'])) {
+            $_SESSION['error_msg'] = "Gagal: Pesanan yang telah lunas tidak dapat dikembalikan ke pending.";
+        } else {
+            if ($action === 'confirm') {
+                // Update tabel order dan payment menjadi dibayar
+                mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'dibayar' WHERE id_order = $order_id");
+                mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'dibayar', waktu_bayar = NOW() WHERE id_order = $order_id");
+                $_SESSION['success_msg'] = "Pembayaran untuk pesanan #PLG-" . str_pad($order_id, 5, '0', STR_PAD_LEFT) . " berhasil dikonfirmasi!";
+            } elseif ($action === 'reset') {
+                // Reset tabel order dan payment menjadi pending
+                mysqli_query($conn, "UPDATE `order` SET status_pesanan = 'pending' WHERE id_order = $order_id");
+                mysqli_query($conn, "UPDATE payment SET status_pembayaran = 'pending', waktu_bayar = NULL WHERE id_order = $order_id");
+                $_SESSION['success_msg'] = "Status pembayaran untuk pesanan #PLG-" . str_pad($order_id, 5, '0', STR_PAD_LEFT) . " berhasil dikembalikan ke pending.";
+            }
         }
     }
 
@@ -382,6 +394,13 @@ $total_pending = $summary_data['total_pending'] ?? 0;
             <?php unset($_SESSION['success_msg']); ?>
         <?php endif; ?>
 
+        <?php if (isset($_SESSION['error_msg'])): ?>
+            <div class="alert-error" style="background-color: #FFEBEE; color: #C62828; border-left: 5px solid #E53935; padding: 15px 20px; border-radius: 15px; margin-bottom: 25px; font-weight: 700; font-size: 14px;">
+                ⚠️ <?= $_SESSION['error_msg'] ?>
+            </div>
+            <?php unset($_SESSION['error_msg']); ?>
+        <?php endif; ?>
+
         <div class="top-cards-grid">
             <div class="stat-card">
                 <span>Total Transaksi</span>
@@ -453,10 +472,12 @@ $total_pending = $summary_data['total_pending'] ?? 0;
                                 </td>
                                 <td style="text-align:center;">
                                     <div class="actions-cell">
-                                        <?php if (!$is_lunas): ?>
-                                            <a href="kelola_pembayaran.php?id=<?= $row['id_order'] ?>&action=confirm" class="btn-action bg-confirm">Konfirmasi Lunas</a>
+                                        <?php if (strtolower($row['status_pesanan']) === 'selesai'): ?>
+                                            <span style="font-weight: 700; color: var(--green-card); font-size: 0.85rem;">🔒 Selesai (Terkunci)</span>
+                                        <?php elseif ($is_lunas): ?>
+                                            <span style="font-weight: 700; color: var(--green-card); font-size: 0.85rem;">🔒 Lunas (Terkunci)</span>
                                         <?php else: ?>
-                                            <a href="kelola_pembayaran.php?id=<?= $row['id_order'] ?>&action=reset" class="btn-action bg-reset">Batal Konfirmasi</a>
+                                            <a href="kelola_pembayaran.php?id=<?= $row['id_order'] ?>&action=confirm" class="btn-action bg-confirm">Konfirmasi Lunas</a>
                                         <?php endif; ?>
                                     </div>
                                 </td>
